@@ -1,0 +1,23 @@
+# Build artifacts
+bin/
+dist/
+*.exe
+*.exe~
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Vendor
+vendor/
+
+# Testing
+coverage.out
+*.test
+*.prof
+
+# IDE
+.DS_Store
+*.swp
+*.swo
+*~

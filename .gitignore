@@ -1,0 +1,22 @@
+# macOS
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Environment
+.env
+.env.*
+
+# Logs
+*.log
+
+# Backend
+backend/bin/
+backend/vendor/
+backend/coverage.out
+
+# Frontend (extra safety)
+frontend/node_modules/
+frontend/.next/
+frontend/out/
