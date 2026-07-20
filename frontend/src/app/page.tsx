@@ -1,68 +1,88 @@
 "use client";
 
 import { useState } from "react";
-import { useWebLLM } from "@/hooks/useWebLLM";
-import { PromptInput } from "@/components/PromptInput";
-import { AskButton } from "@/components/AskButton";
-import { StatusCard } from "@/components/StatusCard";
-import { ResponseCard } from "@/components/ResponseCard";
-import { MetricsCard } from "@/components/MetricsCard";
-import { DecisionScoreCard } from "@/components/DecisionScoreCard";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-export default function Home() {
-  const [prompt, setPrompt] = useState("");
-  const {
-    loadStatus,
-    initProgress,
-    progressText,
-    loadError,
-    isInferenceRunning,
-    responseText,
-    inferenceTime,
-    score,
-    handleAskAI,
-  } = useWebLLM();
+export default function LoginPage() {
+  const router = useRouter();
 
-  const onAskAI = async () => {
-    await handleAskAI(prompt);
-    setPrompt("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const login = async () => {
+    setLoading(true);
+
+    try {
+      const res = await fetch("http://localhost:8080/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!data.success) {
+        alert("Login failed");
+        return;
+      }
+
+      router.push("/dashboard");
+    } catch {
+      alert("Server error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black">
-      <main className="max-w-2xl mx-auto px-6 py-12">
-        {/* Header */}
-        <div className="mb-12">
-          <h1 className="text-4xl font-bold text-black dark:text-white mb-2">
-            LLM Decision Score
-          </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400">
-            Ask the AI a question and see how it decides.
-          </p>
-        </div>
+    <main className="min-h-screen flex items-center justify-center bg-white">
+      <div className="w-full max-w-sm border rounded-xl p-8 shadow">
 
-        <PromptInput value={prompt} onChange={setPrompt} />
+        <h1 className="text-3xl font-bold mb-8">
+          LLM Decision Score
+        </h1>
 
-        {/* Ask AI Button */}
-        <AskButton
-          disabled={loadStatus !== "loaded" || isInferenceRunning}
-          isLoading={isInferenceRunning}
-          onClick={onAskAI}
+        <input
+          className="w-full border rounded p-3 mb-4"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
 
-        <StatusCard
-          loadStatus={loadStatus}
-          initProgress={initProgress}
-          progressText={progressText}
-          loadError={loadError}
+        <input
+          type="password"
+          className="w-full border rounded p-3 mb-6"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
 
-        <ResponseCard responseText={responseText} isLoading={isInferenceRunning} />
+        <button
+          onClick={login}
+          disabled={loading}
+          className="w-full bg-blue-600 text-white rounded p-3"
+        >
+          {loading ? "Logging in..." : "Login"}
+        </button>
 
-        <MetricsCard inferenceTime={inferenceTime} />
+        <p className="text-center mt-6 text-sm">
+          Don't have an account?{" "}
+          <Link
+            href="/register"
+            className="text-blue-600 hover:underline"
+          >
+            Create Account
+          </Link>
+        </p>
 
-        <DecisionScoreCard score={score} />
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }
