@@ -7,6 +7,7 @@ import { AskButton } from "@/components/AskButton";
 import { StatusCard } from "@/components/StatusCard";
 import { ResponseCard } from "@/components/ResponseCard";
 import { MetricsCard } from "@/components/MetricsCard";
+import { DecisionScoreCard } from "@/components/DecisionScoreCard";
 
 export default function Home() {
   const [prompt, setPrompt] = useState("");
@@ -18,6 +19,7 @@ export default function Home() {
     isInferenceRunning,
     responseText,
     inferenceTime,
+    score,
     handleAskAI,
   } = useWebLLM();
 
@@ -58,6 +60,8 @@ export default function Home() {
         <ResponseCard responseText={responseText} isLoading={isInferenceRunning} />
 
         <MetricsCard inferenceTime={inferenceTime} />
+
+        <DecisionScoreCard score={score} />
       </main>
     </div>
   );

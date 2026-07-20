@@ -11,6 +11,7 @@ export interface WebLLMState {
   isInferenceRunning: boolean;
   responseText: string;
   inferenceTime: number | null;
+  score: number | null;
 }
 
 export interface WebLLMHandlers {
@@ -28,6 +29,7 @@ export function useWebLLM(): UseWebLLMReturn {
   const [isInferenceRunning, setIsInferenceRunning] = useState(false);
   const [responseText, setResponseText] = useState<string>("");
   const [inferenceTime, setInferenceTime] = useState<number | null>(null);
+  const [score, setScore] = useState<number | null>(null);
 
   const handleAskAI = async (prompt: string) => {
     if (!engineRef.current) {
@@ -37,6 +39,7 @@ export function useWebLLM(): UseWebLLMReturn {
     setIsInferenceRunning(true);
     setResponseText("");
     setInferenceTime(null);
+    setScore(null);
 
     try {
       const startTime = performance.now();
@@ -56,7 +59,31 @@ export function useWebLLM(): UseWebLLMReturn {
           ? rawContent.map((part: any) => part.type === "text" ? part.text : "").join("")
           : "";
 
-      setResponseText(content || "No response returned.");
+      const responseContent = content || "No response returned.";
+      setResponseText(responseContent);
+
+      // Send prompt and response to backend for scoring
+      try {
+        const scoreResponse = await fetch("http://localhost:8080/score", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            prompt: prompt,
+            response: responseContent,
+          }),
+        });
+
+        if (scoreResponse.ok) {
+          const scoreData = await scoreResponse.json();
+          setScore(scoreData.score);
+        } else {
+          console.error("Failed to get score from backend:", scoreResponse.status);
+        }
+      } catch (scoreError) {
+        console.error("Error calling /score endpoint:", scoreError);
+      }
     } catch (error) {
       setResponseText(error instanceof Error ? error.message : String(error));
     } finally {
@@ -115,6 +142,7 @@ export function useWebLLM(): UseWebLLMReturn {
     isInferenceRunning,
     responseText,
     inferenceTime,
+    score,
     handleAskAI,
   };
 }
