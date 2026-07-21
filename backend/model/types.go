@@ -10,3 +10,10 @@ type ScoreRequest struct {
 type ScoreResponse struct {
 	Score int `json:"score"`
 }
+
+// HistoryItem represents one scored LLM interaction.
+type HistoryItem struct {
+	Prompt   string `json:"prompt"`
+	Response string `json:"response"`
+	Score    int    `json:"score"`
+}

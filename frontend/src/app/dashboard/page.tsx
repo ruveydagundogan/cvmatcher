@@ -23,6 +23,8 @@ export default function DashboardPage() {
     responseText,
     inferenceTime,
     score,
+    wordCount,
+    characterCount,
     handleAskAI,
   } = useWebLLM();
 
@@ -63,7 +65,10 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <PromptInput value={prompt} onChange={setPrompt} />
+        <PromptInput
+          value={prompt}
+          onChange={setPrompt}
+        />
 
         <AskButton
           disabled={loadStatus !== "loaded" || isInferenceRunning}
@@ -83,9 +88,15 @@ export default function DashboardPage() {
           isLoading={isInferenceRunning}
         />
 
-        <MetricsCard inferenceTime={inferenceTime} />
+        <MetricsCard
+          inferenceTime={inferenceTime}
+          wordCount={wordCount}
+          characterCount={characterCount}
+        />
 
-        <DecisionScoreCard score={score} />
+        <DecisionScoreCard
+          score={score}
+        />
       </main>
     </div>
   );

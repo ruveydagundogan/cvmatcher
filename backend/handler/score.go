@@ -27,7 +27,7 @@ func PostScore(c *gin.Context) {
 
 	c.JSON(200, model.ScoreResponse{
 		Score: score,
-	})
+})
 }
 
 func calculateDecisionScore(prompt, response string) int {

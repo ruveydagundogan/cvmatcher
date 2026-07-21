@@ -44,7 +44,9 @@ func Keywords(c *gin.Context) {
 }
 
 func GetHistory(c *gin.Context) {
-	c.JSON(http.StatusOK, History)
+	c.JSON(http.StatusOK, gin.H{
+		"history": History,
+	})
 }
 
 func DeleteHistory(c *gin.Context) {

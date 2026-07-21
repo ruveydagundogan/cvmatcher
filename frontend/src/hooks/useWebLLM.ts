@@ -12,13 +12,15 @@ export interface WebLLMState {
   responseText: string;
   inferenceTime: number | null;
   score: number | null;
+  wordCount: number;
+  characterCount: number;
 }
 
 export interface WebLLMHandlers {
   handleAskAI: (prompt: string) => Promise<void>;
 }
 
-export interface UseWebLLMReturn extends WebLLMState, WebLLMHandlers {}
+export interface UseWebLLMReturn extends WebLLMState, WebLLMHandlers { }
 
 export function useWebLLM(): UseWebLLMReturn {
   const engineRef = useRef<MLCEngine | null>(null);
@@ -30,6 +32,8 @@ export function useWebLLM(): UseWebLLMReturn {
   const [responseText, setResponseText] = useState<string>("");
   const [inferenceTime, setInferenceTime] = useState<number | null>(null);
   const [score, setScore] = useState<number | null>(null);
+  const [wordCount, setWordCount] = useState(0);
+  const [characterCount, setCharacterCount] = useState(0);
 
   const handleAskAI = async (prompt: string) => {
     if (!engineRef.current) {
@@ -40,6 +44,8 @@ export function useWebLLM(): UseWebLLMReturn {
     setResponseText("");
     setInferenceTime(null);
     setScore(null);
+    setWordCount(0);
+    setCharacterCount(0);
 
     try {
       const startTime = performance.now();
@@ -60,7 +66,19 @@ export function useWebLLM(): UseWebLLMReturn {
           : "";
 
       const responseContent = content || "No response returned.";
+
+      // Response'u ekrana yazdır
       setResponseText(responseContent);
+
+      // Metrics
+      setCharacterCount(responseContent.length);
+
+      setWordCount(
+        responseContent
+          .trim()
+          .split(/\s+/)
+          .filter(Boolean).length
+      );
 
       // Send prompt and response to backend for scoring
       try {
@@ -143,6 +161,8 @@ export function useWebLLM(): UseWebLLMReturn {
     responseText,
     inferenceTime,
     score,
+    wordCount,
+    characterCount,
     handleAskAI,
   };
 }
