@@ -4,17 +4,18 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"os"
 )
 
 var (
-	ErrNotFound       = errors.New("not found")
-	ErrAlreadyExists  = errors.New("already exists")
-	ErrUnauthorized   = errors.New("unauthorized")
-	ErrForbidden      = errors.New("forbidden")
-	ErrValidation     = errors.New("validation failed")
-	ErrRateLimited    = errors.New("rate limited")
+	ErrNotFound      = errors.New("not found")
+	ErrAlreadyExists = errors.New("already exists")
+	ErrUnauthorized  = errors.New("unauthorized")
+	ErrForbidden     = errors.New("forbidden")
+	ErrValidation    = errors.New("validation failed")
+	ErrRateLimited   = errors.New("rate limited")
 	ErrNotImplemented = errors.New("not implemented")
-	ErrInternal       = errors.New("internal error")
+	ErrInternal      = errors.New("internal error")
 )
 
 type DomainError struct {
@@ -24,6 +25,9 @@ type DomainError struct {
 }
 
 func (e *DomainError) Error() string {
+	if os.Getenv("GO_ENV") == "production" && e.Kind == ErrInternal {
+		return "an internal error occurred"
+	}
 	if e.Err != nil {
 		return fmt.Sprintf("%s: %v", e.Message, e.Err)
 	}

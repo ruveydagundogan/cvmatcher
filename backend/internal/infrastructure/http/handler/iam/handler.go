@@ -60,6 +60,11 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if len(req.Password) < 6 {
+		response.BadRequest(w, "password must be at least 6 characters")
+		return
+	}
+
 	token, user, err := h.registerUC.Execute(r.Context(), req.Email, req.Password, req.FirstName, req.LastName)
 	if err != nil {
 		response.Error(w, err)

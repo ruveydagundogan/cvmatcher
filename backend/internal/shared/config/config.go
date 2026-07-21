@@ -17,24 +17,24 @@ type Config struct {
 }
 
 type ServerConfig struct {
-	Host              string
-	Port              int
-	ReadTimeout       time.Duration
-	WriteTimeout      time.Duration
-	IdleTimeout       time.Duration
-	MaxBodyBytes      int64
+	Host               string
+	Port               int
+	ReadTimeout        time.Duration
+	WriteTimeout       time.Duration
+	IdleTimeout        time.Duration
+	MaxBodyBytes       int64
 	CORSAllowedOrigins []string
 }
 
 type DatabaseConfig struct {
-	Host       string
-	Port       int
-	User       string
-	Password   string
-	Name       string
-	SSLMode    string
-	MaxConns   int32
-	MinConns   int32
+	Host     string
+	Port     int
+	User     string
+	Password string
+	Name     string
+	SSLMode  string
+	MaxConns int32
+	MinConns int32
 }
 
 type RedisConfig struct {
@@ -55,12 +55,12 @@ type LogConfig struct {
 func Load() *Config {
 	return &Config{
 		Server: ServerConfig{
-			Host:              getEnv("SERVER_HOST", "0.0.0.0"),
-			Port:              getEnvInt("SERVER_PORT", 8080),
-			ReadTimeout:       getEnvDuration("SERVER_READ_TIMEOUT_SECONDS", 15),
-			WriteTimeout:      getEnvDuration("SERVER_WRITE_TIMEOUT_SECONDS", 15),
-			IdleTimeout:       getEnvDuration("SERVER_IDLE_TIMEOUT_SECONDS", 60),
-			MaxBodyBytes:      getEnvInt64("MAX_BODY_BYTES", 1048576),
+			Host:               getEnv("SERVER_HOST", "0.0.0.0"),
+			Port:               getEnvInt("SERVER_PORT", 8080),
+			ReadTimeout:        getEnvDuration("SERVER_READ_TIMEOUT_SECONDS", 15),
+			WriteTimeout:       getEnvDuration("SERVER_WRITE_TIMEOUT_SECONDS", 15),
+			IdleTimeout:        getEnvDuration("SERVER_IDLE_TIMEOUT_SECONDS", 60),
+			MaxBodyBytes:       getEnvInt64("MAX_BODY_BYTES", 262144),
 			CORSAllowedOrigins: getEnvSliceDefault("CORS_ALLOWED_ORIGINS", []string{"http://localhost:3000"}),
 		},
 		Database: DatabaseConfig{
@@ -78,7 +78,7 @@ func Load() *Config {
 			Port: getEnvInt("REDIS_PORT", 6379),
 		},
 		JWT: JWTConfig{
-			Secret:          getEnv("JWT_SECRET", "change-me-in-production"),
+			Secret:          getEnv("JWT_SECRET", ""),
 			ExpirationHours: getEnvInt("JWT_EXPIRATION_HOURS", 24),
 		},
 		Log: LogConfig{

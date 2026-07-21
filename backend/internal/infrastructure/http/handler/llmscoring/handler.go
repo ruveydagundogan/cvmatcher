@@ -5,11 +5,16 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/application/llmscoring/dto"
-	scoringmodel "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/llmscoring/model"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/middleware"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/response"
+)
+
+const (
+	maxPromptLen   = 10000
+	maxResponseLen = 50000
 )
 
 type ScoreUseCase interface {
@@ -52,7 +57,8 @@ func NewHandler(
 func (h *Handler) Score(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r.Context())
 	if userID == "" {
-		userID = "anonymous"
+		response.Unauthorized(w, "authentication required")
+		return
 	}
 
 	var req dto.ScoreRequestDTO
@@ -65,6 +71,31 @@ func (h *Handler) Score(w http.ResponseWriter, r *http.Request) {
 		response.BadRequest(w, "prompt and response are required")
 		return
 	}
+
+	if len(req.Prompt) > maxPromptLen {
+		response.BadRequest(w, "prompt exceeds maximum length")
+		return
+	}
+	if len(req.Response) > maxResponseLen {
+		response.BadRequest(w, "response exceeds maximum length")
+		return
+	}
+
+	for i := 0; i < len(req.Prompt); i++ {
+		if req.Prompt[i] == 0 {
+			response.BadRequest(w, "invalid character in prompt")
+			return
+		}
+	}
+	for i := 0; i < len(req.Response); i++ {
+		if req.Response[i] == 0 {
+			response.BadRequest(w, "invalid character in response")
+			return
+		}
+	}
+
+	req.Prompt = strings.TrimSpace(req.Prompt)
+	req.Response = strings.TrimSpace(req.Response)
 
 	if req.Model == "" {
 		req.Model = "Gemma-2B"
@@ -94,6 +125,9 @@ func (h *Handler) GetHistory(w http.ResponseWriter, r *http.Request) {
 	}
 	if limit < 1 {
 		limit = 20
+	}
+	if limit > 100 {
+		limit = 100
 	}
 
 	result, err := h.historyUC.Execute(r.Context(), userID, page, limit)
@@ -137,7 +171,6 @@ func (h *Handler) GetStats(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetModels(w http.ResponseWriter, r *http.Request) {
-	_ = scoringmodel.NewScoreRequest // keep import alive
 	response.Success(w, map[string]interface{}{
 		"models": []string{"Gemma-2B", "Gemma-7B"},
 	})

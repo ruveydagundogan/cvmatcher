@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -22,6 +23,7 @@ import (
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/config"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/database"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/logger"
+	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/middleware"
 
 	auditrepo "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/audit/repository"
 	iamrepo "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/iam/repository"
@@ -30,6 +32,16 @@ import (
 
 func main() {
 	cfg := config.Load()
+
+	if cfg.JWT.Secret == "" {
+		env := os.Getenv("GO_ENV")
+		if env == "production" || env == "staging" {
+			slog.Error("JWT_SECRET is required in production/staging")
+			os.Exit(1)
+		}
+		slog.Warn("JWT_SECRET not set, using development fallback")
+	}
+
 	log := logger.New(cfg.Log.Level, cfg.Log.Format)
 
 	log.Info("starting llm-decision-score backend",
@@ -66,7 +78,7 @@ func main() {
 	}
 
 	jwtService := auth.NewJWTService(cfg.JWT)
-	bcryptService := auth.NewBcryptAuthService()
+	bcryptService := auth.NewBcryptAuthService(10)
 
 	registerUC := usecase.NewRegisterUseCase(userRepo, roleRepo, bcryptService, jwtService, auditRepo, log)
 	loginUC := usecase.NewLoginUseCase(userRepo, jwtService, auditRepo, log)
@@ -82,12 +94,15 @@ func main() {
 	iamH := iamhandler.NewHandler(registerUC, loginUC, getProfileUC, updateProfileUC)
 	llmH := llmhandler.NewHandler(scoreUC, historyUC, deleteHistoryUC, statsUC)
 
+	rateLimiter := middleware.NewRateLimiter(100, 200, log)
+
 	deps := router.Dependencies{
 		HealthHandler: healthHandler,
 		IAMHandler:    iamH,
 		LLMHandler:    llmH,
 		JWTValidator:  jwtService,
 		Config:        cfg,
+		RateLimiter:   rateLimiter,
 	}
 
 	r := router.NewRouter(deps)

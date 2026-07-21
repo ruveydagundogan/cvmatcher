@@ -2,17 +2,24 @@ package middleware
 
 import (
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/response"
 )
 
 func CORS(allowedOrigins []string) func(http.Handler) http.Handler {
+	env := os.Getenv("GO_ENV")
+
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			origin := r.Header.Get("Origin")
 
 			if len(allowedOrigins) == 0 || (len(allowedOrigins) == 1 && allowedOrigins[0] == "*") {
+				if env == "production" || env == "staging" {
+					response.BadRequest(w, "CORS not configured")
+					return
+				}
 				w.Header().Set("Access-Control-Allow-Origin", "*")
 			} else {
 				for _, allowed := range allowedOrigins {
@@ -25,7 +32,7 @@ func CORS(allowedOrigins []string) func(http.Handler) http.Handler {
 			}
 
 			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-			w.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Authorization, X-Organization-ID, X-App-ID")
+			w.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Authorization")
 			w.Header().Set("Access-Control-Max-Age", "86400")
 
 			if r.Method == http.MethodOptions {

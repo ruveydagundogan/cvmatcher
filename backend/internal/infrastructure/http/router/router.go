@@ -14,11 +14,12 @@ import (
 )
 
 type Dependencies struct {
-	HealthHandler  *healthhandler.Handler
-	IAMHandler     *iamhandler.Handler
-	LLMHandler     *llmhandler.Handler
-	JWTValidator   middleware.TokenValidator
-	Config         *config.Config
+	HealthHandler *healthhandler.Handler
+	IAMHandler    *iamhandler.Handler
+	LLMHandler    *llmhandler.Handler
+	JWTValidator  middleware.TokenValidator
+	Config        *config.Config
+	RateLimiter   *middleware.RateLimiter
 }
 
 func NewRouter(deps Dependencies) http.Handler {
@@ -36,7 +37,12 @@ func NewRouter(deps Dependencies) http.Handler {
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Post("/auth/register", deps.IAMHandler.Register)
 		r.Post("/auth/login", deps.IAMHandler.Login)
-		r.Post("/score", deps.LLMHandler.Score)
+
+		r.Group(func(r chi.Router) {
+			r.Use(deps.RateLimiter.RateLimit)
+			r.Post("/score", deps.LLMHandler.Score)
+		})
+
 		r.Get("/models", deps.LLMHandler.GetModels)
 
 		r.Group(func(r chi.Router) {

@@ -9,6 +9,8 @@ import (
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/llmscoring/repository"
 )
 
+const maxInMemoryScores = 100000
+
 type InMemoryScoringRepo struct {
 	mu     sync.RWMutex
 	scores []*model.ScoreRequest
@@ -21,6 +23,10 @@ func NewInMemoryScoringRepo() *InMemoryScoringRepo {
 func (r *InMemoryScoringRepo) Save(_ context.Context, score *model.ScoreRequest) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
+	if len(r.scores) >= maxInMemoryScores {
+		cutoff := maxInMemoryScores / 10
+		r.scores = r.scores[cutoff:]
+	}
 	r.scores = append(r.scores, score)
 	return nil
 }

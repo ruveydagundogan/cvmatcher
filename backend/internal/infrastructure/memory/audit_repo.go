@@ -7,6 +7,8 @@ import (
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/audit/model"
 )
 
+const maxInMemoryAuditLogs = 50000
+
 type InMemoryAuditRepo struct {
 	mu   sync.RWMutex
 	logs []*model.AuditLog
@@ -19,6 +21,10 @@ func NewInMemoryAuditRepo() *InMemoryAuditRepo {
 func (r *InMemoryAuditRepo) Save(_ context.Context, log *model.AuditLog) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
+	if len(r.logs) >= maxInMemoryAuditLogs {
+		cutoff := maxInMemoryAuditLogs / 10
+		r.logs = r.logs[cutoff:]
+	}
 	r.logs = append(r.logs, log)
 	return nil
 }

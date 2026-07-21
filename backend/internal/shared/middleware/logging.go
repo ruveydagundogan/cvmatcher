@@ -3,6 +3,7 @@ package middleware
 import (
 	"log/slog"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -20,7 +21,7 @@ func Logging(logger *slog.Logger) func(http.Handler) http.Handler {
 					"path", r.URL.Path,
 					"status", wrapped.statusCode,
 					"duration", time.Since(start).String(),
-					"remote_addr", r.RemoteAddr,
+					"remote_addr", maskIP(r.RemoteAddr),
 				)
 			}
 		})
@@ -35,4 +36,11 @@ type statusResponseWriter struct {
 func (w *statusResponseWriter) WriteHeader(code int) {
 	w.statusCode = code
 	w.ResponseWriter.WriteHeader(code)
+}
+
+func maskIP(ip string) string {
+	if idx := strings.LastIndex(ip, ":"); idx != -1 {
+		return ip[:idx] + ":***"
+	}
+	return ip
 }
