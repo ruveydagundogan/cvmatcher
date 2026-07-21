@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import type { InitProgressReport, MLCEngine } from "@mlc-ai/web-llm";
 
 export interface WebLLMState {
@@ -16,8 +16,17 @@ export interface WebLLMState {
   characterCount: number;
 }
 
+export interface ScoreResult {
+  prompt: string;
+  response: string;
+  score: number;
+  inferenceTime: number;
+  wordCount: number;
+  characterCount: number;
+}
+
 export interface WebLLMHandlers {
-  handleAskAI: (prompt: string) => Promise<void>;
+  handleAskAI: (prompt: string) => Promise<ScoreResult | null>;
 }
 
 export interface UseWebLLMReturn extends WebLLMState, WebLLMHandlers { }
@@ -35,9 +44,9 @@ export function useWebLLM(): UseWebLLMReturn {
   const [wordCount, setWordCount] = useState(0);
   const [characterCount, setCharacterCount] = useState(0);
 
-  const handleAskAI = async (prompt: string) => {
+  const handleAskAI = async (prompt: string): Promise<ScoreResult | null> => {
     if (!engineRef.current) {
-      return;
+      return null;
     }
 
     setIsInferenceRunning(true);
@@ -67,26 +76,31 @@ export function useWebLLM(): UseWebLLMReturn {
 
       const responseContent = content || "No response returned.";
 
-      // Response'u ekrana yazdır
       setResponseText(responseContent);
 
-      // Metrics
-      setCharacterCount(responseContent.length);
+      const charCount = responseContent.length;
+      setCharacterCount(charCount);
 
-      setWordCount(
-        responseContent
-          .trim()
-          .split(/\s+/)
-          .filter(Boolean).length
-      );
+      const wordCnt = responseContent
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean).length;
+      setWordCount(wordCnt);
 
-      // Send prompt and response to backend for scoring
+      let scoreValue: number | null = null;
+
       try {
-        const scoreResponse = await fetch("http://localhost:8080/score", {
+        const token = localStorage.getItem("token");
+        const headers: Record<string, string> = {
+          "Content-Type": "application/json",
+        };
+        if (token) {
+          headers["Authorization"] = `Bearer ${token}`;
+        }
+
+        const scoreResponse = await fetch("http://localhost:8080/api/v1/score", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers,
           body: JSON.stringify({
             prompt: prompt,
             response: responseContent,
@@ -95,15 +109,30 @@ export function useWebLLM(): UseWebLLMReturn {
 
         if (scoreResponse.ok) {
           const scoreData = await scoreResponse.json();
-          setScore(scoreData.score);
+          if (scoreData.success && scoreData.data?.score !== undefined) {
+            scoreValue = scoreData.data.score;
+          } else {
+            scoreValue = scoreData.score ?? null;
+          }
+          setScore(scoreValue);
         } else {
           console.error("Failed to get score from backend:", scoreResponse.status);
         }
       } catch (scoreError) {
         console.error("Error calling /score endpoint:", scoreError);
       }
+
+      return {
+        prompt,
+        response: responseContent,
+        score: scoreValue || 0,
+        inferenceTime: elapsedTime,
+        wordCount: wordCnt,
+        characterCount: charCount,
+      };
     } catch (error) {
       setResponseText(error instanceof Error ? error.message : String(error));
+      return null;
     } finally {
       setIsInferenceRunning(false);
     }
@@ -120,7 +149,6 @@ export function useWebLLM(): UseWebLLMReturn {
       try {
         const { CreateMLCEngine } = await import("@mlc-ai/web-llm");
 
-        // Model ID verified from the installed @mlc-ai/web-llm package source.
         const selectedModel = "gemma-2b-it-q4f16_1-MLC";
 
         const initProgressCallback = (report: InitProgressReport) => {

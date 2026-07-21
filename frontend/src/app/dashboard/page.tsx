@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
+import { useState, useCallback } from "react";
 
 import { useWebLLM } from "@/hooks/useWebLLM";
+import { useHistory } from "@/hooks/useHistory";
 import { PromptInput } from "@/components/PromptInput";
 import { AskButton } from "@/components/AskButton";
 import { StatusCard } from "@/components/StatusCard";
@@ -13,6 +13,7 @@ import { DecisionScoreCard } from "@/components/DecisionScoreCard";
 
 export default function DashboardPage() {
   const [prompt, setPrompt] = useState("");
+  const { addItem } = useHistory();
 
   const {
     loadStatus,
@@ -25,79 +26,80 @@ export default function DashboardPage() {
     score,
     wordCount,
     characterCount,
-    handleAskAI,
+    handleAskAI: llmHandleAskAI,
   } = useWebLLM();
 
-  const onAskAI = async () => {
-    await handleAskAI(prompt);
+  const handleAskAI = useCallback(async () => {
+    if (!prompt.trim()) return;
+
+    const currentPrompt = prompt;
     setPrompt("");
-  };
+
+    const result = await llmHandleAskAI(currentPrompt);
+
+    if (result && result.score > 0) {
+      addItem({
+        prompt: result.prompt,
+        response: result.response,
+        score: result.score,
+        model: "Gemma-2B",
+        word_count: result.wordCount,
+        char_count: result.characterCount,
+        inference_time: result.inferenceTime,
+      });
+    }
+  }, [prompt, llmHandleAskAI, addItem]);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black">
-      <main className="max-w-2xl mx-auto px-6 py-12">
-        {/* Header */}
-        <div className="mb-12 flex items-start justify-between">
-          <div>
-            <h1 className="text-4xl font-bold text-black dark:text-white mb-2">
-              LLM Decision Score
-            </h1>
-
-            <p className="text-lg text-gray-600 dark:text-gray-400">
-              Ask the AI a question and see how it decides.
-            </p>
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
+      {/* Left - Chat */}
+      <div className="flex flex-col">
+        <div className="flex-1 bg-white dark:bg-slate-900/50 rounded-2xl border border-gray-200 dark:border-white/10 p-6 flex flex-col">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center animate-pulse-glow">
+              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">AI Assistant</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Gemma-2B • Browser LLM</p>
+            </div>
           </div>
 
-          <div className="flex gap-4">
-            <Link
-              href="/history"
-              className="text-blue-600 hover:underline"
-            >
-              History
-            </Link>
+          <div className="flex-1 min-h-0">
+            <ResponseCard responseText={responseText} isLoading={isInferenceRunning} />
+          </div>
 
-            <Link
-              href="/"
-              className="text-red-600 hover:underline"
-            >
-              Logout
-            </Link>
+          <div className="mt-4">
+            <StatusCard
+              loadStatus={loadStatus}
+              initProgress={initProgress}
+              progressText={progressText}
+              loadError={loadError}
+            />
+          </div>
+
+          <div className="mt-4 space-y-3">
+            <PromptInput value={prompt} onChange={setPrompt} />
+            <AskButton
+              disabled={loadStatus !== "loaded" || isInferenceRunning || !prompt.trim()}
+              isLoading={isInferenceRunning}
+              onClick={handleAskAI}
+            />
           </div>
         </div>
+      </div>
 
-        <PromptInput
-          value={prompt}
-          onChange={setPrompt}
-        />
-
-        <AskButton
-          disabled={loadStatus !== "loaded" || isInferenceRunning}
-          isLoading={isInferenceRunning}
-          onClick={onAskAI}
-        />
-
-        <StatusCard
-          loadStatus={loadStatus}
-          initProgress={initProgress}
-          progressText={progressText}
-          loadError={loadError}
-        />
-
-        <ResponseCard
-          responseText={responseText}
-          isLoading={isInferenceRunning}
-        />
-
+      {/* Right - Metrics & Score */}
+      <div className="flex flex-col gap-6">
+        <DecisionScoreCard score={score} />
         <MetricsCard
           inferenceTime={inferenceTime}
           wordCount={wordCount}
           characterCount={characterCount}
         />
-
-        <DecisionScoreCard
-          score={score}
-        />
-      </main>
+      </div>
     </div>
   );
 }
