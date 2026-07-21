@@ -1,0 +1,15 @@
+frontend/
+backend/bin/
+backend/vendor/
+backend/.git/
+backend/*.md
+backend/.env
+backend/.env.*
+node_modules/
+.next/
+.git/
+.github/
+*.md
+render.yaml
+opencode.json
+.DS_Store

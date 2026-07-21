@@ -98,7 +98,7 @@ export function useWebLLM(): UseWebLLMReturn {
           headers["Authorization"] = `Bearer ${token}`;
         }
 
-        const scoreResponse = await fetch("http://localhost:8080/api/v1/score", {
+        const scoreResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"}/api/v1/score`, {
           method: "POST",
           headers,
           body: JSON.stringify({
