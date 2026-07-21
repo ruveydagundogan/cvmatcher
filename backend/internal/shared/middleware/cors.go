@@ -15,7 +15,9 @@ func CORS(allowedOrigins []string) func(http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			origin := r.Header.Get("Origin")
 
-			if len(allowedOrigins) == 0 || (len(allowedOrigins) == 1 && allowedOrigins[0] == "*") {
+			if len(allowedOrigins) == 1 && allowedOrigins[0] == "*" {
+				w.Header().Set("Access-Control-Allow-Origin", "*")
+			} else if len(allowedOrigins) == 0 {
 				if env == "production" || env == "staging" {
 					response.BadRequest(w, "CORS not configured")
 					return
