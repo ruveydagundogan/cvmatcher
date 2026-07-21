@@ -27,7 +27,7 @@ func (r *InMemoryAuditRepo) FindByUserID(_ context.Context, userID string, offse
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
-	var filtered []*model.AuditLog
+	filtered := make([]*model.AuditLog, 0, 32)
 	for _, l := range r.logs {
 		if l.UserID == userID {
 			filtered = append(filtered, l)
@@ -49,7 +49,7 @@ func (r *InMemoryAuditRepo) FindByResource(_ context.Context, resource, resource
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
-	var filtered []*model.AuditLog
+	filtered := make([]*model.AuditLog, 0, 16)
 	for _, l := range r.logs {
 		if l.Resource == resource && l.ResourceID == resourceID {
 			filtered = append(filtered, l)

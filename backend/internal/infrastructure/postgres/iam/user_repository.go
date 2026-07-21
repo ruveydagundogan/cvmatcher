@@ -80,7 +80,7 @@ func (r *UserRepository) List(ctx context.Context, offset, limit int) ([]*model.
 	}
 	defer rows.Close()
 
-	var users []*model.User
+	users := make([]*model.User, 0, min(limit, 64))
 	for rows.Next() {
 		user := &model.User{}
 		if err := rows.Scan(&user.ID, &user.Email, &user.PasswordHash, &user.FirstName, &user.LastName, &user.Status, &user.CreatedAt, &user.UpdatedAt); err != nil {
@@ -90,4 +90,11 @@ func (r *UserRepository) List(ctx context.Context, offset, limit int) ([]*model.
 	}
 
 	return users, total, nil
+}
+
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
 }

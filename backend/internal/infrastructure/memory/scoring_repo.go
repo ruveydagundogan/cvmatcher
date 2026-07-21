@@ -40,7 +40,7 @@ func (r *InMemoryScoringRepo) FindByUserID(_ context.Context, userID string, off
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
-	var filtered []*model.ScoreRequest
+	filtered := make([]*model.ScoreRequest, 0, 64)
 	for _, s := range r.scores {
 		if s.UserID == userID {
 			filtered = append(filtered, s)
@@ -61,7 +61,7 @@ func (r *InMemoryScoringRepo) FindByUserID(_ context.Context, userID string, off
 func (r *InMemoryScoringRepo) DeleteByUserID(_ context.Context, userID string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	var remaining []*model.ScoreRequest
+	remaining := make([]*model.ScoreRequest, 0, len(r.scores))
 	for _, s := range r.scores {
 		if s.UserID != userID {
 			remaining = append(remaining, s)
@@ -76,20 +76,16 @@ func (r *InMemoryScoringRepo) GetStats(_ context.Context, userID string) (*repos
 	defer r.mu.RUnlock()
 
 	stats := &repository.ScoringStats{}
+	var totalScore float64
 	for _, s := range r.scores {
 		if s.UserID == userID {
 			stats.TotalRequests++
 			stats.TotalWords += s.WordCount
 			stats.TotalChars += s.CharCount
+			totalScore += float64(s.Score)
 		}
 	}
 	if stats.TotalRequests > 0 {
-		var totalScore float64
-		for _, s := range r.scores {
-			if s.UserID == userID {
-				totalScore += float64(s.Score)
-			}
-		}
 		stats.AverageScore = totalScore / float64(stats.TotalRequests)
 	}
 	return stats, nil

@@ -3,6 +3,7 @@ package response
 import (
 	"encoding/json"
 	"errors"
+	"log/slog"
 	"net/http"
 
 	apperrors "github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/errors"
@@ -23,7 +24,9 @@ type ErrorResponse struct {
 func JSON(w http.ResponseWriter, status int, data interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(data)
+	if err := json.NewEncoder(w).Encode(data); err != nil {
+		slog.Error("json encode error", "error", err, "status", status)
+	}
 }
 
 func Success(w http.ResponseWriter, data interface{}) {

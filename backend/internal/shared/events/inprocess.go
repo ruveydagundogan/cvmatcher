@@ -21,26 +21,31 @@ func NewInProcessBus(logger *slog.Logger) *InProcessBus {
 
 func (b *InProcessBus) Publish(ctx context.Context, topic string, event Event) error {
 	b.mu.RLock()
-	handlers := b.handlers[topic]
+	handlers := make([]Handler, len(b.handlers[topic]))
+	copy(handlers, b.handlers[topic])
 	b.mu.RUnlock()
 
+	var wg sync.WaitGroup
 	for _, handler := range handlers {
+		wg.Add(1)
 		go func(h Handler) {
+			defer wg.Done()
+			defer func() {
+				if r := recover(); r != nil {
+					b.logger.Error("event handler panic",
+						"topic", topic, "event_type", event.Type, "panic", r)
+				}
+			}()
 			if err := h(ctx, event); err != nil {
 				b.logger.Error("event handler error",
-					"topic", topic,
-					"event_type", event.Type,
-					"error", err,
-				)
+					"topic", topic, "event_type", event.Type, "error", err)
 			}
 		}(handler)
 	}
+	wg.Wait()
 
 	b.logger.Info("event published",
-		"topic", topic,
-		"event_type", event.Type,
-		"event_id", event.ID,
-	)
+		"topic", topic, "event_type", event.Type, "event_id", event.ID)
 
 	return nil
 }

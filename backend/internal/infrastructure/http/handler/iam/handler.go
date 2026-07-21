@@ -1,27 +1,44 @@
 package iam
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/application/iam/dto"
-	iamusecase "github.com/ruveydagundogan/llm-decision-score/backend/internal/application/iam/usecase"
+	iammodel "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/iam/model"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/middleware"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/response"
 )
 
+type RegisterUseCase interface {
+	Execute(ctx context.Context, email, password, firstName, lastName string) (string, *iammodel.User, error)
+}
+
+type LoginUseCase interface {
+	Execute(ctx context.Context, email, password string) (string, *iammodel.User, error)
+}
+
+type GetProfileUseCase interface {
+	Execute(ctx context.Context, userID string) (*iammodel.User, error)
+}
+
+type UpdateProfileUseCase interface {
+	Execute(ctx context.Context, userID, firstName, lastName string) error
+}
+
 type Handler struct {
-	registerUC   *iamusecase.RegisterUseCase
-	loginUC      *iamusecase.LoginUseCase
-	getProfileUC *iamusecase.GetProfileUseCase
-	updateUC     *iamusecase.UpdateProfileUseCase
+	registerUC   RegisterUseCase
+	loginUC      LoginUseCase
+	getProfileUC GetProfileUseCase
+	updateUC     UpdateProfileUseCase
 }
 
 func NewHandler(
-	registerUC *iamusecase.RegisterUseCase,
-	loginUC *iamusecase.LoginUseCase,
-	getProfileUC *iamusecase.GetProfileUseCase,
-	updateUC *iamusecase.UpdateProfileUseCase,
+	registerUC RegisterUseCase,
+	loginUC LoginUseCase,
+	getProfileUC GetProfileUseCase,
+	updateUC UpdateProfileUseCase,
 ) *Handler {
 	return &Handler{
 		registerUC:   registerUC,

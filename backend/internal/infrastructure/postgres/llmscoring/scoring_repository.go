@@ -61,7 +61,7 @@ func (r *ScoringRepository) FindByUserID(ctx context.Context, userID string, off
 	}
 	defer rows.Close()
 
-	var scores []*model.ScoreRequest
+	scores := make([]*model.ScoreRequest, 0, min(limit, 64))
 	for rows.Next() {
 		score := &model.ScoreRequest{}
 		if err := rows.Scan(&score.ID, &score.UserID, &score.Prompt, &score.Response, &score.Score,
@@ -90,4 +90,11 @@ func (r *ScoringRepository) GetStats(ctx context.Context, userID string) (*repos
 		return nil, err
 	}
 	return stats, nil
+}
+
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
 }

@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"log/slog"
+	"time"
 
 	auditmodel "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/audit/model"
 	auditrepo "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/audit/repository"
@@ -40,6 +41,9 @@ func NewRegisterUseCase(
 }
 
 func (uc *RegisterUseCase) Execute(ctx context.Context, email, password, firstName, lastName string) (string, *iammodel.User, error) {
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+
 	existing, err := uc.userRepo.FindByEmail(ctx, email)
 	if err == nil && existing != nil {
 		return "", nil, apperrors.AlreadyExists("email already registered")
@@ -98,6 +102,9 @@ func NewLoginUseCase(
 }
 
 func (uc *LoginUseCase) Execute(ctx context.Context, email, password string) (string, *iammodel.User, error) {
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+
 	user, err := uc.userRepo.FindByEmail(ctx, email)
 	if err != nil || user == nil {
 		return "", nil, apperrors.Unauthorized("invalid email or password")
@@ -128,6 +135,9 @@ func NewGetProfileUseCase(userRepo iamrepo.UserRepository, logger *slog.Logger) 
 }
 
 func (uc *GetProfileUseCase) Execute(ctx context.Context, userID string) (*iammodel.User, error) {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
 	user, err := uc.userRepo.FindByID(ctx, userID)
 	if err != nil || user == nil {
 		return nil, apperrors.NotFound("user not found")
@@ -145,6 +155,9 @@ func NewUpdateProfileUseCase(userRepo iamrepo.UserRepository, logger *slog.Logge
 }
 
 func (uc *UpdateProfileUseCase) Execute(ctx context.Context, userID, firstName, lastName string) error {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
 	user, err := uc.userRepo.FindByID(ctx, userID)
 	if err != nil || user == nil {
 		return apperrors.NotFound("user not found")

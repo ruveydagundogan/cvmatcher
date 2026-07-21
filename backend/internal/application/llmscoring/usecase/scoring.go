@@ -4,6 +4,7 @@ import (
 	"context"
 	"log/slog"
 	"strings"
+	"time"
 
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/application/llmscoring/dto"
 	auditmodel "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/audit/model"
@@ -32,6 +33,9 @@ func NewScoreUseCase(
 }
 
 func (uc *ScoreUseCase) Execute(ctx context.Context, userID string, req dto.ScoreRequestDTO) (*dto.ScoreResponseDTO, error) {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
 	scoreItem := scoringmodel.NewScoreRequest(userID, req.Prompt, req.Response, req.Model, req.InferenceMs)
 	scoreItem.Score = calculateDecisionScore(req.Prompt, req.Response)
 
@@ -71,6 +75,9 @@ func NewGetHistoryUseCase(scoringRepo scoringrepo.ScoringRepository, logger *slo
 }
 
 func (uc *GetHistoryUseCase) Execute(ctx context.Context, userID string, page, limit int) (*dto.HistoryListResponseDTO, error) {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
 	if page < 1 {
 		page = 1
 	}
@@ -125,6 +132,9 @@ func NewDeleteHistoryUseCase(
 }
 
 func (uc *DeleteHistoryUseCase) Execute(ctx context.Context, userID string) error {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
 	if err := uc.scoringRepo.DeleteByUserID(ctx, userID); err != nil {
 		return apperrors.Internal("failed to delete history", err)
 	}
@@ -148,6 +158,9 @@ func NewGetStatsUseCase(scoringRepo scoringrepo.ScoringRepository, logger *slog.
 }
 
 func (uc *GetStatsUseCase) Execute(ctx context.Context, userID string) (*dto.StatsResponseDTO, error) {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
 	stats, err := uc.scoringRepo.GetStats(ctx, userID)
 	if err != nil {
 		return nil, apperrors.Internal("failed to fetch stats", err)
@@ -164,74 +177,78 @@ func (uc *GetStatsUseCase) Execute(ctx context.Context, userID string) (*dto.Sta
 func calculateDecisionScore(prompt, response string) int {
 	score := 0
 
-	prompt = strings.ToLower(prompt)
-	response = strings.ToLower(response)
+	lowerResp := strings.ToLower(response)
+	respLen := len(lowerResp)
 
-	length := len(response)
 	switch {
-	case length >= 800:
+	case respLen >= 800:
 		score += 25
-	case length >= 500:
+	case respLen >= 500:
 		score += 22
-	case length >= 300:
+	case respLen >= 300:
 		score += 18
-	case length >= 150:
+	case respLen >= 150:
 		score += 14
-	case length >= 80:
+	case respLen >= 80:
 		score += 10
 	default:
 		score += 5
 	}
 
-	promptWords := strings.Fields(prompt)
-	validWords := 0
-	matchedWords := 0
-
-	for _, word := range promptWords {
-		word = strings.Trim(word, ".,!?;:\"'()[]{}")
-		if len(word) <= 2 {
-			continue
-		}
-		validWords++
-		if strings.Contains(response, word) {
-			matchedWords++
-		}
-	}
+	lowerPrompt := strings.ToLower(prompt)
+	validWords, matchedWords := countMatchingWords(lowerPrompt, lowerResp)
 
 	if validWords > 0 {
 		score += (matchedWords * 30) / validWords
 	}
 
-	if strings.Contains(response, ".") {
+	var hasDot, hasNewline, hasFormatting, hasComma, hasColon, hasSemicolon, hasParen bool
+	dotCount := 0
+	for i := 0; i < respLen; i++ {
+		switch lowerResp[i] {
+		case '.':
+			hasDot = true
+			dotCount++
+		case '\n':
+			hasNewline = true
+		case '*', '-':
+			hasFormatting = true
+		case ',':
+			hasComma = true
+		case ':':
+			hasColon = true
+		case ';':
+			hasSemicolon = true
+		case '(':
+			hasParen = true
+		}
+	}
+	if hasDot {
 		score += 5
 	}
-	if strings.Contains(response, "\n") {
+	if hasNewline {
 		score += 5
 	}
-	if strings.Contains(response, "*") || strings.Contains(response, "-") {
+	if hasFormatting {
 		score += 5
 	}
-	if strings.Count(response, ".") >= 3 {
+	if dotCount >= 3 {
 		score += 5
+	}
+	if hasComma {
+		score += 3
+	}
+	if hasColon {
+		score += 3
+	}
+	if hasSemicolon {
+		score += 3
+	}
+	if hasParen {
+		score += 3
 	}
 
-	if strings.Contains(response, ",") {
-		score += 3
-	}
-	if strings.Contains(response, ":") {
-		score += 3
-	}
-	if strings.Contains(response, ";") {
-		score += 3
-	}
-	if strings.Contains(response, "(") {
-		score += 3
-	}
-	if len(strings.Fields(response)) >= 80 {
-		score += 3
-	}
-
-	wordCount := len(strings.Fields(response))
+	wordCount := countWords(lowerResp)
 	switch {
 	case wordCount >= 120:
 		score += 10
@@ -253,4 +270,60 @@ func calculateDecisionScore(prompt, response string) int {
 	}
 
 	return score
+}
+
+func countWords(s string) int {
+	count := 0
+	inWord := false
+	for i := 0; i < len(s); i++ {
+		if s[i] == ' ' || s[i] == '\n' || s[i] == '\t' {
+			if inWord {
+				count++
+				inWord = false
+			}
+		} else {
+			inWord = true
+		}
+	}
+	if inWord {
+		count++
+	}
+	return count
+}
+
+func countMatchingWords(lowerPrompt, lowerResp string) (valid, matched int) {
+	start := -1
+	for i := 0; i <= len(lowerPrompt); i++ {
+		isSpace := i == len(lowerPrompt) || lowerPrompt[i] == ' ' || lowerPrompt[i] == '\n' || lowerPrompt[i] == '\t'
+		if !isSpace && start == -1 {
+			start = i
+			continue
+		}
+		if isSpace && start != -1 {
+			word := lowerPrompt[start:i]
+			start = -1
+			for len(word) > 0 && isPunct(word[0]) {
+				word = word[1:]
+			}
+			for len(word) > 0 && isPunct(word[len(word)-1]) {
+				word = word[:len(word)-1]
+			}
+			if len(word) <= 2 {
+				continue
+			}
+			valid++
+			if strings.Contains(lowerResp, word) {
+				matched++
+			}
+		}
+	}
+	return
+}
+
+func isPunct(b byte) bool {
+	switch b {
+	case '.', ',', '!', '?', ';', ':', '"', '\'', '(', ')', '[', ']', '{', '}':
+		return true
+	}
+	return false
 }

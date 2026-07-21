@@ -1,28 +1,45 @@
 package llmscoring
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"strconv"
 
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/application/llmscoring/dto"
-	llmusecase "github.com/ruveydagundogan/llm-decision-score/backend/internal/application/llmscoring/usecase"
+	scoringmodel "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/llmscoring/model"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/middleware"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/response"
 )
 
+type ScoreUseCase interface {
+	Execute(ctx context.Context, userID string, req dto.ScoreRequestDTO) (*dto.ScoreResponseDTO, error)
+}
+
+type GetHistoryUseCase interface {
+	Execute(ctx context.Context, userID string, page, limit int) (*dto.HistoryListResponseDTO, error)
+}
+
+type DeleteHistoryUseCase interface {
+	Execute(ctx context.Context, userID string) error
+}
+
+type GetStatsUseCase interface {
+	Execute(ctx context.Context, userID string) (*dto.StatsResponseDTO, error)
+}
+
 type Handler struct {
-	scoreUC       *llmusecase.ScoreUseCase
-	historyUC     *llmusecase.GetHistoryUseCase
-	deleteHistUC  *llmusecase.DeleteHistoryUseCase
-	statsUC       *llmusecase.GetStatsUseCase
+	scoreUC      ScoreUseCase
+	historyUC    GetHistoryUseCase
+	deleteHistUC DeleteHistoryUseCase
+	statsUC      GetStatsUseCase
 }
 
 func NewHandler(
-	scoreUC *llmusecase.ScoreUseCase,
-	historyUC *llmusecase.GetHistoryUseCase,
-	deleteHistUC *llmusecase.DeleteHistoryUseCase,
-	statsUC *llmusecase.GetStatsUseCase,
+	scoreUC ScoreUseCase,
+	historyUC GetHistoryUseCase,
+	deleteHistUC DeleteHistoryUseCase,
+	statsUC GetStatsUseCase,
 ) *Handler {
 	return &Handler{
 		scoreUC:      scoreUC,
@@ -47,6 +64,10 @@ func (h *Handler) Score(w http.ResponseWriter, r *http.Request) {
 	if req.Prompt == "" || req.Response == "" {
 		response.BadRequest(w, "prompt and response are required")
 		return
+	}
+
+	if req.Model == "" {
+		req.Model = "Gemma-2B"
 	}
 
 	result, err := h.scoreUC.Execute(r.Context(), userID, req)
@@ -116,6 +137,7 @@ func (h *Handler) GetStats(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetModels(w http.ResponseWriter, r *http.Request) {
+	_ = scoringmodel.NewScoreRequest // keep import alive
 	response.Success(w, map[string]interface{}{
 		"models": []string{"Gemma-2B", "Gemma-7B"},
 	})

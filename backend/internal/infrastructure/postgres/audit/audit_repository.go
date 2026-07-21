@@ -45,7 +45,7 @@ func (r *AuditRepository) FindByUserID(ctx context.Context, userID string, offse
 	}
 	defer rows.Close()
 
-	var logs []*model.AuditLog
+	logs := make([]*model.AuditLog, 0, min(limit, 32))
 	for rows.Next() {
 		log := &model.AuditLog{}
 		if err := rows.Scan(&log.ID, &log.UserID, &log.Action, &log.Resource, &log.ResourceID,
@@ -69,7 +69,7 @@ func (r *AuditRepository) FindByResource(ctx context.Context, resource, resource
 	}
 	defer rows.Close()
 
-	var logs []*model.AuditLog
+	logs := make([]*model.AuditLog, 0, 16)
 	for rows.Next() {
 		log := &model.AuditLog{}
 		if err := rows.Scan(&log.ID, &log.UserID, &log.Action, &log.Resource, &log.ResourceID,
@@ -80,4 +80,11 @@ func (r *AuditRepository) FindByResource(ctx context.Context, resource, resource
 	}
 
 	return logs, nil
+}
+
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
 }

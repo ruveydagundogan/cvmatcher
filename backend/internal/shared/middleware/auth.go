@@ -92,13 +92,13 @@ func GetUserRole(ctx context.Context) string {
 	return ""
 }
 
-func hasPermission(role, permission string) bool {
-	permissions := map[string][]string{
-		"user":  {"score:write", "history:read", "history:write", "profile:read", "profile:write"},
-		"admin": {"score:write", "history:read", "history:write", "profile:read", "profile:write", "user:read", "user:write"},
-	}
+var rolePermissions = map[string][]string{
+	"user":  {"score:write", "history:read", "history:write", "profile:read", "profile:write"},
+	"admin": {"score:write", "history:read", "history:write", "profile:read", "profile:write", "user:read", "user:write"},
+}
 
-	rolePerms, ok := permissions[role]
+func hasPermission(role, permission string) bool {
+	rolePerms, ok := rolePermissions[role]
 	if !ok {
 		return false
 	}
