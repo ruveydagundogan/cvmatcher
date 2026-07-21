@@ -53,15 +53,22 @@ type LogConfig struct {
 }
 
 func Load() *Config {
+	port := getEnvInt("SERVER_PORT", 8080)
+	if p := os.Getenv("PORT"); p != "" {
+		if parsed, err := strconv.Atoi(p); err == nil {
+			port = parsed
+		}
+	}
+
 	return &Config{
 		Server: ServerConfig{
 			Host:               getEnv("SERVER_HOST", "0.0.0.0"),
-			Port:               getEnvInt("SERVER_PORT", 8080),
+			Port:               port,
 			ReadTimeout:        getEnvDuration("SERVER_READ_TIMEOUT_SECONDS", 15),
 			WriteTimeout:       getEnvDuration("SERVER_WRITE_TIMEOUT_SECONDS", 15),
 			IdleTimeout:        getEnvDuration("SERVER_IDLE_TIMEOUT_SECONDS", 60),
 			MaxBodyBytes:       getEnvInt64("MAX_BODY_BYTES", 262144),
-			CORSAllowedOrigins: getEnvSliceDefault("CORS_ALLOWED_ORIGINS", []string{"http://localhost:3000"}),
+			CORSAllowedOrigins: getEnvSliceDefault("CORS_ALLOWED_ORIGINS", []string{"http://localhost:3000", "http://localhost:3001"}),
 		},
 		Database: DatabaseConfig{
 			Host:     getEnv("DB_HOST", "localhost"),
