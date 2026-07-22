@@ -78,7 +78,11 @@ func main() {
 	}
 
 	jwtService := auth.NewJWTService(cfg.JWT)
-	bcryptService := auth.NewBcryptAuthService(10)
+	bcryptCost := cfg.BcryptCost
+	if bcryptCost == 0 {
+		bcryptCost = 10
+	}
+	bcryptService := auth.NewBcryptAuthService(bcryptCost)
 
 	registerUC := usecase.NewRegisterUseCase(userRepo, roleRepo, bcryptService, jwtService, auditRepo, log)
 	loginUC := usecase.NewLoginUseCase(userRepo, jwtService, auditRepo, log)

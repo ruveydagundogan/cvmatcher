@@ -9,11 +9,12 @@ import (
 )
 
 type Config struct {
-	Server   ServerConfig
-	Database DatabaseConfig
-	Redis    RedisConfig
-	JWT      JWTConfig
-	Log      LogConfig
+	Server      ServerConfig
+	Database    DatabaseConfig
+	Redis       RedisConfig
+	JWT         JWTConfig
+	Log         LogConfig
+	BcryptCost  int
 }
 
 type ServerConfig struct {
@@ -92,6 +93,7 @@ func Load() *Config {
 			Level:  getEnv("LOG_LEVEL", "info"),
 			Format: getEnv("LOG_FORMAT", "json"),
 		},
+		BcryptCost: getEnvInt("BCRYPT_COST", 10),
 	}
 }
 

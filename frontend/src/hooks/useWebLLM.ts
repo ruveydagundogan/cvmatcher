@@ -1,7 +1,35 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { InitProgressReport, MLCEngine } from "@mlc-ai/web-llm";
+
+const SELECTED_MODEL = "gemma-2b-it-q4f16_1-MLC";
+const MODEL_LOADED_KEY = "webllm_engine_ready";
+
+let sharedEngine: MLCEngine | null = null;
+let enginePromise: Promise<MLCEngine> | null = null;
+
+async function getOrCreateEngine(
+  onProgress?: (report: InitProgressReport) => void
+): Promise<MLCEngine> {
+  if (sharedEngine) return sharedEngine;
+
+  if (enginePromise) return enginePromise;
+
+  enginePromise = (async () => {
+    const { CreateMLCEngine } = await import("@mlc-ai/web-llm");
+    const engine = await CreateMLCEngine(SELECTED_MODEL, {
+      initProgressCallback: onProgress,
+    });
+    sharedEngine = engine;
+    try {
+      sessionStorage.setItem(MODEL_LOADED_KEY, "true");
+    } catch {}
+    return engine;
+  })();
+
+  return enginePromise;
+}
 
 export interface WebLLMState {
   loadStatus: "idle" | "loading" | "loaded" | "error";
@@ -33,7 +61,13 @@ export interface UseWebLLMReturn extends WebLLMState, WebLLMHandlers { }
 
 export function useWebLLM(): UseWebLLMReturn {
   const engineRef = useRef<MLCEngine | null>(null);
-  const [loadStatus, setLoadStatus] = useState<"idle" | "loading" | "loaded" | "error">("idle");
+  const [loadStatus, setLoadStatus] = useState<"idle" | "loading" | "loaded" | "error">(() => {
+    if (sharedEngine) return "loaded";
+    try {
+      if (sessionStorage.getItem(MODEL_LOADED_KEY) === "true") return "loading";
+    } catch {}
+    return "idle";
+  });
   const [initProgress, setInitProgress] = useState<number>(0);
   const [progressText, setProgressText] = useState<string>("");
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -142,27 +176,25 @@ export function useWebLLM(): UseWebLLMReturn {
     let mounted = true;
 
     async function initWebLLM() {
+      if (sharedEngine) {
+        engineRef.current = sharedEngine;
+        setLoadStatus("loaded");
+        return;
+      }
+
       setLoadStatus("loading");
       setInitProgress(0);
       setProgressText("Starting model initialization...");
 
       try {
-        const { CreateMLCEngine } = await import("@mlc-ai/web-llm");
-
-        const selectedModel = "gemma-2b-it-q4f16_1-MLC";
-
-        const initProgressCallback = (report: InitProgressReport) => {
+        const engine = await getOrCreateEngine((report) => {
           if (!mounted) return;
           setInitProgress(report.progress);
           setProgressText(report.text);
-        };
-
-        const createdEngine = await CreateMLCEngine(selectedModel, {
-          initProgressCallback,
         });
 
         if (mounted) {
-          engineRef.current = createdEngine;
+          engineRef.current = engine;
           setLoadStatus("loaded");
         }
       } catch (error) {

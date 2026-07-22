@@ -59,6 +59,8 @@ func Error(w http.ResponseWriter, err error) {
 		message = "an internal error occurred"
 	}
 
+	slog.Error("request error", "error", err, "status", status)
+
 	JSON(w, status, ErrorResponse{
 		Success: false,
 		Error:   message,
