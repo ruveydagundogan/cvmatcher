@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "npm run build-sw && next dev",
+    "build-sw": "npx esbuild sw.ts --bundle --outfile=public/sw.js --format=iife --platform=browser",
+    "build": "npm run build-sw && next build",
     "start": "next start",
     "lint": "eslint"
   },

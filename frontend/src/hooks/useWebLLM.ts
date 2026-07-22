@@ -1,51 +1,47 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { InitProgressReport, MLCEngine } from "@mlc-ai/web-llm";
+import type { InitProgressReport } from "@mlc-ai/web-llm";
+import type { MLCEngineInterface } from "@mlc-ai/web-llm";
 
 const SELECTED_MODEL = "gemma-2b-it-q4f16_1-MLC";
-const MODEL_LOADED_KEY = "webllm_engine_ready";
-const ENGINE_GLOBAL_KEY = "__webllm_engine__";
 
-declare global {
-  interface Window {
-    [ENGINE_GLOBAL_KEY]?: MLCEngine;
-  }
+let enginePromise: Promise<MLCEngineInterface> | null = null;
+let swRegistrationPromise: Promise<void> | null = null;
+
+async function ensureServiceWorker(): Promise<void> {
+  if (swRegistrationPromise) return swRegistrationPromise;
+  swRegistrationPromise = (async () => {
+    if (!("serviceWorker" in navigator)) return;
+    try {
+      await navigator.serviceWorker.register("/sw.js");
+    } catch (err) {
+      console.warn("ServiceWorker registration failed:", err);
+    }
+  })();
+  return swRegistrationPromise;
 }
-
-function getSharedEngine(): MLCEngine | null {
-  if (typeof window !== "undefined" && window[ENGINE_GLOBAL_KEY]) {
-    return window[ENGINE_GLOBAL_KEY];
-  }
-  return null;
-}
-
-function setSharedEngine(engine: MLCEngine): void {
-  if (typeof window !== "undefined") {
-    window[ENGINE_GLOBAL_KEY] = engine;
-  }
-}
-
-let enginePromise: Promise<MLCEngine> | null = null;
 
 async function getOrCreateEngine(
   onProgress?: (report: InitProgressReport) => void
-): Promise<MLCEngine> {
-  const existing = getSharedEngine();
-  if (existing) return existing;
-
+): Promise<MLCEngineInterface> {
   if (enginePromise) return enginePromise;
 
   enginePromise = (async () => {
-    const { CreateMLCEngine } = await import("@mlc-ai/web-llm");
-    const engine = await CreateMLCEngine(SELECTED_MODEL, {
-      initProgressCallback: onProgress,
-    });
-    setSharedEngine(engine);
     try {
-      sessionStorage.setItem(MODEL_LOADED_KEY, "true");
-    } catch {}
-    return engine;
+      await ensureServiceWorker();
+      const { CreateServiceWorkerMLCEngine } = await import("@mlc-ai/web-llm");
+      const engine = await CreateServiceWorkerMLCEngine(SELECTED_MODEL, {
+        initProgressCallback: onProgress,
+      });
+      return engine;
+    } catch {
+      const { CreateMLCEngine } = await import("@mlc-ai/web-llm");
+      const engine = await CreateMLCEngine(SELECTED_MODEL, {
+        initProgressCallback: onProgress,
+      });
+      return engine;
+    }
   })();
 
   return enginePromise;
@@ -80,14 +76,8 @@ export interface WebLLMHandlers {
 export interface UseWebLLMReturn extends WebLLMState, WebLLMHandlers { }
 
 export function useWebLLM(): UseWebLLMReturn {
-  const engineRef = useRef<MLCEngine | null>(null);
-  const [loadStatus, setLoadStatus] = useState<"idle" | "loading" | "loaded" | "error">(() => {
-    if (getSharedEngine()) return "loaded";
-    try {
-      if (sessionStorage.getItem(MODEL_LOADED_KEY) === "true") return "loading";
-    } catch {}
-    return "idle";
-  });
+  const engineRef = useRef<MLCEngineInterface | null>(null);
+  const [loadStatus, setLoadStatus] = useState<"idle" | "loading" | "loaded" | "error">("idle");
   const [initProgress, setInitProgress] = useState<number>(0);
   const [progressText, setProgressText] = useState<string>("");
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -196,13 +186,6 @@ export function useWebLLM(): UseWebLLMReturn {
     let mounted = true;
 
     async function initWebLLM() {
-      const existing = getSharedEngine();
-      if (existing) {
-        engineRef.current = existing;
-        setLoadStatus("loaded");
-        return;
-      }
-
       setLoadStatus("loading");
       setInitProgress(0);
       setProgressText("Starting model initialization...");
