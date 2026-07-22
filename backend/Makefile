@@ -21,13 +21,19 @@ migrate-down:
 	@echo "Run drop statements manually"
 
 docker-up:
-	docker compose -f ../docker-compose.yml up -d postgres backend
+	docker compose -f ../docker-compose.yml up -d postgres backend prometheus grafana
 
 docker-down:
 	docker compose -f ../docker-compose.yml down
 
 docker-up-all:
 	docker compose -f ../docker-compose.yml up -d
+
+docker-grafana:
+	docker compose -f ../docker-compose.yml up -d prometheus grafana
+
+grafana-open:
+	open http://localhost:3001
 
 mlc-llm-start:
 	pip install --pre -U -f https://mlc.ai/wheels mlc-llm-nightly mlc-ai-nightly

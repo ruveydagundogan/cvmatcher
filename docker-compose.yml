@@ -79,9 +79,28 @@ services:
     networks:
       - llm-network
 
+  grafana:
+    image: grafana/grafana:latest
+    container_name: llm-decision-score-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_INSTALL_PLUGINS: ""
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/etc/grafana/dashboards
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - llm-network
+
 volumes:
   pgdata:
   prometheus-data:
+  grafana-data:
 
 networks:
   llm-network:
