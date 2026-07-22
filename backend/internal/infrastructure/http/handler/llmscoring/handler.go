@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/application/llmscoring/dto"
+	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/constants"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/middleware"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/response"
 )
@@ -55,7 +56,7 @@ func NewHandler(
 }
 
 func (h *Handler) Score(w http.ResponseWriter, r *http.Request) {
-	userID := middleware.GetUserID(r.Context())
+	userID := constants.NormalizeUserID(middleware.GetUserID(r.Context()))
 
 	var req dto.ScoreRequestDTO
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -107,7 +108,7 @@ func (h *Handler) Score(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetHistory(w http.ResponseWriter, r *http.Request) {
-	userID := middleware.GetUserID(r.Context())
+	userID := constants.NormalizeUserID(middleware.GetUserID(r.Context()))
 	if userID == "" {
 		response.Unauthorized(w, "authentication required")
 		return
@@ -136,7 +137,7 @@ func (h *Handler) GetHistory(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) DeleteHistory(w http.ResponseWriter, r *http.Request) {
-	userID := middleware.GetUserID(r.Context())
+	userID := constants.NormalizeUserID(middleware.GetUserID(r.Context()))
 	if userID == "" {
 		response.Unauthorized(w, "authentication required")
 		return
@@ -151,7 +152,7 @@ func (h *Handler) DeleteHistory(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetStats(w http.ResponseWriter, r *http.Request) {
-	userID := middleware.GetUserID(r.Context())
+	userID := constants.NormalizeUserID(middleware.GetUserID(r.Context()))
 	if userID == "" {
 		response.Unauthorized(w, "authentication required")
 		return
