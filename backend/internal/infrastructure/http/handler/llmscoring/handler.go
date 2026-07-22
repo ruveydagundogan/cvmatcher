@@ -56,10 +56,6 @@ func NewHandler(
 
 func (h *Handler) Score(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r.Context())
-	if userID == "" {
-		response.Unauthorized(w, "authentication required")
-		return
-	}
 
 	var req dto.ScoreRequestDTO
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
