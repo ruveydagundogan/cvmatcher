@@ -6,20 +6,24 @@ import (
 	"github.com/go-chi/chi/v5"
 	chimw "github.com/go-chi/chi/v5/middleware"
 
+	backendllmhandler "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/backendllm"
 	healthhandler "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/health"
 	iamhandler "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/iam"
 	llmhandler "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/llmscoring"
+	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/metrics"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/config"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/middleware"
 )
 
 type Dependencies struct {
-	HealthHandler *healthhandler.Handler
-	IAMHandler    *iamhandler.Handler
-	LLMHandler    *llmhandler.Handler
-	JWTValidator  middleware.TokenValidator
-	Config        *config.Config
-	RateLimiter   *middleware.RateLimiter
+	HealthHandler  *healthhandler.Handler
+	IAMHandler     *iamhandler.Handler
+	LLMHandler     *llmhandler.Handler
+	BackendLLMHandler *backendllmhandler.Handler
+	JWTValidator   middleware.TokenValidator
+	Config         *config.Config
+	RateLimiter    *middleware.RateLimiter
+	Metrics        *metrics.HTTPMetrics
 }
 
 func NewRouter(deps Dependencies) http.Handler {
@@ -31,8 +35,16 @@ func NewRouter(deps Dependencies) http.Handler {
 	r.Use(middleware.MaxBodyBytes(deps.Config.Server.MaxBodyBytes))
 	r.Use(middleware.CORS(deps.Config.Server.CORSAllowedOrigins))
 
+	if deps.Metrics != nil {
+		r.Use(deps.Metrics.Middleware)
+	}
+
 	r.Get("/health/live", deps.HealthHandler.Live)
 	r.Get("/health/ready", deps.HealthHandler.Ready)
+
+	if deps.Metrics != nil {
+		r.Handle("/metrics", deps.Metrics.Handler())
+	}
 
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Post("/auth/register", deps.IAMHandler.Register)
@@ -44,6 +56,10 @@ func NewRouter(deps Dependencies) http.Handler {
 		})
 
 		r.Get("/models", deps.LLMHandler.GetModels)
+
+		if deps.BackendLLMHandler != nil {
+			r.Post("/llm/chat", deps.BackendLLMHandler.Chat)
+		}
 
 		r.Group(func(r chi.Router) {
 			r.Use(middleware.JWTAuth(deps.JWTValidator))

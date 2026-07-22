@@ -12,11 +12,14 @@ import (
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/application/iam/usecase"
 	llmusecase "github.com/ruveydagundogan/llm-decision-score/backend/internal/application/llmscoring/usecase"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/auth"
+	backendllmhandler "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/backendllm"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/health"
 	iamhandler "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/iam"
 	llmhandler "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/llmscoring"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/router"
+	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/llm"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/memory"
+	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/metrics"
 	pgresaudit "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/postgres/audit"
 	pgresiam "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/postgres/iam"
 	pgresscoring "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/postgres/llmscoring"
@@ -103,13 +106,26 @@ func main() {
 
 	rateLimiter := middleware.NewRateLimiter(100, 200, log)
 
+	var backendLLMHandler *backendllmhandler.Handler
+	if cfg.MLCLLM.Enabled {
+		llmClient := llm.NewClient(cfg.MLCLLM.BaseURL, 60*time.Second)
+		backendLLMHandler = backendllmhandler.NewHandler(llmClient)
+		log.Info("server-side LLM enabled", "base_url", cfg.MLCLLM.BaseURL)
+	} else {
+		log.Info("server-side LLM disabled, using browser-based WebLLM")
+	}
+
+	httpMetrics := metrics.NewHTTPMetrics("llm-decision-score")
+
 	deps := router.Dependencies{
-		HealthHandler: healthHandler,
-		IAMHandler:    iamH,
-		LLMHandler:    llmH,
-		JWTValidator:  jwtService,
-		Config:        cfg,
-		RateLimiter:   rateLimiter,
+		HealthHandler:    healthHandler,
+		IAMHandler:       iamH,
+		LLMHandler:       llmH,
+		BackendLLMHandler: backendLLMHandler,
+		JWTValidator:     jwtService,
+		Config:           cfg,
+		RateLimiter:      rateLimiter,
+		Metrics:          httpMetrics,
 	}
 
 	r := router.NewRouter(deps)

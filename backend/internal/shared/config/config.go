@@ -15,6 +15,12 @@ type Config struct {
 	JWT         JWTConfig
 	Log         LogConfig
 	BcryptCost  int
+	MLCLLM      MLCLLMConfig
+}
+
+type MLCLLMConfig struct {
+	Enabled bool
+	BaseURL string
 }
 
 type ServerConfig struct {
@@ -94,6 +100,10 @@ func Load() *Config {
 			Format: getEnv("LOG_FORMAT", "json"),
 		},
 		BcryptCost: getEnvInt("BCRYPT_COST", 10),
+		MLCLLM: MLCLLMConfig{
+			Enabled: getEnvBool("MLC_LLM_ENABLED", false),
+			BaseURL: getEnv("MLC_LLM_BASE_URL", "http://localhost:8000"),
+		},
 	}
 }
 
@@ -154,6 +164,13 @@ func getEnvDuration(key string, defaultSeconds int) time.Duration {
 		}
 	}
 	return time.Duration(defaultSeconds) * time.Second
+}
+
+func getEnvBool(key string, defaultValue bool) bool {
+	if value, ok := os.LookupEnv(key); ok {
+		return value == "true" || value == "1" || value == "yes"
+	}
+	return defaultValue
 }
 
 func getEnvSlice(key string) []string {
