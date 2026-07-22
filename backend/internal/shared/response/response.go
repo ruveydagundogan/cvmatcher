@@ -52,14 +52,15 @@ func Created(w http.ResponseWriter, data interface{}) {
 
 func Error(w http.ResponseWriter, err error) {
 	status := apperrors.HTTPStatusCode(err)
-	message := err.Error()
 
 	var domainErr *apperrors.DomainError
-	if !errors.As(err, &domainErr) {
-		message = "an internal error occurred"
+	message := "an internal error occurred"
+	if errors.As(err, &domainErr) {
+		message = domainErr.Message
+		slog.Error("request error", "kind", domainErr.Kind, "message", domainErr.Message, "inner_error", domainErr.Err, "status", status)
+	} else {
+		slog.Error("request error", "error", err, "status", status)
 	}
-
-	slog.Error("request error", "error", err, "status", status)
 
 	JSON(w, status, ErrorResponse{
 		Success: false,
