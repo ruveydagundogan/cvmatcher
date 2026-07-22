@@ -4,6 +4,9 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"os"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -42,4 +45,33 @@ func NewPostgresPool(ctx context.Context, cfg config.DatabaseConfig, logger *slo
 	)
 
 	return pool, nil
+}
+
+func RunMigrations(ctx context.Context, pool *pgxpool.Pool, logger *slog.Logger) error {
+	migrationsDir := "migrations"
+	entries, err := os.ReadDir(migrationsDir)
+	if err != nil {
+		logger.Warn("migrations directory not found, skipping", "dir", migrationsDir)
+		return nil
+	}
+
+	for _, entry := range entries {
+		if entry.IsDir() || !strings.HasSuffix(entry.Name(), ".sql") {
+			continue
+		}
+
+		content, err := os.ReadFile(filepath.Join(migrationsDir, entry.Name()))
+		if err != nil {
+			return fmt.Errorf("failed to read migration %s: %w", entry.Name(), err)
+		}
+
+		_, err = pool.Exec(ctx, string(content))
+		if err != nil {
+			return fmt.Errorf("failed to execute migration %s: %w", entry.Name(), err)
+		}
+
+		logger.Info("migration applied", "file", entry.Name())
+	}
+
+	return nil
 }

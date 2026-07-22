@@ -70,6 +70,9 @@ func main() {
 		auditRepo = memory.NewInMemoryAuditRepo()
 	} else {
 		log.Info("postgresql connected, using persistent storage")
+		if err := database.RunMigrations(ctx, pool, log); err != nil {
+			log.Error("failed to run migrations", "error", err)
+		}
 		userRepo = pgresiam.NewUserRepository(pool)
 		roleRepo = pgresiam.NewRoleRepository(pool)
 		scoringRepo = pgresscoring.NewScoringRepository(pool)
