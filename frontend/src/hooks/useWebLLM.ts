@@ -5,14 +5,34 @@ import type { InitProgressReport, MLCEngine } from "@mlc-ai/web-llm";
 
 const SELECTED_MODEL = "gemma-2b-it-q4f16_1-MLC";
 const MODEL_LOADED_KEY = "webllm_engine_ready";
+const ENGINE_GLOBAL_KEY = "__webllm_engine__";
 
-let sharedEngine: MLCEngine | null = null;
+declare global {
+  interface Window {
+    [ENGINE_GLOBAL_KEY]?: MLCEngine;
+  }
+}
+
+function getSharedEngine(): MLCEngine | null {
+  if (typeof window !== "undefined" && window[ENGINE_GLOBAL_KEY]) {
+    return window[ENGINE_GLOBAL_KEY];
+  }
+  return null;
+}
+
+function setSharedEngine(engine: MLCEngine): void {
+  if (typeof window !== "undefined") {
+    window[ENGINE_GLOBAL_KEY] = engine;
+  }
+}
+
 let enginePromise: Promise<MLCEngine> | null = null;
 
 async function getOrCreateEngine(
   onProgress?: (report: InitProgressReport) => void
 ): Promise<MLCEngine> {
-  if (sharedEngine) return sharedEngine;
+  const existing = getSharedEngine();
+  if (existing) return existing;
 
   if (enginePromise) return enginePromise;
 
@@ -21,7 +41,7 @@ async function getOrCreateEngine(
     const engine = await CreateMLCEngine(SELECTED_MODEL, {
       initProgressCallback: onProgress,
     });
-    sharedEngine = engine;
+    setSharedEngine(engine);
     try {
       sessionStorage.setItem(MODEL_LOADED_KEY, "true");
     } catch {}
@@ -62,7 +82,7 @@ export interface UseWebLLMReturn extends WebLLMState, WebLLMHandlers { }
 export function useWebLLM(): UseWebLLMReturn {
   const engineRef = useRef<MLCEngine | null>(null);
   const [loadStatus, setLoadStatus] = useState<"idle" | "loading" | "loaded" | "error">(() => {
-    if (sharedEngine) return "loaded";
+    if (getSharedEngine()) return "loaded";
     try {
       if (sessionStorage.getItem(MODEL_LOADED_KEY) === "true") return "loading";
     } catch {}
@@ -176,8 +196,9 @@ export function useWebLLM(): UseWebLLMReturn {
     let mounted = true;
 
     async function initWebLLM() {
-      if (sharedEngine) {
-        engineRef.current = sharedEngine;
+      const existing = getSharedEngine();
+      if (existing) {
+        engineRef.current = existing;
         setLoadStatus("loaded");
         return;
       }
