@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
@@ -16,11 +17,18 @@ func NewAuditRepository(pool *pgxpool.Pool) *AuditRepository {
 	return &AuditRepository{pool: pool}
 }
 
+func nullableUserID(userID string) interface{} {
+	if userID == "" {
+		return nil
+	}
+	return userID
+}
+
 func (r *AuditRepository) Save(ctx context.Context, log *model.AuditLog) error {
 	_, err := r.pool.Exec(ctx,
 		`INSERT INTO audit_logs (id, user_id, action, resource, resource_id, details, ip_address, user_agent, created_at)
 		 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-		log.ID, log.UserID, log.Action, log.Resource, log.ResourceID,
+		log.ID, nullableUserID(log.UserID), log.Action, log.Resource, log.ResourceID,
 		log.Details, log.IPAddress, log.UserAgent, log.CreatedAt,
 	)
 	return err
@@ -29,7 +37,7 @@ func (r *AuditRepository) Save(ctx context.Context, log *model.AuditLog) error {
 func (r *AuditRepository) FindByUserID(ctx context.Context, userID string, offset, limit int) ([]*model.AuditLog, int, error) {
 	var total int
 	err := r.pool.QueryRow(ctx,
-		`SELECT COUNT(*) FROM audit_logs WHERE user_id = $1`, userID,
+		`SELECT COUNT(*) FROM audit_logs WHERE user_id = $1`, nullableUserID(userID),
 	).Scan(&total)
 	if err != nil {
 		return nil, 0, err
@@ -38,7 +46,7 @@ func (r *AuditRepository) FindByUserID(ctx context.Context, userID string, offse
 	rows, err := r.pool.Query(ctx,
 		`SELECT id, user_id, action, resource, resource_id, details, ip_address, user_agent, created_at
 		 FROM audit_logs WHERE user_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3`,
-		userID, limit, offset,
+		nullableUserID(userID), limit, offset,
 	)
 	if err != nil {
 		return nil, 0, err
@@ -48,9 +56,13 @@ func (r *AuditRepository) FindByUserID(ctx context.Context, userID string, offse
 	logs := make([]*model.AuditLog, 0, min(limit, 32))
 	for rows.Next() {
 		log := &model.AuditLog{}
-		if err := rows.Scan(&log.ID, &log.UserID, &log.Action, &log.Resource, &log.ResourceID,
+		var userIDCol sql.NullString
+		if err := rows.Scan(&log.ID, &userIDCol, &log.Action, &log.Resource, &log.ResourceID,
 			&log.Details, &log.IPAddress, &log.UserAgent, &log.CreatedAt); err != nil {
 			return nil, 0, err
+		}
+		if userIDCol.Valid {
+			log.UserID = userIDCol.String
 		}
 		logs = append(logs, log)
 	}
@@ -72,9 +84,13 @@ func (r *AuditRepository) FindByResource(ctx context.Context, resource, resource
 	logs := make([]*model.AuditLog, 0, 16)
 	for rows.Next() {
 		log := &model.AuditLog{}
-		if err := rows.Scan(&log.ID, &log.UserID, &log.Action, &log.Resource, &log.ResourceID,
+		var userIDCol sql.NullString
+		if err := rows.Scan(&log.ID, &userIDCol, &log.Action, &log.Resource, &log.ResourceID,
 			&log.Details, &log.IPAddress, &log.UserAgent, &log.CreatedAt); err != nil {
 			return nil, err
+		}
+		if userIDCol.Valid {
+			log.UserID = userIDCol.String
 		}
 		logs = append(logs, log)
 	}
