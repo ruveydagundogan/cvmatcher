@@ -23,6 +23,8 @@ import (
 	pgresaudit "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/postgres/audit"
 	pgresiam "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/postgres/iam"
 	pgresscoring "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/postgres/llmscoring"
+	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/ratelimit"
+	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/cache"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/config"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/database"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/logger"
@@ -100,11 +102,24 @@ func main() {
 	deleteHistoryUC := llmusecase.NewDeleteHistoryUseCase(scoringRepo, auditRepo, log)
 	statsUC := llmusecase.NewGetStatsUseCase(scoringRepo, log)
 
+	redisClient, err := cache.NewRedisClient(ctx, cfg.Redis, log)
+	if err != nil {
+		log.Warn("redis unavailable, running with in-memory rate limiter", "error", err)
+		redisClient = nil
+	}
+
 	healthHandler := health.NewHandler(nil)
 	iamH := iamhandler.NewHandler(registerUC, loginUC, getProfileUC, updateProfileUC)
 	llmH := llmhandler.NewHandler(scoreUC, historyUC, deleteHistoryUC, statsUC)
 
-	rateLimiter := middleware.NewRateLimiter(100, 200, log)
+	var rateLimiter func(http.Handler) http.Handler
+	if redisClient != nil {
+		log.Info("redis connected, using distributed rate limiter")
+		rateLimiter = ratelimit.NewRedisRateLimiter(redisClient, 100, 200, log).RateLimit
+	} else {
+		log.Info("redis unavailable, using in-memory rate limiter")
+		rateLimiter = middleware.NewRateLimiter(100, 200, log).RateLimit
+	}
 
 	var backendLLMHandler *backendllmhandler.Handler
 	if cfg.MLCLLM.Enabled {
