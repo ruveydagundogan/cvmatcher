@@ -55,31 +55,12 @@ services:
       LOG_FORMAT: text
       BCRYPT_COST: "5"
       MLC_LLM_ENABLED: "false"
-      MLC_LLM_BASE_URL: http://mlc-llm:8000
+      MLC_LLM_BASE_URL: http://localhost:8000
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
-    networks:
-      - llm-network
-
-  mlc-llm:
-    profiles:
-      - gpu
-    image: nvidia/cuda:12.1.0-devel-ubuntu22.04
-    container_name: llm-decision-score-mlc-llm
-    ports:
-      - "8000:8000"
-    environment:
-      MLC_MODEL: HF://mlc-ai/gemma-2b-it-q4f16_1-MLC
-      MLC_HOST: 0.0.0.0
-      MLC_PORT: 8000
-    command: >
-      bash -c "
-        pip install --pre -U -f https://mlc.ai/wheels mlc-llm-nightly-cu121 mlc-ai-nightly-cu121 &&
-        python -m mlc_llm serve $${MLC_MODEL} --host $${MLC_HOST} --port $${MLC_PORT} --mode interactive
-      "
     networks:
       - llm-network
 
