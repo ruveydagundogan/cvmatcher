@@ -36,7 +36,7 @@ services:
       - key: MLC_LLM_ENABLED
         value: "true"
       - key: MLC_LLM_BASE_URL
-        value: "http://localhost:10000/tunnel"
+        value: "/tunnel"
     healthCheckPath: /health/live
     autoDeploy: true
 
