@@ -3,6 +3,7 @@ package backendllm
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"strings"
 	"time"
@@ -52,8 +53,8 @@ func (h *Handler) Chat(w http.ResponseWriter, r *http.Request) {
 		}, req.MaxTokens)
 		h.metrics.LLM.Observe(time.Since(start), err == nil)
 		if err != nil {
-			response.Error(w, err)
-			return
+			slog.Warn("LLM client error, falling back to mock", "error", err)
+			content = mockResponse(req.Prompt)
 		}
 	} else {
 		content = mockResponse(req.Prompt)

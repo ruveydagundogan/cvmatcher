@@ -34,9 +34,9 @@ services:
       - key: CORS_ALLOWED_ORIGINS
         value: "*"
       - key: MLC_LLM_ENABLED
-        value: "false"
+        value: "true"
       - key: MLC_LLM_BASE_URL
-        value: "http://localhost:8000"
+        value: "https://nomination-apart-tue-expo.trycloudflare.com"
     healthCheckPath: /health/live
     autoDeploy: true
 
