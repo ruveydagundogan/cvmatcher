@@ -126,17 +126,17 @@ func main() {
 	}
 
 	var llmClient *llm.Client
-	if cfg.MLCLLM.Enabled {
-		baseURL := cfg.MLCLLM.BaseURL
-		if len(baseURL) > 0 && baseURL[0] == '/' {
-			port := os.Getenv("PORT")
-			if port == "" {
-				port = fmt.Sprintf("%d", cfg.Server.Port)
-			}
-			baseURL = fmt.Sprintf("http://localhost:%s%s", port, baseURL)
+	baseURL := cfg.MLCLLM.BaseURL
+	if len(baseURL) > 0 && baseURL[0] == '/' {
+		port := os.Getenv("PORT")
+		if port == "" {
+			port = fmt.Sprintf("%d", cfg.Server.Port)
 		}
+		baseURL = fmt.Sprintf("http://localhost:%s%s", port, baseURL)
+	}
+	if baseURL != "" {
 		llmClient = llm.NewClient(baseURL, 60*time.Second)
-		log.Info("server-side LLM enabled", "base_url", baseURL)
+		log.Info("server-side LLM enabled", "base_url", baseURL, "mlc_llm_enabled", cfg.MLCLLM.Enabled)
 	} else {
 		log.Info("server-side LLM disabled, using mock responses")
 	}
