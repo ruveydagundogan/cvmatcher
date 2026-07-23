@@ -102,7 +102,7 @@ func Load() *Config {
 		BcryptCost: getEnvInt("BCRYPT_COST", 10),
 		MLCLLM: MLCLLMConfig{
 			Enabled: getEnvBool("MLC_LLM_ENABLED", false),
-			BaseURL: getEnv("MLC_LLM_BASE_URL", "http://localhost:8000"),
+			BaseURL: getEnv("MLC_LLM_BASE_URL", ""),
 		},
 	}
 }
