@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"time"
 )
@@ -64,7 +65,10 @@ func (c *Client) ChatCompletion(ctx context.Context, messages []ChatMessage, max
 		return "", fmt.Errorf("marshal request: %w", err)
 	}
 
-	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, c.baseURL+"/v1/chat/completions", bytes.NewReader(body))
+	targetURL := c.baseURL + "/v1/chat/completions"
+	slog.Info("llm: sending request", "url", targetURL)
+
+	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, targetURL, bytes.NewReader(body))
 	if err != nil {
 		return "", fmt.Errorf("create request: %w", err)
 	}
@@ -75,6 +79,8 @@ func (c *Client) ChatCompletion(ctx context.Context, messages []ChatMessage, max
 		return "", fmt.Errorf("send request: %w", err)
 	}
 	defer resp.Body.Close()
+
+	slog.Info("llm: received response", "status", resp.StatusCode)
 
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {

@@ -103,11 +103,14 @@ func (s *Server) HandleWebSocket(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) ProxyHandler(w http.ResponseWriter, r *http.Request) {
+	slog.Info("tunnel: proxy request received", "path", r.URL.Path, "method", r.Method)
+
 	s.connMu.RLock()
 	conn := s.conn
 	s.connMu.RUnlock()
 
 	if conn == nil {
+		slog.Warn("tunnel: no agent connected for proxy request")
 		http.Error(w, "tunnel: no agent connected", http.StatusServiceUnavailable)
 		return
 	}
