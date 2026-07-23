@@ -25,7 +25,8 @@ func NewRedisClient(ctx context.Context, cfg config.RedisConfig, logger *slog.Lo
 
 	if err := client.Ping(ctx).Err(); err != nil {
 		logger.Warn("redis unavailable, running without cache", "error", err)
-		return client, nil
+		client.Close()
+		return nil, err
 	}
 
 	logger.Info("redis connected", "host", cfg.Host, "port", cfg.Port)
