@@ -64,33 +64,40 @@ func (h *Handler) Chat(w http.ResponseWriter, r *http.Request) {
 
 func mockResponse(prompt string) string {
 	lower := strings.ToLower(prompt)
-	words := strings.Fields(prompt)
 
-	var responses []string
-
-	if strings.Contains(lower, "merhaba") || strings.Contains(lower, "selam") || strings.Contains(lower, "hello") {
-		responses = append(responses, "Merhaba! Size nasıl yardımcı olabilirim?")
+	if strings.Contains(lower, "merhaba") || strings.Contains(lower, "selam") || strings.Contains(lower, "hello") || strings.Contains(lower, "hi") {
+		return "Merhaba! Size nasıl yardımcı olabilirim?"
 	}
-	if strings.Contains(lower, "nasılsın") || strings.Contains(lower, "how are you") {
-		responses = append(responses, "Ben bir AI asistanıyım, her zaman iyiyim!")
+	if strings.Contains(lower, "nasılsın") || strings.Contains(lower, "how are you") || strings.Contains(lower, "naber") {
+		return "Ben bir AI asistanıyım, her zaman iyiyim! Size nasıl yardımcı olabilirim?"
 	}
-	if strings.Contains(lower, "yardım") || strings.Contains(lower, "help") {
-		responses = append(responses, "Size nasıl yardımcı olabilirim? Lütfen sorunuzu detaylandırın.")
+	if strings.Contains(lower, "yardım") || strings.Contains(lower, "help") || strings.Contains(lower, "yapabilir") {
+		return "Size yardımcı olmaktan mutluluk duyarım. Sorularınızı detaylı bir şekilde cevaplamaya çalışırım. Lütfen sormak istediğiniz şeyi belirtin."
 	}
-	if strings.Contains(lower, "hava") || strings.Contains(lower, "weather") {
-		responses = append(responses, "Hava durumu hakkında güncel bilgim yok, ancak bugünün harika bir gün olduğunu söyleyebilirim!")
-	}
-	if strings.Contains(lower, "teşekkür") || strings.Contains(lower, "thanks") {
-		responses = append(responses, "Rica ederim! Başka bir şeye yardımcı olabilir miyim?")
+	if strings.Contains(lower, "teşekkür") || strings.Contains(lower, "thanks") || strings.Contains(lower, "sağ ol") {
+		return "Rica ederim! Başka bir şeye yardımcı olabilir miyim?"
 	}
 
-	if len(responses) > 0 {
-		return strings.Join(responses, " ")
+	if strings.Contains(lower, "what is") || strings.Contains(lower, "what are") || strings.Contains(lower, "who is") || strings.Contains(lower, "nedir") || strings.Contains(lower, "kimdir") {
+		topic := strings.TrimSpace(strings.TrimPrefix(strings.TrimPrefix(strings.TrimPrefix(strings.TrimPrefix(strings.TrimPrefix(prompt, "what is"), "what are"), "who is"), "nedir"), "kimdir"))
+		topic = strings.TrimPrefix(topic, " the ")
+		topic = strings.TrimPrefix(topic, " a ")
+		topic = strings.TrimPrefix(topic, " an ")
+		if topic == "" {
+			topic = prompt
+		}
+		return fmt.Sprintf("%s, günümüz teknolojisinde önemli bir kavramdır. Temel olarak, bilgi işleme ve karar verme süreçlerini otomatikleştirmek için kullanılır. Alt dalları arasında makine öğrenmesi, doğal dil işleme ve bilgisayarlı görü bulunur. Günlük hayatta arama motorlarından öneri sistemlerine kadar pek çok alanda karşımıza çıkar. Daha detaylı bilgi isterseniz belirli bir alt konuya odaklanabiliriz.", topic)
 	}
 
-	if len(words) <= 3 {
-		return fmt.Sprintf("'%s' hakkında düşünmeme izin verin. Bu ilginç bir konu. Daha fazla bilgi verebilir misiniz?", prompt)
+	if strings.Contains(lower, "ai") || strings.Contains(lower, "artificial intelligence") || strings.Contains(lower, "yapay zeka") || strings.Contains(lower, "llm") {
+		return "AI (Yapay Zeka), insan zekasını taklit eden sistemlerin genel adıdır. Makine öğrenmesi, derin öğrenme ve doğal dil işleme gibi alt dalları vardır. LLM'ler (Large Language Models), büyük miktarda metin verisiyle eğitilmiş yapay zeka modelleridir. Metin üretme, soru cevaplama, çeviri gibi görevlerde kullanılırlar. Günümüzde ChatGPT, Gemini, Claude gibi popüler örnekleri bulunmaktadır."
+	}
+	if strings.Contains(lower, "python") || strings.Contains(lower, "kod") || strings.Contains(lower, "code") || strings.Contains(lower, "programlama") {
+		return "Programlama konusunda yardımcı olabilirim. Python, öğrenmesi kolay ve çok yönlü bir dildir. Veri bilimi, yapay zeka, web geliştirme gibi birçok alanda kullanılır. Belirli bir konuda örnek kod veya açıklama isterseniz lütfen detaylandırın."
+	}
+	if strings.Contains(lower, "score") || strings.Contains(lower, "puan") || strings.Contains(lower, "değerlendir") || strings.Contains(lower, "evaluate") {
+		return "Bu prompt'u değerlendirelim. İyi bir prompt net, spesifik ve bağlam içerir. Kötü bir prompt ise belirsiz ve geneldir. Prompt'unuzu daha iyi hale getirmek için: hedef kitlenizi belirleyin, net talimatlar verin, beklediğiniz çıktı formatını tanımlayın. Mevcut prompt'unuzu bu kriterlere göre değerlendirebilirim."
 	}
 
-	return fmt.Sprintf("'%s' konusunu değerlendiriyorum. Anladığım kadarıyla bu, üzerinde düşünülmesi gereken bir konu. Şu açıdan bakılabilir: öncelikle ana faktörleri belirlemek, ardından olası sonuçları değerlendirmek faydalı olacaktır. Sizin bu konudaki düşünceleriniz neler?", prompt)
+	return fmt.Sprintf("'%s' hakkında düşünelim. Bu konuda size yardımcı olabilmek için biraz daha bağlam sağlayabilir misiniz? Örneğin, bu konunun hangi yönüyle ilgileniyorsunuz? Belirli bir sorunuz veya üzerinde çalıştığınız bir proje var mı?", prompt)
 }
