@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "LLM Decision Score",
-  description: "AI-powered decision scoring with WebLLM",
+  description: "AI-powered decision scoring with MLC LLM",
 };
 
 export default function RootLayout({

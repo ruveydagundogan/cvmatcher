@@ -121,14 +121,14 @@ func main() {
 		rateLimiter = middleware.NewRateLimiter(100, 200, log).RateLimit
 	}
 
-	var backendLLMHandler *backendllmhandler.Handler
+	var llmClient *llm.Client
 	if cfg.MLCLLM.Enabled {
-		llmClient := llm.NewClient(cfg.MLCLLM.BaseURL, 60*time.Second)
-		backendLLMHandler = backendllmhandler.NewHandler(llmClient)
+		llmClient = llm.NewClient(cfg.MLCLLM.BaseURL, 60*time.Second)
 		log.Info("server-side LLM enabled", "base_url", cfg.MLCLLM.BaseURL)
 	} else {
-		log.Info("server-side LLM disabled, using browser-based WebLLM")
+		log.Info("server-side LLM disabled, using mock responses")
 	}
+	backendLLMHandler := backendllmhandler.NewHandler(llmClient)
 
 	httpMetrics := metrics.NewHTTPMetrics("llm-decision-score")
 

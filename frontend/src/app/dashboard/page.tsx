@@ -2,11 +2,10 @@
 
 import { useState, useCallback } from "react";
 
-import { useWebLLM } from "@/hooks/useWebLLM";
+import { useLLM } from "@/hooks/useLLM";
 import { useHistory } from "@/hooks/useHistory";
 import { PromptInput } from "@/components/PromptInput";
 import { AskButton } from "@/components/AskButton";
-import { StatusCard } from "@/components/StatusCard";
 import { ResponseCard } from "@/components/ResponseCard";
 import { MetricsCard } from "@/components/MetricsCard";
 import { DecisionScoreCard } from "@/components/DecisionScoreCard";
@@ -16,9 +15,6 @@ export default function DashboardPage() {
   const { addItem } = useHistory();
 
   const {
-    loadStatus,
-    initProgress,
-    progressText,
     loadError,
     isInferenceRunning,
     responseText,
@@ -27,7 +23,7 @@ export default function DashboardPage() {
     wordCount,
     characterCount,
     handleAskAI: llmHandleAskAI,
-  } = useWebLLM();
+  } = useLLM();
 
   const handleAskAI = useCallback(async () => {
     if (!prompt.trim()) return;
@@ -63,7 +59,7 @@ export default function DashboardPage() {
             </div>
             <div>
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">AI Assistant</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Gemma-2B • Browser LLM</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Gemma-2B • Backend LLM</p>
             </div>
           </div>
 
@@ -71,19 +67,15 @@ export default function DashboardPage() {
             <ResponseCard responseText={responseText} isLoading={isInferenceRunning} />
           </div>
 
-          <div className="mt-4">
-            <StatusCard
-              loadStatus={loadStatus}
-              initProgress={initProgress}
-              progressText={progressText}
-              loadError={loadError}
-            />
-          </div>
-
           <div className="mt-4 space-y-3">
             <PromptInput value={prompt} onChange={setPrompt} />
+            {loadError && (
+              <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-3">
+                <p className="text-sm text-red-400">{loadError}</p>
+              </div>
+            )}
             <AskButton
-              disabled={loadStatus !== "loaded" || isInferenceRunning || !prompt.trim()}
+              disabled={isInferenceRunning || !prompt.trim()}
               isLoading={isInferenceRunning}
               onClick={handleAskAI}
             />
