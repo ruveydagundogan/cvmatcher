@@ -7,11 +7,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/application/llmscoring/dto"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/metrics"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/constants"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/middleware"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/response"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/application/llmscoring/dto"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/metrics"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/shared/constants"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/shared/middleware"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/shared/response"
 )
 
 const (

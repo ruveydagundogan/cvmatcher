@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"strconv"
 
-	jdmodel "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/jobdescription/model"
+	jdmodel "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/jobdescription/model"
 	"github.com/go-chi/chi/v5"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/middleware"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/response"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/shared/middleware"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/shared/response"
 )
 
 type JDUseCase interface {

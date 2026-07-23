@@ -6,7 +6,7 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/cv/model"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/domain/cv/model"
 )
 
 type InMemoryCVRepo struct {

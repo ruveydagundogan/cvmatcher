@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/response"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/shared/response"
 )
 
 type RateLimiter struct {

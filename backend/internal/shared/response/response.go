@@ -6,7 +6,7 @@ import (
 	"log/slog"
 	"net/http"
 
-	apperrors "github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/errors"
+	apperrors "github.com/ruveydagundogan/cvmatcher/backend/internal/shared/errors"
 )
 
 type SuccessResponse struct {

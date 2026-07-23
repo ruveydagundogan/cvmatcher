@@ -10,43 +10,43 @@ import (
 	"syscall"
 	"time"
 
-	cvusecase "github.com/ruveydagundogan/llm-decision-score/backend/internal/application/cv/usecase"
-	iusecase "github.com/ruveydagundogan/llm-decision-score/backend/internal/application/iam/usecase"
-	jdusecase "github.com/ruveydagundogan/llm-decision-score/backend/internal/application/jobdescription/usecase"
-	llmusecase "github.com/ruveydagundogan/llm-decision-score/backend/internal/application/llmscoring/usecase"
-	matchusecase "github.com/ruveydagundogan/llm-decision-score/backend/internal/application/matching/usecase"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/auth"
-	cvhandler "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/cv"
-	backendllmhandler "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/backendllm"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/health"
-	iamhandler "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/iam"
-	jdhandler "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/jd"
-	llmhandler "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/llmscoring"
-	matchinghandler "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/matching"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/router"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/llm"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/memory"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/metrics"
-	pgresaudit "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/postgres/audit"
-	pgrescv "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/postgres/cv"
-	pgresiam "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/postgres/iam"
-	pgresjd "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/postgres/jobdescription"
-	pgresscoring "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/postgres/llmscoring"
-	pgresmatch "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/postgres/matching"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/ratelimit"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/tunnel"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/cache"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/config"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/database"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/logger"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/middleware"
+	cvusecase "github.com/ruveydagundogan/cvmatcher/backend/internal/application/cv/usecase"
+	iusecase "github.com/ruveydagundogan/cvmatcher/backend/internal/application/iam/usecase"
+	jdusecase "github.com/ruveydagundogan/cvmatcher/backend/internal/application/jobdescription/usecase"
+	llmusecase "github.com/ruveydagundogan/cvmatcher/backend/internal/application/llmscoring/usecase"
+	matchusecase "github.com/ruveydagundogan/cvmatcher/backend/internal/application/matching/usecase"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/auth"
+	cvhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/cv"
+	backendllmhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/backendllm"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/health"
+	iamhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/iam"
+	jdhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/jd"
+	llmhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/llmscoring"
+	matchinghandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/matching"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/router"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/llm"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/memory"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/metrics"
+	pgresaudit "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/postgres/audit"
+	pgrescv "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/postgres/cv"
+	pgresiam "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/postgres/iam"
+	pgresjd "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/postgres/jobdescription"
+	pgresscoring "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/postgres/llmscoring"
+	pgresmatch "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/postgres/matching"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/ratelimit"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/tunnel"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/shared/cache"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/shared/config"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/shared/database"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/shared/logger"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/shared/middleware"
 
-	auditrepo "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/audit/repository"
-	cvrepo "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/cv/repository"
-	iamrepo "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/iam/repository"
-	jdrepo "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/jobdescription/repository"
-	matchrepo "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/matching/repository"
-	scoringrepo "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/llmscoring/repository"
+	auditrepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/audit/repository"
+	cvrepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/cv/repository"
+	iamrepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/iam/repository"
+	jdrepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/jobdescription/repository"
+	matchrepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/matching/repository"
+	scoringrepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/llmscoring/repository"
 )
 
 func main() {
@@ -63,7 +63,7 @@ func main() {
 
 	log := logger.New(cfg.Log.Level, cfg.Log.Format)
 
-	log.Info("starting llm-decision-score backend",
+	log.Info("starting cvmatcher backend",
 		"server_host", cfg.Server.Host,
 		"server_port", cfg.Server.Port,
 	)
@@ -131,7 +131,7 @@ func main() {
 		redisClient = nil
 	}
 
-	m := metrics.New("llm-decision-score")
+	m := metrics.New("cvmatcher")
 
 	healthHandler := health.NewHandler(nil)
 	iamH := iamhandler.NewHandler(registerUC, loginUC, getProfileUC, updateProfileUC)

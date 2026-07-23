@@ -6,7 +6,7 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/jobdescription/model"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/domain/jobdescription/model"
 )
 
 type InMemoryJDRepo struct {

@@ -65,7 +65,7 @@ export default function LoginPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">LLM Decision Score</h1>
+          <h1 className="text-3xl font-bold text-white mb-2">CV Matcher</h1>
           <p className="text-gray-400">AI-powered decision scoring</p>
         </div>
 

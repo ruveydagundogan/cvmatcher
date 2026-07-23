@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/tunnel"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/tunnel"
 )
 
 func main() {

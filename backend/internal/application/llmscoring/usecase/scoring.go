@@ -6,12 +6,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/application/llmscoring/dto"
-	auditmodel "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/audit/model"
-	auditrepo "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/audit/repository"
-	scoringmodel "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/llmscoring/model"
-	scoringrepo "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/llmscoring/repository"
-	apperrors "github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/errors"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/application/llmscoring/dto"
+	auditmodel "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/audit/model"
+	auditrepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/audit/repository"
+	scoringmodel "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/llmscoring/model"
+	scoringrepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/llmscoring/repository"
+	apperrors "github.com/ruveydagundogan/cvmatcher/backend/internal/shared/errors"
 )
 
 type ScoreUseCase struct {

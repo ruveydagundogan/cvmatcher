@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/jobdescription/model"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/domain/jobdescription/model"
 )
 
 type JobDescriptionRepository struct {

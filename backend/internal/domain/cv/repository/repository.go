@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/cv/model"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/domain/cv/model"
 )
 
 type CVRepository interface {

@@ -10,7 +10,7 @@ import (
 
 	"github.com/redis/go-redis/v9"
 
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/response"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/shared/response"
 )
 
 type RedisRateLimiter struct {

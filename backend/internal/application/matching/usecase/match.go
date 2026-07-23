@@ -8,13 +8,13 @@ import (
 	"strings"
 	"time"
 
-	cvmodel "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/cv/model"
-	cvrepo "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/cv/repository"
-	jdmodel "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/jobdescription/model"
-	jdrepo "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/jobdescription/repository"
-	matchmodel "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/matching/model"
-	matchrepo "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/matching/repository"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/llm"
+	cvmodel "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/cv/model"
+	cvrepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/cv/repository"
+	jdmodel "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/jobdescription/model"
+	jdrepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/jobdescription/repository"
+	matchmodel "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/matching/model"
+	matchrepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/matching/repository"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/llm"
 )
 
 type MatchUseCase struct {

@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"strconv"
 
-	matchmodel "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/matching/model"
+	matchmodel "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/matching/model"
 	"github.com/go-chi/chi/v5"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/middleware"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/response"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/shared/middleware"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/shared/response"
 )
 
 type MatchUseCase interface {

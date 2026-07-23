@@ -8,7 +8,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/config"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/shared/config"
 )
 
 type Claims struct {

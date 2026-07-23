@@ -8,7 +8,7 @@ import (
 
 	"github.com/redis/go-redis/v9"
 
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/config"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/shared/config"
 )
 
 func NewRedisClient(ctx context.Context, cfg config.RedisConfig, logger *slog.Logger) (*redis.Client, error) {

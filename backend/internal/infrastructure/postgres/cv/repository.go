@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/cv/model"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/domain/cv/model"
 )
 
 type CVRepository struct {

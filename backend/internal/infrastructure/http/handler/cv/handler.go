@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"strconv"
 
-	cvmodel "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/cv/model"
+	cvmodel "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/cv/model"
 	"github.com/go-chi/chi/v5"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/middleware"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/response"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/shared/middleware"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/shared/response"
 )
 
 type CVUseCase interface {

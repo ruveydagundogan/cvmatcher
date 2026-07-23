@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: llm-decision-score-api
+    name: cvmatcher-api
     runtime: go
     buildCommand: cd backend && go build -tags netgo -ldflags '-s -w' -o app ./cmd/server
     startCommand: cd backend && ./app
@@ -11,23 +11,23 @@ services:
         generateValue: true
       - key: DB_HOST
         fromDatabase:
-          name: llm-decision-score-db
+          name: cvmatcher-db
           property: host
       - key: DB_PORT
         fromDatabase:
-          name: llm-decision-score-db
+          name: cvmatcher-db
           property: port
       - key: DB_USER
         fromDatabase:
-          name: llm-decision-score-db
+          name: cvmatcher-db
           property: user
       - key: DB_PASSWORD
         fromDatabase:
-          name: llm-decision-score-db
+          name: cvmatcher-db
           property: password
       - key: DB_NAME
         fromDatabase:
-          name: llm-decision-score-db
+          name: cvmatcher-db
           property: database
       - key: DB_SSLMODE
         value: require
@@ -41,7 +41,7 @@ services:
     autoDeploy: true
 
 databases:
-  - name: llm-decision-score-db
+  - name: cvmatcher-db
     plan: free
     databaseName: llmdecisionscore
     user: llmdecisionscore

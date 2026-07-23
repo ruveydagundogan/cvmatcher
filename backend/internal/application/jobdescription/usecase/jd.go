@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
-	jdmodel "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/jobdescription/model"
-	jdrepo "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/jobdescription/repository"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/llm"
+	jdmodel "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/jobdescription/model"
+	jdrepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/jobdescription/repository"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/llm"
 )
 
 type JDUseCase struct {

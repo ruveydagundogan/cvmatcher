@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
-	cvmodel "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/cv/model"
-	cvrepo "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/cv/repository"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/llm"
+	cvmodel "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/cv/model"
+	cvrepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/cv/repository"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/llm"
 )
 
 type CVUseCase struct {

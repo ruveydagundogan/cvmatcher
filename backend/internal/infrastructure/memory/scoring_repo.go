@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/llmscoring/model"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/llmscoring/repository"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/domain/llmscoring/model"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/domain/llmscoring/repository"
 )
 
 const maxInMemoryScores = 100000

@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/llmscoring/model"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/domain/llmscoring/model"
 )
 
 type ScoringRepository interface {

@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/application/iam/dto"
-	iammodel "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/iam/model"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/middleware"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/response"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/application/iam/dto"
+	iammodel "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/iam/model"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/shared/middleware"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/shared/response"
 )
 
 type RegisterUseCase interface {

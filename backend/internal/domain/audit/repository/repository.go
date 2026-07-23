@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/audit/model"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/domain/audit/model"
 )
 
 type AuditRepository interface {

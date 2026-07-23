@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/response"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/shared/response"
 )
 
 func CORS(allowedOrigins []string) func(http.Handler) http.Handler {

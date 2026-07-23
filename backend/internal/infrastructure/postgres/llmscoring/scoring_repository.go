@@ -6,8 +6,8 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/llmscoring/model"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/llmscoring/repository"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/domain/llmscoring/model"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/domain/llmscoring/repository"
 )
 
 type ScoringRepository struct {

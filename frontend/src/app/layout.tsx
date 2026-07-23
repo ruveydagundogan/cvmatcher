@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "LLM Decision Score",
+  title: "CV Matcher",
   description: "AI-powered decision scoring with MLC LLM",
 };
 

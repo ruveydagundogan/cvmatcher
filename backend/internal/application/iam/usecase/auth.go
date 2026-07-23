@@ -5,12 +5,12 @@ import (
 	"log/slog"
 	"time"
 
-	auditmodel "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/audit/model"
-	auditrepo "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/audit/repository"
-	iammodel "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/iam/model"
-	iamrepo "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/iam/repository"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/iam/service"
-	apperrors "github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/errors"
+	auditmodel "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/audit/model"
+	auditrepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/audit/repository"
+	iammodel "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/iam/model"
+	iamrepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/iam/repository"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/domain/iam/service"
+	apperrors "github.com/ruveydagundogan/cvmatcher/backend/internal/shared/errors"
 )
 
 type RegisterUseCase struct {

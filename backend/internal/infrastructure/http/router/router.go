@@ -6,16 +6,16 @@ import (
 	"github.com/go-chi/chi/v5"
 	chimw "github.com/go-chi/chi/v5/middleware"
 
-	backendllmhandler "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/backendllm"
-	cvhandler "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/cv"
-	healthhandler "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/health"
-	iamhandler "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/iam"
-	jdhandler "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/jd"
-	llmhandler "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/llmscoring"
-	matchinghandler "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/matching"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/metrics"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/config"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/middleware"
+	backendllmhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/backendllm"
+	cvhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/cv"
+	healthhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/health"
+	iamhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/iam"
+	jdhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/jd"
+	llmhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/llmscoring"
+	matchinghandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/matching"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/metrics"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/shared/config"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/shared/middleware"
 )
 
 type Dependencies struct {

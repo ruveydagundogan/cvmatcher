@@ -1,4 +1,4 @@
-module github.com/ruveydagundogan/llm-decision-score/backend
+module github.com/ruveydagundogan/cvmatcher/backend
 
 go 1.26.5
 

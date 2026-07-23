@@ -6,7 +6,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/iam/model"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/domain/iam/model"
 )
 
 type RoleRepository struct {

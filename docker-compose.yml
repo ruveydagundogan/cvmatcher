@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: llm-decision-score-postgres
+    container_name: cvmatcher-postgres
     environment:
       POSTGRES_USER: llmdecisionscore
       POSTGRES_PASSWORD: llmdecisionscore
@@ -16,11 +16,11 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - llm-network
+      - cvmatcher-network
 
   redis:
     image: redis:7-alpine
-    container_name: llm-decision-score-redis
+    container_name: cvmatcher-redis
     ports:
       - "6379:6379"
     volumes:
@@ -31,7 +31,7 @@ services:
       timeout: 3s
       retries: 5
     networks:
-      - llm-network
+      - cvmatcher-network
 
   backend:
     build:
@@ -62,11 +62,11 @@ services:
       redis:
         condition: service_healthy
     networks:
-      - llm-network
+      - cvmatcher-network
 
   prometheus:
     image: prom/prometheus:latest
-    container_name: llm-decision-score-prometheus
+    container_name: cvmatcher-prometheus
     ports:
       - "9090:9090"
     volumes:
@@ -76,11 +76,11 @@ services:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--storage.tsdb.path=/prometheus"
     networks:
-      - llm-network
+      - cvmatcher-network
 
   grafana:
     image: grafana/grafana:latest
-    container_name: llm-decision-score-grafana
+    container_name: cvmatcher-grafana
     ports:
       - "3001:3000"
     environment:
@@ -94,11 +94,11 @@ services:
     depends_on:
       - prometheus
     networks:
-      - llm-network
+      - cvmatcher-network
 
   nginx:
     image: nginx:alpine
-    container_name: llm-decision-score-nginx
+    container_name: cvmatcher-nginx
     ports:
       - "8080:80"
     volumes:
@@ -106,7 +106,7 @@ services:
     depends_on:
       - backend
     networks:
-      - llm-network
+      - cvmatcher-network
 
 volumes:
   pgdata:
@@ -115,5 +115,5 @@ volumes:
   grafana-data:
 
 networks:
-  llm-network:
+  cvmatcher-network:
     driver: bridge

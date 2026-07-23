@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/matching/model"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/domain/matching/model"
 )
 
 type MatchingRepository struct {

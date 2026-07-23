@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/iam/model"
+	"github.com/ruveydagundogan/cvmatcher/backend/internal/domain/iam/model"
 )
 
 type UserRepository interface {

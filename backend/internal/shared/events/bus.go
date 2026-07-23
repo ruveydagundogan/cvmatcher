@@ -8,9 +8,9 @@ import (
 )
 
 const (
-	TopicLLMScoring = "llmdecisionscore.scoring"
-	TopicIAM        = "llmdecisionscore.iam"
-	TopicAudit      = "llmdecisionscore.audit"
+	TopicLLMScoring = "cvmatcher.scoring"
+	TopicIAM        = "cvmatcher.iam"
+	TopicAudit      = "cvmatcher.audit"
 )
 
 type Event struct {

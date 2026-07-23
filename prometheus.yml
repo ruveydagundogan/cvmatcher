@@ -3,7 +3,7 @@ global:
   evaluation_interval: 15s
 
 scrape_configs:
-  - job_name: "llm-decision-score-backend"
+  - job_name: "cvmatcher-backend"
     static_configs:
       - targets: ["backend:8081"]
     metrics_path: /metrics

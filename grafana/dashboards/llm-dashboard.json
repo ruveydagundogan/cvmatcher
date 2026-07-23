@@ -1,6 +1,6 @@
 {
-  "title": "LLM Decision Score",
-  "uid": "llm-decision-score",
+  "title": "CV Matcher",
+  "uid": "cvmatcher",
   "version": 3,
   "timezone": "browser",
   "refresh": "30s",
