@@ -7,9 +7,12 @@ import (
 	chimw "github.com/go-chi/chi/v5/middleware"
 
 	backendllmhandler "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/backendllm"
+	cvhandler "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/cv"
 	healthhandler "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/health"
 	iamhandler "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/iam"
+	jdhandler "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/jd"
 	llmhandler "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/llmscoring"
+	matchinghandler "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/matching"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/metrics"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/config"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/middleware"
@@ -20,6 +23,9 @@ type Dependencies struct {
 	IAMHandler         *iamhandler.Handler
 	LLMHandler         *llmhandler.Handler
 	BackendLLMHandler  *backendllmhandler.Handler
+	CVHandler          *cvhandler.Handler
+	JDHandler          *jdhandler.Handler
+	MatchingHandler    *matchinghandler.Handler
 	JWTValidator       middleware.TokenValidator
 	Config             *config.Config
 	RateLimiter        func(http.Handler) http.Handler
@@ -66,6 +72,30 @@ func NewRouter(deps Dependencies) http.Handler {
 			r.Get("/history", deps.LLMHandler.GetHistory)
 			r.Delete("/history", deps.LLMHandler.DeleteHistory)
 			r.Get("/stats", deps.LLMHandler.GetStats)
+
+			if deps.CVHandler != nil {
+				r.Post("/cvs", deps.CVHandler.Create)
+				r.Get("/cvs", deps.CVHandler.List)
+				r.Get("/cvs/{id}", deps.CVHandler.GetByID)
+				r.Delete("/cvs/{id}", deps.CVHandler.Delete)
+				r.Post("/cvs/{id}/parse", deps.CVHandler.Parse)
+			}
+
+			if deps.JDHandler != nil {
+				r.Post("/jds", deps.JDHandler.Create)
+				r.Get("/jds", deps.JDHandler.List)
+				r.Get("/jds/{id}", deps.JDHandler.GetByID)
+				r.Put("/jds/{id}", deps.JDHandler.Update)
+				r.Delete("/jds/{id}", deps.JDHandler.Delete)
+				r.Post("/jds/{id}/analyze", deps.JDHandler.Analyze)
+			}
+
+			if deps.MatchingHandler != nil {
+				r.Post("/matches", deps.MatchingHandler.RunMatch)
+				r.Get("/matches", deps.MatchingHandler.List)
+				r.Get("/matches/{id}", deps.MatchingHandler.GetByID)
+				r.Get("/dashboard/stats", deps.MatchingHandler.GetDashboardStats)
+			}
 		})
 	})
 

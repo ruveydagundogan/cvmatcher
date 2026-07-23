@@ -1,97 +1,127 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { api } from "@/lib/api";
 
-import { useLLM } from "@/hooks/useLLM";
-import { useHistory } from "@/hooks/useHistory";
-import { PromptInput } from "@/components/PromptInput";
-import { AskButton } from "@/components/AskButton";
-import { ResponseCard } from "@/components/ResponseCard";
-import { MetricsCard } from "@/components/MetricsCard";
-import { DecisionScoreCard } from "@/components/DecisionScoreCard";
+interface DashboardStats {
+  total_cvs: number;
+  total_jds: number;
+  total_matches: number;
+  average_score: number;
+  match_rate: number;
+  recent_matches: Array<{
+    id: string;
+    cv_title: string;
+    jd_title: string;
+    overall_score: number;
+    created_at: string;
+  }>;
+}
 
 export default function DashboardPage() {
-  const [prompt, setPrompt] = useState("");
-  const { addItem } = useHistory();
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  const {
-    loadError,
-    isInferenceRunning,
-    responseText,
-    inferenceTime,
-    score,
-    wordCount,
-    characterCount,
-    handleAskAI: llmHandleAskAI,
-  } = useLLM();
+  useEffect(() => {
+    api.get("/api/v1/dashboard/stats")
+      .then(setStats)
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false));
+  }, []);
 
-  const handleAskAI = useCallback(async () => {
-    if (!prompt.trim()) return;
-
-    const currentPrompt = prompt;
-    setPrompt("");
-
-    const result = await llmHandleAskAI(currentPrompt);
-
-    if (result && result.score > 0) {
-      addItem({
-        prompt: result.prompt,
-        response: result.response,
-        score: result.score,
-        model: "Gemma-2B",
-        word_count: result.wordCount,
-        char_count: result.characterCount,
-        inference_time: result.inferenceTime,
-      });
-    }
-  }, [prompt, llmHandleAskAI, addItem]);
+  const statCards = [
+    { label: "CVs", value: stats?.total_cvs ?? "-", href: "/dashboard/cvs", color: "from-blue-500 to-cyan-600", desc: "Upload & parse resumes" },
+    { label: "Job Descriptions", value: stats?.total_jds ?? "-", href: "/dashboard/jds", color: "from-purple-500 to-pink-600", desc: "Add job postings" },
+    { label: "Matches", value: stats?.total_matches ?? "-", href: "/dashboard/matches", color: "from-green-500 to-emerald-600", desc: "Run AI matching" },
+    { label: "Avg Score", value: stats ? (stats.average_score ? stats.average_score.toFixed(1) : "—") : "-", href: "/dashboard/matches", color: "from-orange-500 to-red-600", desc: "Average match score" },
+  ];
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
-      {/* Left - Chat */}
-      <div className="flex flex-col">
-        <div className="flex-1 bg-white dark:bg-slate-900/50 rounded-2xl border border-gray-200 dark:border-white/10 p-6 flex flex-col">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center animate-pulse-glow">
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-              </svg>
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">AI Assistant</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Gemma-2B • Backend LLM</p>
-            </div>
-          </div>
+    <div>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-1">CV–Job Description AI Matching Platform</p>
+      </div>
 
-          <div className="flex-1 min-h-0">
-            <ResponseCard responseText={responseText} isLoading={isInferenceRunning} />
-          </div>
+      {error && (
+        <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-4 mb-6">
+          <p className="text-sm text-red-400">{error}</p>
+          <p className="text-xs text-red-400/70 mt-1">
+            Backend'e bağlanılamadı. Vercel'de <code className="bg-red-500/10 px-1 rounded">NEXT_PUBLIC_API_URL</code> environment variable'ını Render URL'ine ayarla.
+          </p>
+        </div>
+      )}
 
-          <div className="mt-4 space-y-3">
-            <PromptInput value={prompt} onChange={setPrompt} />
-            {loadError && (
-              <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-3">
-                <p className="text-sm text-red-400">{loadError}</p>
+      {loading ? (
+        <div className="flex items-center justify-center h-32">
+          <div className="animate-spin w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full" />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {statCards.map((card) => (
+            <Link key={card.label} href={card.href}>
+              <div className="bg-white dark:bg-slate-900/50 rounded-2xl border border-gray-200 dark:border-white/10 p-6 hover:border-purple-500/30 transition-all duration-200 h-full">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">{card.desc}</p>
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{card.label}</p>
+                <p className={`text-4xl font-bold bg-gradient-to-r ${card.color} bg-clip-text text-transparent`}>
+                  {card.value}
+                </p>
               </div>
-            )}
-            <AskButton
-              disabled={isInferenceRunning || !prompt.trim()}
-              isLoading={isInferenceRunning}
-              onClick={handleAskAI}
-            />
+            </Link>
+          ))}
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <Link href="/dashboard/cvs" className="bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-2xl border border-blue-500/20 p-6 hover:border-blue-500/40 transition-all duration-200">
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-1">CV Ekle</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">CV metnini yapıştır ve AI ile parse et</p>
+        </Link>
+        <Link href="/dashboard/jds" className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-2xl border border-purple-500/20 p-6 hover:border-purple-500/40 transition-all duration-200">
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-1">İş Tanımı Ekle</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Job description ekle ve AI ile analiz et</p>
+        </Link>
+        <Link href="/dashboard/matches" className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-2xl border border-green-500/20 p-6 hover:border-green-500/40 transition-all duration-200">
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Match Çalıştır</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">CV ile iş tanımını eşleştir ve skorla</p>
+        </Link>
+      </div>
+
+      {stats && stats.recent_matches && stats.recent_matches.length > 0 && (
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Son Match'ler</h2>
+          <div className="space-y-3">
+            {stats.recent_matches.map((m) => (
+              <Link key={m.id} href={`/dashboard/matches/${m.id}`}>
+                <div className="bg-white dark:bg-slate-900/50 rounded-2xl border border-gray-200 dark:border-white/10 p-4 hover:border-purple-500/30 transition-all duration-200 flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-gray-900 dark:text-white">{m.cv_title} ↔ {m.jd_title}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{new Date(m.created_at).toLocaleDateString()}</p>
+                  </div>
+                  <div className={`px-4 py-2 rounded-xl font-bold ${
+                    m.overall_score >= 70 ? "bg-green-500/10 text-green-500" :
+                    m.overall_score >= 40 ? "bg-yellow-500/10 text-yellow-500" :
+                    "bg-red-500/10 text-red-500"
+                  }`}>
+                    {m.overall_score.toFixed(0)}
+                  </div>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Right - Metrics & Score */}
-      <div className="flex flex-col gap-6">
-        <DecisionScoreCard score={score} />
-        <MetricsCard
-          inferenceTime={inferenceTime}
-          wordCount={wordCount}
-          characterCount={characterCount}
-        />
-      </div>
+      {!loading && !error && (!stats || stats.total_cvs === 0) && (
+        <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-gray-300 dark:border-white/10 p-16 text-center bg-white/5">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Hoş geldin!</h2>
+          <p className="text-gray-500 dark:text-gray-400 max-w-md">
+            İlk CV'ni ekleyerek başla, ardından bir iş tanımı gir ve AI ile match skorunu gör.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

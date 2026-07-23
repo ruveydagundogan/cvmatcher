@@ -10,22 +10,31 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/application/iam/usecase"
+	cvusecase "github.com/ruveydagundogan/llm-decision-score/backend/internal/application/cv/usecase"
+	iusecase "github.com/ruveydagundogan/llm-decision-score/backend/internal/application/iam/usecase"
+	jdusecase "github.com/ruveydagundogan/llm-decision-score/backend/internal/application/jobdescription/usecase"
 	llmusecase "github.com/ruveydagundogan/llm-decision-score/backend/internal/application/llmscoring/usecase"
+	matchusecase "github.com/ruveydagundogan/llm-decision-score/backend/internal/application/matching/usecase"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/auth"
+	cvhandler "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/cv"
 	backendllmhandler "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/backendllm"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/health"
 	iamhandler "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/iam"
+	jdhandler "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/jd"
 	llmhandler "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/llmscoring"
+	matchinghandler "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/handler/matching"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/router"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/llm"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/memory"
-	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/tunnel"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/metrics"
 	pgresaudit "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/postgres/audit"
+	pgrescv "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/postgres/cv"
 	pgresiam "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/postgres/iam"
+	pgresjd "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/postgres/jobdescription"
 	pgresscoring "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/postgres/llmscoring"
+	pgresmatch "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/postgres/matching"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/ratelimit"
+	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/tunnel"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/cache"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/config"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/database"
@@ -33,7 +42,10 @@ import (
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/middleware"
 
 	auditrepo "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/audit/repository"
+	cvrepo "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/cv/repository"
 	iamrepo "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/iam/repository"
+	jdrepo "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/jobdescription/repository"
+	matchrepo "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/matching/repository"
 	scoringrepo "github.com/ruveydagundogan/llm-decision-score/backend/internal/domain/llmscoring/repository"
 )
 
@@ -60,11 +72,14 @@ func main() {
 	defer cancel()
 
 	var (
-		userRepo    iamrepo.UserRepository
-		roleRepo    iamrepo.RoleRepository
-		scoringRepo scoringrepo.ScoringRepository
-		auditRepo   auditrepo.AuditRepository
-		dbPool      interface{ Close() }
+		userRepo     iamrepo.UserRepository
+		roleRepo     iamrepo.RoleRepository
+		scoringRepo  scoringrepo.ScoringRepository
+		auditRepo    auditrepo.AuditRepository
+		cvRepo       cvrepo.CVRepository
+		jdRepo       jdrepo.JobDescriptionRepository
+		matchingRepo matchrepo.MatchingRepository
+		dbPool       interface{ Close() }
 	)
 
 	pool, err := database.NewPostgresPool(ctx, cfg.Database, log)
@@ -75,6 +90,9 @@ func main() {
 		roleRepo = memory.NewInMemoryRoleRepo()
 		scoringRepo = memory.NewInMemoryScoringRepo()
 		auditRepo = memory.NewInMemoryAuditRepo()
+		cvRepo = memory.NewInMemoryCVRepo()
+		jdRepo = memory.NewInMemoryJDRepo()
+		matchingRepo = memory.NewInMemoryMatchingRepo()
 	} else {
 		log.Info("postgresql connected, using persistent storage")
 		if err := database.RunMigrations(ctx, pool, log); err != nil {
@@ -84,6 +102,9 @@ func main() {
 		roleRepo = pgresiam.NewRoleRepository(pool)
 		scoringRepo = pgresscoring.NewScoringRepository(pool)
 		auditRepo = pgresaudit.NewAuditRepository(pool)
+		cvRepo = pgrescv.NewCVRepository(pool)
+		jdRepo = pgresjd.NewJobDescriptionRepository(pool)
+		matchingRepo = pgresmatch.NewMatchingRepository(pool)
 		dbPool = pool
 	}
 
@@ -94,10 +115,10 @@ func main() {
 	}
 	bcryptService := auth.NewBcryptAuthService(bcryptCost)
 
-	registerUC := usecase.NewRegisterUseCase(userRepo, roleRepo, bcryptService, jwtService, auditRepo, log)
-	loginUC := usecase.NewLoginUseCase(userRepo, jwtService, auditRepo, log)
-	getProfileUC := usecase.NewGetProfileUseCase(userRepo, log)
-	updateProfileUC := usecase.NewUpdateProfileUseCase(userRepo, log)
+	registerUC := iusecase.NewRegisterUseCase(userRepo, roleRepo, bcryptService, jwtService, auditRepo, log)
+	loginUC := iusecase.NewLoginUseCase(userRepo, jwtService, auditRepo, log)
+	getProfileUC := iusecase.NewGetProfileUseCase(userRepo, log)
+	updateProfileUC := iusecase.NewUpdateProfileUseCase(userRepo, log)
 
 	scoreUC := llmusecase.NewScoreUseCase(scoringRepo, auditRepo, log)
 	historyUC := llmusecase.NewGetHistoryUseCase(scoringRepo, log)
@@ -142,11 +163,22 @@ func main() {
 	tunnelServer := tunnel.NewServer()
 	backendLLMHandler := backendllmhandler.NewHandler(llmClient, m)
 
+	cvUseCase := cvusecase.NewCVUseCase(cvRepo, llmClient, log)
+	jdUseCase := jdusecase.NewJDUseCase(jdRepo, llmClient, log)
+	matchUseCase := matchusecase.NewMatchUseCase(cvRepo, jdRepo, matchingRepo, llmClient, log)
+
+	cvH := cvhandler.NewHandler(cvUseCase)
+	jdH := jdhandler.NewHandler(jdUseCase)
+	matchH := matchinghandler.NewHandler(matchUseCase)
+
 	deps := router.Dependencies{
 		HealthHandler:      healthHandler,
 		IAMHandler:         iamH,
 		LLMHandler:         llmH,
 		BackendLLMHandler:  backendLLMHandler,
+		CVHandler:          cvH,
+		JDHandler:          jdH,
+		MatchingHandler:    matchH,
 		JWTValidator:       jwtService,
 		Config:             cfg,
 		RateLimiter:        rateLimiter,
