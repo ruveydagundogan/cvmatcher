@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/llm"
+	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/metrics"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/response"
 )
 
@@ -17,10 +19,11 @@ type ChatRequest struct {
 
 type Handler struct {
 	llmClient *llm.Client
+	metrics   *metrics.Metrics
 }
 
-func NewHandler(client *llm.Client) *Handler {
-	return &Handler{llmClient: client}
+func NewHandler(client *llm.Client, m *metrics.Metrics) *Handler {
+	return &Handler{llmClient: client, metrics: m}
 }
 
 func (h *Handler) Chat(w http.ResponseWriter, r *http.Request) {
@@ -43,9 +46,11 @@ func (h *Handler) Chat(w http.ResponseWriter, r *http.Request) {
 	var err error
 
 	if h.llmClient != nil {
+		start := time.Now()
 		content, err = h.llmClient.ChatCompletion(r.Context(), []llm.ChatMessage{
 			{Role: "user", Content: req.Prompt},
 		}, req.MaxTokens)
+		h.metrics.LLM.Observe(time.Since(start), err == nil)
 		if err != nil {
 			response.Error(w, err)
 			return

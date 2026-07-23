@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/application/llmscoring/dto"
+	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/metrics"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/constants"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/middleware"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/shared/response"
@@ -39,6 +40,7 @@ type Handler struct {
 	historyUC    GetHistoryUseCase
 	deleteHistUC DeleteHistoryUseCase
 	statsUC      GetStatsUseCase
+	metrics      *metrics.Metrics
 }
 
 func NewHandler(
@@ -46,12 +48,14 @@ func NewHandler(
 	historyUC GetHistoryUseCase,
 	deleteHistUC DeleteHistoryUseCase,
 	statsUC GetStatsUseCase,
+	m *metrics.Metrics,
 ) *Handler {
 	return &Handler{
 		scoreUC:      scoreUC,
 		historyUC:    historyUC,
 		deleteHistUC: deleteHistUC,
 		statsUC:      statsUC,
+		metrics:      m,
 	}
 }
 
@@ -103,6 +107,8 @@ func (h *Handler) Score(w http.ResponseWriter, r *http.Request) {
 		response.Error(w, err)
 		return
 	}
+
+	h.metrics.Scoring.Observe(result.Model, result.Score, len(req.Prompt), len(req.Response), result.WordCount)
 
 	response.Success(w, result)
 }

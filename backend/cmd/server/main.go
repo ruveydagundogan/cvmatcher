@@ -108,9 +108,11 @@ func main() {
 		redisClient = nil
 	}
 
+	m := metrics.New("llm-decision-score")
+
 	healthHandler := health.NewHandler(nil)
 	iamH := iamhandler.NewHandler(registerUC, loginUC, getProfileUC, updateProfileUC)
-	llmH := llmhandler.NewHandler(scoreUC, historyUC, deleteHistoryUC, statsUC)
+	llmH := llmhandler.NewHandler(scoreUC, historyUC, deleteHistoryUC, statsUC, m)
 
 	var rateLimiter func(http.Handler) http.Handler
 	if redisClient != nil {
@@ -128,9 +130,7 @@ func main() {
 	} else {
 		log.Info("server-side LLM disabled, using mock responses")
 	}
-	backendLLMHandler := backendllmhandler.NewHandler(llmClient)
-
-	httpMetrics := metrics.NewHTTPMetrics("llm-decision-score")
+	backendLLMHandler := backendllmhandler.NewHandler(llmClient, m)
 
 	deps := router.Dependencies{
 		HealthHandler:    healthHandler,
@@ -140,7 +140,7 @@ func main() {
 		JWTValidator:     jwtService,
 		Config:           cfg,
 		RateLimiter:      rateLimiter,
-		Metrics:          httpMetrics,
+		Metrics:          m,
 	}
 
 	r := router.NewRouter(deps)

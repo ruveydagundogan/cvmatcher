@@ -1,13 +1,15 @@
 {
   "title": "LLM Decision Score",
   "uid": "llm-decision-score",
-  "version": 1,
+  "version": 3,
   "timezone": "browser",
+  "refresh": "30s",
+  "schemaVersion": 39,
   "panels": [
     {
       "title": "HTTP Request Rate",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 0 },
       "targets": [
         {
           "expr": "rate(http_requests_total[1m])",
@@ -25,22 +27,19 @@
     {
       "title": "Request Duration (p50 / p95 / p99)",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 0 },
       "targets": [
         {
-          "expr": "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket[1m]))",
-          "legendFormat": "p50",
-          "interval": "15s"
+          "expr": "histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket[1m])) by (le))",
+          "legendFormat": "p50"
         },
         {
-          "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[1m]))",
-          "legendFormat": "p95",
-          "interval": "15s"
+          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[1m])) by (le))",
+          "legendFormat": "p95"
         },
         {
-          "expr": "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[1m]))",
-          "legendFormat": "p99",
-          "interval": "15s"
+          "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[1m])) by (le))",
+          "legendFormat": "p99"
         }
       ],
       "fieldConfig": {
@@ -51,41 +50,21 @@
       }
     },
     {
-      "title": "Inflight Requests",
-      "type": "timeseries",
-      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 8 },
-      "targets": [
-        {
-          "expr": "http_requests_inflight",
-          "legendFormat": "inflight",
-          "interval": "15s"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "custom": { "lineInterpolation": "smooth" }
-        }
-      }
-    },
-    {
       "title": "Status Code Breakdown",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 8 },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 0 },
       "targets": [
         {
           "expr": "rate(http_requests_total{status=~\"2..\"}[1m])",
-          "legendFormat": "2xx",
-          "interval": "15s"
+          "legendFormat": "2xx"
         },
         {
           "expr": "rate(http_requests_total{status=~\"4..\"}[1m])",
-          "legendFormat": "4xx",
-          "interval": "15s"
+          "legendFormat": "4xx"
         },
         {
           "expr": "rate(http_requests_total{status=~\"5..\"}[1m])",
-          "legendFormat": "5xx",
-          "interval": "15s"
+          "legendFormat": "5xx"
         }
       ],
       "fieldConfig": {
@@ -96,24 +75,132 @@
       }
     },
     {
-      "title": "Error Rate (4xx + 5xx)",
-      "type": "timeseries",
-      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 8 },
+      "title": "Score Distribution",
+      "type": "barchart",
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 8 },
       "targets": [
         {
-          "expr": "rate(http_requests_total{status=~\"[45]..\"}[1m])",
-          "legendFormat": "errors",
-          "interval": "15s"
+          "expr": "sum(rate(score_value_bucket[1m])) by (le)",
+          "legendFormat": "<= {{le}}"
         }
       ],
       "fieldConfig": {
         "defaults": {
           "unit": "reqps",
-          "custom": { "lineInterpolation": "smooth" },
-          "color": { "mode": "fixed" }
+          "custom": { "stacking": { "mode": "normal" } }
+        }
+      }
+    },
+    {
+      "title": "Average Score",
+      "type": "stat",
+      "gridPos": { "h": 8, "w": 4, "x": 8, "y": 8 },
+      "targets": [
+        {
+          "expr": "sum(rate(score_value_sum[1m])) / sum(rate(score_value_count[1m]))",
+          "legendFormat": "avg"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "min": 0,
+          "max": 100,
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [ { "value": null, "color": "red" }, { "value": 30, "color": "yellow" }, { "value": 60, "color": "green" } ] }
+        }
+      }
+    },
+    {
+      "title": "Total Scores",
+      "type": "stat",
+      "gridPos": { "h": 8, "w": 4, "x": 12, "y": 8 },
+      "targets": [
+        {
+          "expr": "sum(rate(score_requests_total[1m]))",
+          "legendFormat": "total"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [ { "value": null, "color": "green" } ] }
+        }
+      }
+    },
+    {
+      "title": "Inflight Requests",
+      "type": "stat",
+      "gridPos": { "h": 8, "w": 4, "x": 16, "y": 8 },
+      "targets": [
+        {
+          "expr": "http_requests_inflight",
+          "legendFormat": "inflight"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [ { "value": null, "color": "green" }, { "value": 10, "color": "yellow" }, { "value": 50, "color": "red" } ] }
+        }
+      }
+    },
+    {
+      "title": "Word Count Distribution",
+      "type": "barchart",
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 16 },
+      "targets": [
+        {
+          "expr": "sum(rate(score_word_count_bucket[1m])) by (le)",
+          "legendFormat": "<= {{le}} words"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": { "stacking": { "mode": "normal" } }
+        }
+      }
+    },
+    {
+      "title": "Prompt vs Response Size",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 16 },
+      "targets": [
+        {
+          "expr": "sum(rate(score_prompt_length_bytes_sum[1m])) / sum(rate(score_prompt_length_bytes_count[1m]))",
+          "legendFormat": "avg prompt"
+        },
+        {
+          "expr": "sum(rate(score_response_length_bytes_sum[1m])) / sum(rate(score_response_length_bytes_count[1m]))",
+          "legendFormat": "avg response"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "custom": { "lineInterpolation": "smooth" }
+        }
+      }
+    },
+    {
+      "title": "Response Size by Endpoint",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 16 },
+      "targets": [
+        {
+          "expr": "rate(http_response_size_bytes_sum[1m]) / rate(http_response_size_bytes_count[1m])",
+          "legendFormat": "{{method}} {{path}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "custom": { "lineInterpolation": "smooth" }
         }
       }
     }
-  ],
-  "refresh": "30s"
+  ]
 }

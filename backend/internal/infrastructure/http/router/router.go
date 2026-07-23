@@ -23,7 +23,7 @@ type Dependencies struct {
 	JWTValidator     middleware.TokenValidator
 	Config           *config.Config
 	RateLimiter      func(http.Handler) http.Handler
-	Metrics          *metrics.HTTPMetrics
+	Metrics          *metrics.Metrics
 }
 
 func NewRouter(deps Dependencies) http.Handler {
@@ -35,16 +35,12 @@ func NewRouter(deps Dependencies) http.Handler {
 	r.Use(middleware.MaxBodyBytes(deps.Config.Server.MaxBodyBytes))
 	r.Use(middleware.CORS(deps.Config.Server.CORSAllowedOrigins))
 
-	if deps.Metrics != nil {
-		r.Use(deps.Metrics.Middleware)
-	}
+	r.Use(deps.Metrics.HTTP.Middleware)
 
 	r.Get("/health/live", deps.HealthHandler.Live)
 	r.Get("/health/ready", deps.HealthHandler.Ready)
 
-	if deps.Metrics != nil {
-		r.Handle("/metrics", deps.Metrics.Handler())
-	}
+	r.Handle("/metrics", deps.Metrics.Handler())
 
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Post("/auth/register", deps.IAMHandler.Register)

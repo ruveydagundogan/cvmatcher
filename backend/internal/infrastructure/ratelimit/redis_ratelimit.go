@@ -3,6 +3,7 @@ package ratelimit
 import (
 	"fmt"
 	"log/slog"
+	"math/rand"
 	"net/http"
 	"strings"
 	"time"
@@ -43,21 +44,21 @@ func (rl *RedisRateLimiter) RateLimit(next http.Handler) http.Handler {
 		}
 
 		ip := r.RemoteAddr
-		if fwd := r.Header.Get("X-Forwarded-For"); fwd != "" {
-			ip = strings.SplitN(fwd, ",", 2)[0]
-		}
 		if xff := r.Header.Get("X-Real-IP"); xff != "" {
 			ip = xff
+		} else if fwd := r.Header.Get("X-Forwarded-For"); fwd != "" {
+			ip = strings.SplitN(fwd, ",", 2)[0]
 		}
 
 		key := fmt.Sprintf("ratelimit:%s", ip)
 		now := time.Now().Unix()
 		window := int64(1)
+		member := fmt.Sprintf("%d:%d", now, rand.Int63())
 
 		pipe := rl.client.Pipeline()
 		pipe.ZRemRangeByScore(r.Context(), key, "0", fmt.Sprintf("%d", now-window))
 		count := pipe.ZCard(r.Context(), key)
-		pipe.ZAdd(r.Context(), key, redis.Z{Score: float64(now), Member: fmt.Sprintf("%d", now)})
+		pipe.ZAdd(r.Context(), key, redis.Z{Score: float64(now), Member: member})
 		pipe.Expire(r.Context(), key, 60*time.Second)
 		_, err := pipe.Exec(r.Context())
 
