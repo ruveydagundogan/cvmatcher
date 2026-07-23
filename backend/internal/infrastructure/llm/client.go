@@ -48,7 +48,7 @@ func NewClient(baseURL string, timeout time.Duration) *Client {
 		httpClient: &http.Client{
 			Timeout: timeout,
 		},
-		model: "default",
+		model: "gemma:2b",
 	}
 }
 

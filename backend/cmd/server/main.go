@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -19,6 +20,7 @@ import (
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/http/router"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/llm"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/memory"
+	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/tunnel"
 	"github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/metrics"
 	pgresaudit "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/postgres/audit"
 	pgresiam "github.com/ruveydagundogan/llm-decision-score/backend/internal/infrastructure/postgres/iam"
@@ -125,29 +127,45 @@ func main() {
 
 	var llmClient *llm.Client
 	if cfg.MLCLLM.Enabled {
-		llmClient = llm.NewClient(cfg.MLCLLM.BaseURL, 60*time.Second)
-		log.Info("server-side LLM enabled", "base_url", cfg.MLCLLM.BaseURL)
+		baseURL := cfg.MLCLLM.BaseURL
+		if len(baseURL) > 0 && baseURL[0] == '/' {
+			port := os.Getenv("PORT")
+			if port == "" {
+				port = fmt.Sprintf("%d", cfg.Server.Port)
+			}
+			baseURL = fmt.Sprintf("http://localhost:%s%s", port, baseURL)
+		}
+		llmClient = llm.NewClient(baseURL, 60*time.Second)
+		log.Info("server-side LLM enabled", "base_url", baseURL)
 	} else {
 		log.Info("server-side LLM disabled, using mock responses")
 	}
+	tunnelServer := tunnel.NewServer()
 	backendLLMHandler := backendllmhandler.NewHandler(llmClient, m)
 
 	deps := router.Dependencies{
-		HealthHandler:    healthHandler,
-		IAMHandler:       iamH,
-		LLMHandler:       llmH,
-		BackendLLMHandler: backendLLMHandler,
-		JWTValidator:     jwtService,
-		Config:           cfg,
-		RateLimiter:      rateLimiter,
-		Metrics:          m,
+		HealthHandler:      healthHandler,
+		IAMHandler:         iamH,
+		LLMHandler:         llmH,
+		BackendLLMHandler:  backendLLMHandler,
+		JWTValidator:       jwtService,
+		Config:             cfg,
+		RateLimiter:        rateLimiter,
+		Metrics:            m,
 	}
 
 	r := router.NewRouter(deps)
 
+	mux := http.NewServeMux()
+	if tunnelServer != nil {
+		mux.HandleFunc("/tunnel/ws", tunnelServer.HandleWebSocket)
+		mux.HandleFunc("/tunnel/", tunnelServer.ProxyHandler)
+	}
+	mux.Handle("/", r)
+
 	srv := &http.Server{
 		Addr:         cfg.Server.Addr(),
-		Handler:      r,
+		Handler:      mux,
 		ReadTimeout:  cfg.Server.ReadTimeout,
 		WriteTimeout: cfg.Server.WriteTimeout,
 		IdleTimeout:  cfg.Server.IdleTimeout,

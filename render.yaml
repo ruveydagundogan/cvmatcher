@@ -36,7 +36,7 @@ services:
       - key: MLC_LLM_ENABLED
         value: "true"
       - key: MLC_LLM_BASE_URL
-        value: "https://nomination-apart-tue-expo.trycloudflare.com"
+        value: "http://localhost:10000/tunnel"
     healthCheckPath: /health/live
     autoDeploy: true
 

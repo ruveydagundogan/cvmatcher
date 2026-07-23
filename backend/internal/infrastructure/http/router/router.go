@@ -16,14 +16,14 @@ import (
 )
 
 type Dependencies struct {
-	HealthHandler    *healthhandler.Handler
-	IAMHandler       *iamhandler.Handler
-	LLMHandler       *llmhandler.Handler
-	BackendLLMHandler *backendllmhandler.Handler
-	JWTValidator     middleware.TokenValidator
-	Config           *config.Config
-	RateLimiter      func(http.Handler) http.Handler
-	Metrics          *metrics.Metrics
+	HealthHandler      *healthhandler.Handler
+	IAMHandler         *iamhandler.Handler
+	LLMHandler         *llmhandler.Handler
+	BackendLLMHandler  *backendllmhandler.Handler
+	JWTValidator       middleware.TokenValidator
+	Config             *config.Config
+	RateLimiter        func(http.Handler) http.Handler
+	Metrics            *metrics.Metrics
 }
 
 func NewRouter(deps Dependencies) http.Handler {
