@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"math"
 	"strings"
 	"time"
 
@@ -65,16 +66,16 @@ func (uc *MatchUseCase) RunMatch(ctx context.Context, userID, cvID, jdID string)
 
 	if cv.Status != "completed" {
 		if err := uc.parseCV(ctx, cv); err != nil {
-			return nil, err
+			uc.log.Warn("cv parse failed, proceeding with empty skills", "error", err)
 		}
 	}
 	if len(jd.RequiredSkills) == 0 {
 		if err := uc.analyzeJD(ctx, jd); err != nil {
-			return nil, err
+			uc.log.Warn("jd analyze failed, proceeding with empty skills", "error", err)
 		}
 	}
 
-	return uc.runLLMMatch(ctx, userID, cv, jd)
+	return uc.runMatch(ctx, userID, cv, jd)
 }
 
 func (uc *MatchUseCase) parseCV(ctx context.Context, cv *cvmodel.CV) error {
@@ -132,30 +133,25 @@ func (uc *MatchUseCase) analyzeJD(ctx context.Context, jd *jdmodel.JobDescriptio
 	return uc.jdRepo.Update(ctx, jd)
 }
 
-func (uc *MatchUseCase) runLLMMatch(ctx context.Context, userID string, cv *cvmodel.CV, jd *jdmodel.JobDescription) (*matchmodel.MatchResult, error) {
-	expJSON, _ := json.Marshal(cv.ParsedExperience)
-	eduJSON, _ := json.Marshal(cv.ParsedEducation)
+func (uc *MatchUseCase) runMatch(ctx context.Context, userID string, cv *cvmodel.CV, jd *jdmodel.JobDescription) (*matchmodel.MatchResult, error) {
+	if len(cv.ParsedSkills) == 0 {
+		cv.ParsedSkills = extractSkillsFromContent(cv.Content)
+	}
+	if len(jd.RequiredSkills) == 0 {
+		jd.RequiredSkills = extractSkillsFromContent(jd.Content)
+	}
 
-	skillsStr := strings.Join(cv.ParsedSkills, ", ")
-	reqSkillsStr := strings.Join(jd.RequiredSkills, ", ")
-	prefSkillsStr := strings.Join(jd.PreferredSkills, ", ")
-
-	prompt := fmt.Sprintf(llm.CVJDMatchPrompt,
-		skillsStr, string(expJSON), string(eduJSON), cv.ParsedSummary,
-		reqSkillsStr, prefSkillsStr, jd.ExperienceLevel, jd.Content,
-	)
-
-	response, err := uc.llmClient.ChatCompletion(ctx, []llm.ChatMessage{
-		{Role: "user", Content: prompt},
-	}, 1024)
+	response, err := uc.llmMatch(ctx, cv, jd)
 	if err != nil {
-		return nil, fmt.Errorf("llm match: %w", err)
+		uc.log.Warn("llm match failed, using fallback scoring", "error", err)
+		return uc.fallbackMatch(ctx, userID, cv, jd)
 	}
 
 	cleaned := cleanJSON(response)
 	var match matchmodel.MatchResult
 	if err := json.Unmarshal([]byte(cleaned), &match); err != nil {
-		return nil, fmt.Errorf("parse match response: %w", err)
+		uc.log.Warn("llm match response parse failed, using fallback scoring", "error", err)
+		return uc.fallbackMatch(ctx, userID, cv, jd)
 	}
 
 	result := matchmodel.NewMatchResult(userID, cv.ID, jd.ID)
@@ -176,6 +172,86 @@ func (uc *MatchUseCase) runLLMMatch(ctx context.Context, userID string, cv *cvmo
 	return result, nil
 }
 
+func (uc *MatchUseCase) llmMatch(ctx context.Context, cv *cvmodel.CV, jd *jdmodel.JobDescription) (string, error) {
+	expJSON, _ := json.Marshal(cv.ParsedExperience)
+	eduJSON, _ := json.Marshal(cv.ParsedEducation)
+
+	skillsStr := strings.Join(cv.ParsedSkills, ", ")
+	reqSkillsStr := strings.Join(jd.RequiredSkills, ", ")
+	prefSkillsStr := strings.Join(jd.PreferredSkills, ", ")
+
+	prompt := fmt.Sprintf(llm.CVJDMatchPrompt,
+		skillsStr, string(expJSON), string(eduJSON), cv.ParsedSummary,
+		reqSkillsStr, prefSkillsStr, jd.ExperienceLevel, jd.Content,
+	)
+
+	return uc.llmClient.ChatCompletion(ctx, []llm.ChatMessage{
+		{Role: "user", Content: prompt},
+	}, 1024)
+}
+
+func (uc *MatchUseCase) fallbackMatch(ctx context.Context, userID string, cv *cvmodel.CV, jd *jdmodel.JobDescription) (*matchmodel.MatchResult, error) {
+	cvSkills := make(map[string]bool)
+	for _, s := range cv.ParsedSkills {
+		cvSkills[strings.ToLower(strings.TrimSpace(s))] = true
+	}
+
+	var matchedSkills, missingSkills []string
+	for _, s := range jd.RequiredSkills {
+		key := strings.ToLower(strings.TrimSpace(s))
+		if cvSkills[key] {
+			matchedSkills = append(matchedSkills, s)
+		} else {
+			missingSkills = append(missingSkills, s)
+		}
+	}
+
+	total := len(jd.RequiredSkills)
+	matched := len(matchedSkills)
+
+	var skillScore, overallScore float64
+	if total > 0 {
+		skillScore = math.Round(float64(matched)/float64(total)*100) / 100
+	}
+	overallScore = skillScore * 0.8
+
+	if overallScore > 0.95 {
+		overallScore = 0.95
+	}
+
+	result := matchmodel.NewMatchResult(userID, cv.ID, jd.ID)
+	result.OverallScore = overallScore
+	result.SkillMatchScore = skillScore
+	result.ExperienceScore = 0.5
+	result.EducationScore = 0.5
+	result.MatchedSkills = matchedSkills
+	result.MissingSkills = missingSkills
+
+	analysis := fmt.Sprintf("Fallback analysis: %d of %d required skills matched. ", matched, total)
+	if overallScore >= 0.7 {
+		analysis += "Good overall fit."
+	} else if overallScore >= 0.4 {
+		analysis += "Moderate fit - consider reviewing missing skills."
+	} else {
+		analysis += "Low match - significant skill gaps identified."
+	}
+	result.LLMAnalysis = analysis
+	result.CreatedAt = time.Now().UTC()
+	result.CVTitle = cv.Title
+	result.JDTitle = jd.Title
+
+	uc.log.Info("fallback match completed",
+		"cv_id", cv.ID, "jd_id", jd.ID,
+		"matched", matched, "total", total,
+		"score", overallScore,
+	)
+
+	if err := uc.matchRepo.Save(ctx, result); err != nil {
+		return nil, fmt.Errorf("save match: %w", err)
+	}
+	return result, nil
+}
+
 func (uc *MatchUseCase) GetByID(ctx context.Context, id string) (*matchmodel.MatchResult, error) {
 	return uc.matchRepo.FindByID(ctx, id)
 }
@@ -186,6 +262,38 @@ func (uc *MatchUseCase) ListByUser(ctx context.Context, userID string, offset, l
 
 func (uc *MatchUseCase) GetDashboardStats(ctx context.Context, userID string) (*matchmodel.DashboardStats, error) {
 	return uc.matchRepo.GetDashboardStats(ctx, userID)
+}
+
+func extractSkillsFromContent(content string) []string {
+	knownSkills := []string{
+		"go", "golang", "python", "java", "javascript", "typescript", "rust", "c++", "c#",
+		"react", "vue", "angular", "next.js", "node.js", "express",
+		"postgresql", "mysql", "mongodb", "redis", "sql", "database",
+		"docker", "kubernetes", "aws", "gcp", "azure", "linux", "git",
+		"rest api", "graphql", "microservices", "ci/cd", "agile",
+		"machine learning", "ai", "data science", "deep learning",
+	}
+	lower := strings.ToLower(content)
+	var skills []string
+	for _, s := range knownSkills {
+		if strings.Contains(lower, s) {
+			skills = append(skills, s)
+		}
+	}
+	return uniqueStrings(skills)
+}
+
+func uniqueStrings(s []string) []string {
+	seen := make(map[string]bool)
+	var result []string
+	for _, v := range s {
+		v = strings.TrimSpace(v)
+		if v != "" && !seen[v] {
+			seen[v] = true
+			result = append(result, v)
+		}
+	}
+	return result
 }
 
 func cleanJSON(s string) string {
