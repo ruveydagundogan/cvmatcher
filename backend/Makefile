@@ -14,8 +14,8 @@ lint:
 	staticcheck ./...
 
 migrate-up:
-	psql -U llmdecisionscore -d llmdecisionscore -f migrations/001_initial_schema.sql
-	psql -U llmdecisionscore -d llmdecisionscore -f migrations/002_allow_anonymous_scoring.sql
+	psql -U cvmatcher -d cvmatcher -h localhost -p 5433 -f migrations/001_initial_schema.sql
+	psql -U cvmatcher -d cvmatcher -h localhost -p 5433 -f migrations/002_allow_anonymous_scoring.sql
 
 migrate-down:
 	@echo "Run drop statements manually"

@@ -61,6 +61,7 @@ func (uc *MatchUseCase) RunMatch(ctx context.Context, userID, cvID, jdID string)
 
 	existing, err := uc.matchRepo.FindByCVAndJD(ctx, cvID, jdID)
 	if err == nil && existing != nil {
+		normalizeResult(existing)
 		return existing, nil
 	}
 
@@ -148,20 +149,29 @@ func (uc *MatchUseCase) runMatch(ctx context.Context, userID string, cv *cvmodel
 	}
 
 	cleaned := cleanJSON(response)
-	var match matchmodel.MatchResult
-	if err := json.Unmarshal([]byte(cleaned), &match); err != nil {
+	var parsed struct {
+		OverallScore    float64  `json:"overall_score"`
+		SkillMatchScore float64  `json:"skill_match_score"`
+		ExperienceScore float64  `json:"experience_score"`
+		EducationScore  float64  `json:"education_score"`
+		MatchedSkills   []string `json:"matched_skills"`
+		MissingSkills   []string `json:"missing_skills"`
+		Analysis        string   `json:"analysis"`
+	}
+
+	if err := json.Unmarshal([]byte(cleaned), &parsed); err != nil {
 		uc.log.Warn("llm match response parse failed, using fallback scoring", "error", err)
 		return uc.fallbackMatch(ctx, userID, cv, jd)
 	}
 
 	result := matchmodel.NewMatchResult(userID, cv.ID, jd.ID)
-	result.OverallScore = norm(match.OverallScore)
-	result.SkillMatchScore = norm(match.SkillMatchScore)
-	result.ExperienceScore = norm(match.ExperienceScore)
-	result.EducationScore = norm(match.EducationScore)
-	result.LLMAnalysis = match.LLMAnalysis
-	result.MatchedSkills = match.MatchedSkills
-	result.MissingSkills = match.MissingSkills
+	result.OverallScore = norm(parsed.OverallScore)
+	result.SkillMatchScore = norm(parsed.SkillMatchScore)
+	result.ExperienceScore = norm(parsed.ExperienceScore)
+	result.EducationScore = norm(parsed.EducationScore)
+	result.LLMAnalysis = parsed.Analysis
+	result.MatchedSkills = parsed.MatchedSkills
+	result.MissingSkills = parsed.MissingSkills
 	result.CreatedAt = time.Now().UTC()
 	result.CVTitle = cv.Title
 	result.JDTitle = jd.Title

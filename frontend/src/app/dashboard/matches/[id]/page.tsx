@@ -16,7 +16,7 @@ interface MatchDetail {
   skill_match_score: number;
   experience_score: number;
   education_score: number;
-  llm_analysis: string;
+  analysis: string;
   matched_skills: string[];
   missing_skills: string[];
   created_at: string;
@@ -145,10 +145,10 @@ export default function MatchDetailPage() {
         </div>
       </div>
 
-      {match.llm_analysis && (
+      {match.analysis && (
         <div className="bg-white dark:bg-slate-900/50 rounded-2xl border border-gray-200 dark:border-white/10 p-6 mb-8">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">AI Analysis</h2>
-          <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{match.llm_analysis}</p>
+          <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{match.analysis}</p>
         </div>
       )}
 

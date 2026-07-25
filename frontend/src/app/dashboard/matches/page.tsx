@@ -14,7 +14,7 @@ interface MatchResult {
   skill_match_score: number;
   experience_score: number;
   education_score: number;
-  llm_analysis: string;
+  analysis: string;
   matched_skills: string[];
   missing_skills: string[];
   created_at: string;
@@ -203,8 +203,8 @@ export default function MatchListPage() {
                   </div>
                 </div>
 
-                {m.llm_analysis && (
-                  <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-3">{m.llm_analysis}</p>
+                {m.analysis && (
+                  <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-3">{m.analysis}</p>
                 )}
 
                 <div className="flex flex-wrap gap-2">

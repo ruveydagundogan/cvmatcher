@@ -27,15 +27,15 @@ services:
     image: postgres:16-alpine
     container_name: cvmatcher-postgres
     environment:
-      POSTGRES_USER: llmdecisionscore
-      POSTGRES_PASSWORD: llmdecisionscore
-      POSTGRES_DB: llmdecisionscore
+      POSTGRES_USER: cvmatcher
+      POSTGRES_PASSWORD: cvmatcher
+      POSTGRES_DB: cvmatcher
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U llmdecisionscore -d llmdecisionscore"]
+      test: ["CMD-SHELL", "pg_isready -U cvmatcher -d cvmatcher"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -67,10 +67,10 @@ services:
       SERVER_HOST: 0.0.0.0
       SERVER_PORT: 8081
       DB_HOST: postgres
-      DB_PORT: 5432
-      DB_USER: llmdecisionscore
-      DB_PASSWORD: llmdecisionscore
-      DB_NAME: llmdecisionscore
+      DB_PORT: "5432"
+      DB_USER: cvmatcher
+      DB_PASSWORD: cvmatcher
+      DB_NAME: cvmatcher
       DB_SSLMODE: disable
       REDIS_HOST: redis
       REDIS_PORT: 6379

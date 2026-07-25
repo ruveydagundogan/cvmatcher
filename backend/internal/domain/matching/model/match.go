@@ -18,7 +18,7 @@ type MatchResult struct {
 	SkillMatchScore float64   `json:"skill_match_score"`
 	ExperienceScore float64   `json:"experience_score"`
 	EducationScore  float64   `json:"education_score"`
-	LLMAnalysis     string    `json:"llm_analysis,omitempty"`
+	LLMAnalysis     string    `json:"analysis,omitempty"`
 	MatchedSkills   []string  `json:"matched_skills,omitempty"`
 	MissingSkills   []string  `json:"missing_skills,omitempty"`
 	CreatedAt       time.Time `json:"created_at"`

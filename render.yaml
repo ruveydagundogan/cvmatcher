@@ -43,5 +43,5 @@ services:
 databases:
   - name: cvmatcher-db
     plan: free
-    databaseName: llmdecisionscore
-    user: llmdecisionscore
+    databaseName: cvmatcher
+    user: cvmatcher
