@@ -405,6 +405,18 @@ func (uc *MatchUseCase) GetDashboardStats(ctx context.Context, userID string) (*
 	if err != nil {
 		return nil, err
 	}
+
+	// CV ve JD sayılarını ilgili repo'lardan al
+	_, cvTotal, err := uc.cvRepo.FindByUserID(ctx, userID, 0, 1)
+	if err == nil {
+		s.TotalCVs = cvTotal
+	}
+
+	_, jdTotal, err := uc.jdRepo.FindByUserID(ctx, userID, 0, 1)
+	if err == nil {
+		s.TotalJDs = jdTotal
+	}
+
 	s.AverageScore = norm(s.AverageScore)
 	for _, m := range s.RecentMatches {
 		normalizeResult(m)
