@@ -116,7 +116,7 @@ func loadDatabaseConfig() DatabaseConfig {
 	dsn := os.Getenv("DATABASE_URL")
 	if dsn != "" {
 		u, err := url.Parse(dsn)
-		if err == nil && u.Scheme == "postgres" {
+		if err == nil && (u.Scheme == "postgres" || u.Scheme == "postgresql") {
 			host := u.Hostname()
 			port := 5432
 			if u.Port() != "" {
