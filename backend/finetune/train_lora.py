@@ -57,14 +57,21 @@ def parse_args():
                         help="Max sequence length (default: 512)")
     parser.add_argument("--quantize", action="store_true", default=False,
                         help="Use 4-bit quantization to reduce memory")
+    parser.add_argument("--mode", type=str, default="cv-parse", choices=["cv-parse", "cv-jd-match"],
+                        help="Training mode: cv-parse (extract structured CV data) or cv-jd-match (CV-JD match scoring)")
     parser.add_argument("--test-only", action="store_true", default=False,
                         help="Load existing adapter and test inference")
     return parser.parse_args()
 
 
-def format_prompt(example):
-    """Format the training example into a prompt-response pair."""
-    system = "You are a CV parsing assistant. Extract structured information from CV texts."
+def get_system_prompt(mode):
+    if mode == "cv-jd-match":
+        return "You are a CV-JD matching assistant. Analyze CV and job description pairs, provide match scores (0.0-1.0) for each category, highlight matched and missing skills, and give a detailed analysis."
+    return "You are a CV parsing assistant. Extract structured information from CV texts."
+
+
+def format_prompt(example, mode="cv-parse"):
+    system = get_system_prompt(mode)
     prompt = f"""<start_of_turn>system
 {system}
 <end_of_turn>
@@ -78,14 +85,14 @@ def format_prompt(example):
     return prompt + example["output"] + "<end_of_turn>"
 
 
-def load_dataset(data_path):
+def load_dataset(data_path, mode="cv-parse"):
     """Load and prepare the training dataset."""
     with open(data_path, "r") as f:
         raw_data = json.load(f)
 
     formatted = []
     for item in raw_data:
-        formatted.append({"text": format_prompt(item)})
+        formatted.append({"text": format_prompt(item, mode)})
 
     return Dataset.from_list(formatted)
 
@@ -237,17 +244,18 @@ Python developer with 6 years of backend experience. Skilled in Django, FastAPI,
         print(f"[RESULT]\n{result}")
         return
 
-    dataset = load_dataset(args.data)
+    dataset = load_dataset(args.data, args.mode)
     print(f"[INFO] Loaded {len(dataset)} training examples")
 
     model, tokenizer = create_lora_model(args.base_model, args.quantize)
 
     trainer = train(model, tokenizer, dataset, args.output_dir, args)
 
+    output_name = "cv-parser" if args.mode == "cv-parse" else "cv-jd-matcher"
     create_ollama_modelfile(
         adapter_path=os.path.abspath(args.output_dir),
         base_model=args.base_model.replace("google/", "").replace("-it", ""),
-        output_name="cv-parser"
+        output_name=output_name
     )
 
     print("[INFO] Pipeline complete!")

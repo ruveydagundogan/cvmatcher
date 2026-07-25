@@ -101,13 +101,11 @@ func (h *Handler) ActivateAdapter(w http.ResponseWriter, r *http.Request) {
 	}
 
 	modelfile := fmt.Sprintf("FROM gemma:2b\nADAPTER %s", target.FilePath)
-	if err := h.mcpEngine.LLMClient().CreateModel(r.Context(), adapterModelName, modelfile); err != nil {
+	if err := h.mcpEngine.LLMClient().CreateModel(r.Context(), adapterModelName, modelfile); err == nil {
+		h.mcpEngine.LLMClient().SetModel(adapterModelName)
 		h.mcpEngine.LoadAdapter(target.Name, target.Description)
-		response.Success(w, target)
-		return
 	}
 
-	h.mcpEngine.LoadAdapter(target.Name, target.Description)
 	response.Success(w, target)
 }
 

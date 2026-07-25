@@ -1,0 +1,27 @@
+[
+  {
+    "instruction": "Analyze how well this CV matches the job description. Rate each category 0.0-1.0.",
+    "input": "CV: Go developer with 5 years in backend systems. Proficient in Go, PostgreSQL, Docker, Kubernetes, AWS.\nJD: Senior Backend Engineer needed with 3+ years Go, microservices, PostgreSQL, Docker, Kubernetes, AWS.",
+    "output": "{\n  \"overall_score\": 0.92,\n  \"skill_match_score\": 1.0,\n  \"experience_score\": 0.85,\n  \"education_score\": 0.7,\n  \"matched_skills\": [\"Go\", \"PostgreSQL\", \"Docker\", \"Kubernetes\", \"AWS\"],\n  \"missing_skills\": [],\n  \"analysis\": \"Excellent match. All 5 required skills are present. The candidate has 5 years of experience which exceeds the 3+ year requirement. Backend systems expertise aligns well with the senior role.\"\n}"
+  },
+  {
+    "instruction": "Analyze how well this CV matches the job description. Rate each category 0.0-1.0.",
+    "input": "CV: Frontend developer with 3 years React experience. Skilled in TypeScript, Next.js, Tailwind CSS.\nJD: Senior Backend Engineer with Go, microservices, PostgreSQL, Docker, Kubernetes.",
+    "output": "{\n  \"overall_score\": 0.12,\n  \"skill_match_score\": 0.0,\n  \"experience_score\": 0.25,\n  \"education_score\": 0.5,\n  \"matched_skills\": [],\n  \"missing_skills\": [\"Go\", \"PostgreSQL\", \"Docker\", \"Kubernetes\", \"Microservices\"],\n  \"analysis\": \"Very poor match. The candidate is a frontend specialist while the role requires senior backend engineering. None of the 5 required skills are present in the CV. Not recommended for this position.\"\n}"
+  },
+  {
+    "instruction": "Analyze how well this CV matches the job description. Rate each category 0.0-1.0.",
+    "input": "CV: Data scientist with 4 years ML experience. Python, TensorFlow, PyTorch, SQL.\nJD: Backend Python Developer with Django, PostgreSQL, REST APIs, Docker.",
+    "output": "{\n  \"overall_score\": 0.45,\n  \"skill_match_score\": 0.4,\n  \"experience_score\": 0.5,\n  \"education_score\": 0.7,\n  \"matched_skills\": [\"Python\", \"SQL\"],\n  \"missing_skills\": [\"Django\", \"REST API\", \"Docker\"],\n  \"analysis\": \"Partial match. Python and SQL transfer well but the candidate lacks Django, REST API, and Docker experience. ML background is not directly relevant but shows analytical能力. May be suitable after skills training.\"\n}"
+  },
+  {
+    "instruction": "Analyze how well this CV matches the job description. Rate each category 0.0-1.0.",
+    "input": "CV: Full-stack developer proficient in React, Node.js, PostgreSQL, Docker, AWS. 6 years experience.\nJD: Senior Full Stack Engineer - React, Node.js, PostgreSQL, AWS, CI/CD, 5+ years experience.",
+    "output": "{\n  \"overall_score\": 0.95,\n  \"skill_match_score\": 1.0,\n  \"experience_score\": 1.0,\n  \"education_score\": 0.8,\n  \"matched_skills\": [\"React\", \"Node.js\", \"PostgreSQL\", \"AWS\"],\n  \"missing_skills\": [\"CI/CD\"],\n  \"analysis\": \"Outstanding match. All primary skills align perfectly. The candidate's 6 years exceed the 5 year requirement. Only CI/CD is missing but is typically a learnable skill. Strong hire recommendation.\"\n}"
+  },
+  {
+    "instruction": "Analyze how well this CV matches the job description. Rate each category 0.0-1.0.",
+    "input": "CV: Junior developer with 1 year experience. Basic knowledge of JavaScript, HTML, CSS.\nJD: Senior Software Engineer - 5+ years, system design, team leadership, Java, Spring Boot, Microservices.",
+    "output": "{\n  \"overall_score\": 0.05,\n  \"skill_match_score\": 0.0,\n  \"experience_score\": 0.0,\n  \"education_score\": 0.3,\n  \"matched_skills\": [],\n  \"missing_skills\": [\"Java\", \"Spring Boot\", \"Microservices\", \"System Design\", \"Team Leadership\"],\n  \"analysis\": \"Not a fit. The candidate is entry-level with frontend skills while the role demands senior backend expertise with 5+ years experience. None of the 5 required skills match. The experience gap is 4+ years.\"\n}"
+  }
+]
