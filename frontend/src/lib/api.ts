@@ -2,7 +2,7 @@ function getAPIBase(): string {
   if (process.env.NEXT_PUBLIC_API_URL) {
     return process.env.NEXT_PUBLIC_API_URL;
   }
-  return "http://localhost:8080";
+  return "https://llm-decision-score-api.onrender.com";
 }
 
 export const API_BASE = getAPIBase();
