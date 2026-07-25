@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: cvmatcher-api
+    name: llm-decision-score-api
     runtime: go
     buildCommand: cd backend && go build -tags netgo -ldflags '-s -w' -o app ./cmd/server
     startCommand: cd backend && ./app
@@ -9,6 +9,10 @@ services:
         value: production
       - key: JWT_SECRET
         generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: cvmatcher-db
+          property: connectionString
       - key: DB_HOST
         fromDatabase:
           name: cvmatcher-db

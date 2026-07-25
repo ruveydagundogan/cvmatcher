@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -77,16 +78,7 @@ func Load() *Config {
 			MaxBodyBytes:       getEnvInt64("MAX_BODY_BYTES", 262144),
 			CORSAllowedOrigins: getEnvSliceDefault("CORS_ALLOWED_ORIGINS", []string{"http://localhost:3000", "http://localhost:3001"}),
 		},
-		Database: DatabaseConfig{
-			Host:     getEnv("DB_HOST", "localhost"),
-			Port:     getEnvInt("DB_PORT", 5433),
-			User:     getEnv("DB_USER", "cvmatcher"),
-			Password: getEnv("DB_PASSWORD", "cvmatcher"),
-			Name:     getEnv("DB_NAME", "cvmatcher"),
-			SSLMode:  getEnv("DB_SSLMODE", "disable"),
-			MaxConns: getEnvInt32("DB_MAX_CONNS", 25),
-			MinConns: getEnvInt32("DB_MIN_CONNS", 5),
-		},
+		Database: loadDatabaseConfig(),
 		Redis: RedisConfig{
 			Host: getEnv("REDIS_HOST", "localhost"),
 			Port: getEnvInt("REDIS_PORT", 6379),
@@ -117,6 +109,48 @@ func (c *DatabaseConfig) DSN() string {
 		c.Name,
 		c.SSLMode,
 	)
+}
+
+func loadDatabaseConfig() DatabaseConfig {
+	dsn := os.Getenv("DATABASE_URL")
+	if dsn != "" {
+		u, err := url.Parse(dsn)
+		if err == nil && u.Scheme == "postgres" {
+			host := u.Hostname()
+			port := 5432
+			if u.Port() != "" {
+				if p, err := strconv.Atoi(u.Port()); err == nil {
+					port = p
+				}
+			}
+			password, _ := u.User.Password()
+			dbName := strings.TrimPrefix(u.Path, "/")
+			sslmode := u.Query().Get("sslmode")
+			if sslmode == "" {
+				sslmode = "require"
+			}
+			return DatabaseConfig{
+				Host:     host,
+				Port:     port,
+				User:     u.User.Username(),
+				Password: password,
+				Name:     dbName,
+				SSLMode:  sslmode,
+				MaxConns: getEnvInt32("DB_MAX_CONNS", 25),
+				MinConns: getEnvInt32("DB_MIN_CONNS", 5),
+			}
+		}
+	}
+	return DatabaseConfig{
+		Host:     getEnv("DB_HOST", "localhost"),
+		Port:     getEnvInt("DB_PORT", 5433),
+		User:     getEnv("DB_USER", "cvmatcher"),
+		Password: getEnv("DB_PASSWORD", "cvmatcher"),
+		Name:     getEnv("DB_NAME", "cvmatcher"),
+		SSLMode:  getEnv("DB_SSLMODE", "disable"),
+		MaxConns: getEnvInt32("DB_MAX_CONNS", 25),
+		MinConns: getEnvInt32("DB_MIN_CONNS", 5),
+	}
 }
 
 func (c *ServerConfig) Addr() string {

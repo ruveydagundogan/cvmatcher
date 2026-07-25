@@ -148,7 +148,7 @@ func main() {
 
 	m := metrics.New("cvmatcher")
 
-	healthHandler := health.NewHandler(nil)
+	healthHandler := health.NewHandler(pool)
 	iamH := iamhandler.NewHandler(registerUC, loginUC, getProfileUC, updateProfileUC)
 	llmH := llmhandler.NewHandler(scoreUC, historyUC, deleteHistoryUC, statsUC, m)
 
