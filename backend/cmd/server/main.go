@@ -164,7 +164,7 @@ func main() {
 	var llmClient *llm.Client
 	baseURL := cfg.MLCLLM.BaseURL
 	if baseURL == "" {
-		baseURL = "/tunnel"
+		baseURL = "http://localhost:11434"
 	}
 	if baseURL[0] == '/' {
 		port := os.Getenv("PORT")
@@ -173,8 +173,8 @@ func main() {
 		}
 		baseURL = fmt.Sprintf("http://localhost:%s%s", port, baseURL)
 	}
-	llmClient = llm.NewClient(baseURL, 60*time.Second)
-	log.Info("server-side LLM enabled", "base_url", baseURL)
+	llmClient = llm.NewClient(baseURL, 120*time.Second)
+	log.Info("LLM client configured", "base_url", baseURL)
 	tunnelServer := tunnel.NewServer()
 	backendLLMHandler := backendllmhandler.NewHandler(llmClient, m)
 

@@ -12,13 +12,18 @@
   </sub>
 </p>
 
-# LLM Decision Score
+# CV Matcher
 
-**AI-powered decision scoring using WebLLM (Gemma) and Go Backend**
+**AI-powered CV & Job Description matching platform using local LLM (Ollama/Gemma) and Go backend**
 
 <p>
-🧠 WebLLM • 💎 Gemma-2B • ⚡ Go (Gin) • ▲ Next.js • 🎯 Decision Scoring
+⚡ Go + Chi • 🧠 Ollama (Gemma-2B) • ▲ Next.js 16 • 🐘 PostgreSQL • 🐳 Docker
 </p>
+
+[![Deployed on Render](https://img.shields.io/badge/Render-46E3B7?logo=render&logoColor=fff)](https://llm-decision-score-api.onrender.com)
+[![Deployed on Vercel](https://img.shields.io/badge/Vercel-000?logo=vercel)](https://llm-decision-score.vercel.app)
+[![Go](https://img.shields.io/badge/Go-1.26-00ADD8?logo=go)](https://go.dev)
+[![Next.js](https://img.shields.io/badge/Next.js-16-000?logo=next.js)](https://nextjs.org)
 
 </div>
 
@@ -26,144 +31,199 @@
 
 ## Overview
 
-LLM Decision Score is a full-stack AI application that combines **browser-based LLM inference** with **backend evaluation**. Using **WebLLM (Gemma-2B)**, responses are generated locally in the browser, while a **Go (Gin)** backend analyzes each prompt-response pair to calculate a decision score and maintain request history.
+CV Matcher is a full-stack application that helps recruiters and hiring managers match **CVs (Resumes)** with **Job Descriptions** using AI. The platform:
 
----
+1. **Parses** CVs to extract skills, experience, and education
+2. **Analyzes** job descriptions to identify required/preferred skills
+3. **Matches** CVs against JDs and produces a detailed compatibility score (0-100%)
+4. Provides an **admin panel** for managing AI model settings, system prompts, and query logs
+5. Includes a **knowledge base** (DeepKwiki) for storing and searching reference information
 
-## Features
-
-- 🚀 Local AI inference with WebLLM (Gemma-2B)
-- 📊 AI-powered decision score calculation
-- ⚡ Real-time inference metrics
-- 📝 Prompt & response history
-- 🎨 Responsive dashboard interface
-- 🔗 REST API powered by Gin
-
----
-
-## Tech Stack
-
-| Layer | Technologies |
-| :--- | :--- |
-| **Frontend** | Next.js, TypeScript, Tailwind CSS |
-| **Backend** | Go, Gin |
-| **AI Model** | WebLLM (Gemma-2B) |
+All AI processing runs locally via **Ollama** (Gemma-2B) — no external API calls, no data leaves your machine.
 
 ---
 
 ## Architecture
 
-| Component | Responsibility |
-| :--- | :--- |
-| **Frontend** | Runs Gemma locally with WebLLM and displays prompts, responses, metrics, and history |
-| **Backend** | Calculates decision scores and manages request history |
-| **WebLLM** | Performs browser-based AI inference |
-
----
-
-## Solution Workflow
-
-```text
-User Prompt
-     │
-     ▼
-WebLLM (Gemma-2B)
-     │
-     ▼
-Generated Response
-     │
-     ▼
-Go Backend (Gin)
-     │
-     ▼
-Decision Score
-     │
-     ▼
-Dashboard & History
+```
+┌─────────────────────────┐      HTTP/JWT      ┌──────────────────────┐
+│   Frontend (Next.js)    │ ──────────────────> │   Backend (Go+Chi)  │
+│                         │ <────────────────── │                      │
+│  /dashboard             │      JSON API       │  - CV/JD CRUD        │
+│  /dashboard/resumes     │                     │  - Match Engine      │
+│  /dashboard/jds         │                     │  - MCP Protocol      │
+│  /dashboard/matches     │                     │  - Knowledge Base    │
+│  /dashboard/knowledge   │                     │  - Admin Panel       │
+│  /admin/*               │                     │  - Auth (JWT)        │
+│                         │                     │  - Rate Limiting     │
+└─────────────────────────┘                     └───────┬──────────────┘
+                                                        │
+                                                        │ OpenAI-compatible API
+                                                        ▼
+                                               ┌──────────────────┐
+                                               │  Ollama (Gemma)  │
+                                               │  Local LLM       │
+                                               └──────────────────┘
 ```
 
-1. The user submits a prompt through the dashboard.
-2. WebLLM generates a response locally in the browser.
-3. The generated response is sent to the Go backend.
-4. The backend evaluates the response and calculates a decision score.
-5. The dashboard displays the response, metrics, score, and stores the request in history.
+### Tech Stack
+
+| Component | Technology | Purpose |
+|-----------|-----------|---------|
+| **Frontend** | Next.js 16, React 19, Tailwind CSS v4 | User interface |
+| **Backend** | Go 1.26, Chi router, pgx | REST API, business logic |
+| **Database** | PostgreSQL 16 (primary), In-memory (fallback) | Data persistence |
+| **Cache** | Redis 7 | Rate limiting, caching |
+| **AI Engine** | Ollama (Gemma-2B) | CV parsing, JD analysis, matching |
+| **Protocol** | MCP (Model Context Protocol) | Standardized LLM communication |
+| **Monitoring** | Prometheus + Grafana | Metrics, dashboards |
+| **Deployment** | Render (backend), Vercel (frontend) | Cloud hosting |
 
 ---
 
-## Decision Score Criteria
+## Features
 
-Each response is evaluated using multiple quality indicators:
+### Core Features
+- **CV Management** — Upload, view, parse CVs with AI-powered skill extraction
+- **JD Management** — Create, edit, analyze job descriptions
+- **AI Matching** — Match CVs vs JDs with detailed score breakdown (overall, skill, experience, education)
+- **Dashboard** — Overview stats (total CVs, JDs, matches, average scores)
+- **Fallback Mode** — Keyword-based parsing/scoring when LLM is unavailable
 
-- Response length
-- Prompt relevance
-- Response structure
-- Content richness
-- Overall completeness
-
-The final score is calculated on a **0–100** scale.
-
----
-
-## Dashboard Metrics
-
-| Metric | Description |
-| :--- | :--- |
-| **Model** | Active language model |
-| **Inference Time** | Time required to generate the response |
-| **Status** | Current model loading status |
-| **Backend** | Backend connection status |
-| **Word Count** | Total generated words |
-| **Character Count** | Total generated characters |
-| **Decision Score** | Backend evaluation score (0–100) |
+### Advanced Features
+- **MCP Protocol** — Standardized LLM query interface (`POST /api/v1/mcp/query`)
+- **DeepKwiki** — Knowledge base with full-text search (`/dashboard/knowledge`)
+- **Admin Panel** (`/admin`) — Adapter management, system prompts, LLM settings, query logs
+- **Rich Results** — AI responses rendered as sections, tables, code blocks
+- **Dark Mode** — Theme toggle with persistent preference
 
 ---
 
-## Project Structure
+## Quick Start
 
-```text
-.
-├── frontend/
-│   ├── app/
-│   ├── components/
-│   ├── hooks/
-│   └── public/
-│
-├── backend/
-│   ├── handler/
-│   ├── model/
-│   ├── router/
-│   └── main.go
-│
-└── README.md
+### Prerequisites
+- Go 1.26+
+- Node.js 20+
+- Docker & Docker Compose
+- [Ollama](https://ollama.ai) (for local AI)
+
+### 1. Start AI Model
+
+```bash
+# Install and run Ollama with Gemma
+ollama pull gemma:2b
+ollama run gemma:2b
 ```
+
+### 2. Start Backend
+
+```bash
+cd backend
+
+# Option A: Full stack with Docker
+docker compose -f ../docker-compose.yml up postgres redis
+
+# Option B: With Ollama in Docker
+docker compose -f ../docker-compose.yml up postgres redis ollama
+
+# Run the backend
+MLC_LLM_BASE_URL=http://localhost:11434 go run ./cmd/server
+```
+
+### 3. Start Frontend
+
+```bash
+cd frontend
+npm install
+NEXT_PUBLIC_API_URL=http://localhost:8080 npm run dev
+```
+
+### 4. Open Browser
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8080
+- Grafana: http://localhost:3001 (admin/admin)
+- Prometheus: http://localhost:9090
 
 ---
 
 ## API Endpoints
 
-| Method | Endpoint | Description |
-| :---: | :--- | :--- |
-| POST | `/score` | Evaluate an AI response and return its decision score |
-| GET | `/llm/history` | Retrieve prompt-response history |
-| DELETE | `/llm/history` | Clear stored history |
+### Public
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/api/v1/auth/register` | Register new user |
+| POST | `/api/v1/auth/login` | Login |
+| POST | `/api/v1/llm/chat` | Chat with AI |
+| POST | `/api/v1/mcp/query` | MCP protocol query |
+
+### Protected (JWT required)
+| Method | Path | Description |
+|--------|------|-------------|
+| GET/PUT | `/api/v1/me` | User profile |
+| CRUD | `/api/v1/cvs` | CV management |
+| POST | `/api/v1/cvs/{id}/parse` | Parse CV with AI |
+| CRUD | `/api/v1/jds` | JD management |
+| POST | `/api/v1/jds/{id}/analyze` | Analyze JD with AI |
+| POST | `/api/v1/matches` | Run CV-JD match |
+| GET | `/api/v1/dashboard/stats` | Dashboard stats |
+| CRUD | `/api/v1/knowledge` | Knowledge base |
+| GET | `/api/v1/knowledge/search` | Full-text search |
+| | `/api/v1/admin/*` | Admin panel API |
 
 ---
 
-## Getting Started
+## Deployment
 
-### 1. Start the Backend
-
-```bash
-cd backend
-go run .
-```
-
-### 2. Start the Frontend
+### Backend (Render)
+The backend auto-deploys from the `main` branch via `render.yaml`. It connects to the local Ollama instance through a **WebSocket tunnel** — the `start-tunnel.sh` script on your machine establishes a tunnel so Render can reach your local AI model.
 
 ```bash
-cd frontend
-npm install
-npm run dev
+# Start the tunnel (connects Render to local Ollama)
+cd backend && bash start-tunnel.sh
 ```
 
-After starting both services, open the application in your browser.
+### Frontend (Vercel)
+Auto-deploys from the `main` branch. Configure `NEXT_PUBLIC_API_URL` environment variable in the Vercel dashboard to point to your Render backend URL.
+
+---
+
+## Project Structure
+
+```
+├── backend/                  # Go backend
+│   ├── cmd/server/           # Entry point
+│   ├── internal/
+│   │   ├── application/      # Use cases
+│   │   │   ├── admin/        # Admin panel logic
+│   │   │   ├── cv/           # CV use cases
+│   │   │   ├── jobdescription/
+│   │   │   ├── knowledge/    # DeepKwiki use cases
+│   │   │   ├── matching/     # Match scoring
+│   │   │   └── iam/          # Auth & users
+│   │   ├── domain/           # Domain models & interfaces
+│   │   ├── infrastructure/   # Implementations
+│   │   │   ├── http/         # Handlers, router
+│   │   │   ├── llm/          # LLM client
+│   │   │   ├── mcp/          # MCP engine
+│   │   │   ├── postgres/     # Postgres repos
+│   │   │   ├── tunnel/       # WebSocket tunnel
+│   │   │   └── memory/       # In-memory fallbacks
+│   │   └── shared/           # Config, middleware, errors
+│   ├── migrations/           # SQL migrations
+│   └── deployments/          # Docker Compose
+├── frontend/                 # Next.js frontend
+│   ├── src/app/
+│   │   ├── dashboard/        # Main app pages
+│   │   ├── admin/            # Admin panel pages
+│   │   └── register/         # Registration
+│   └── src/components/       # Shared components
+├── docker-compose.yml        # Full stack
+├── render.yaml               # Render config
+└── grafana/                  # Monitoring dashboards
+```
+
+---
+
+## License
+
+This project is developed as part of the **MasterFabric Academy** curriculum.

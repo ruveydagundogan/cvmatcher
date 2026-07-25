@@ -4,10 +4,10 @@ import Link from "next/link";
 
 export default function AdminPage() {
   const cards = [
-    { href: "/dashboard/admin/adapters", title: "Adapters", desc: "Manage PEFT/LoRA adapters for hot-swap model tuning" },
-    { href: "/dashboard/admin/prompts", title: "System Prompts", desc: "Create and activate system prompt templates" },
-    { href: "/dashboard/admin/settings", title: "LLM Settings", desc: "Configure temperature, tokens, context length" },
-    { href: "/dashboard/admin/logs", title: "Query Logs", desc: "Monitor LLM query history and latency" },
+    { href: "/admin/adapters", title: "Adapters", desc: "Manage PEFT/LoRA adapters for hot-swap model tuning" },
+    { href: "/admin/prompts", title: "System Prompts", desc: "Create and activate system prompt templates" },
+    { href: "/admin/settings", title: "LLM Settings", desc: "Configure temperature, tokens, context length" },
+    { href: "/admin/logs", title: "Query Logs", desc: "Monitor LLM query history and latency" },
   ];
 
   return (

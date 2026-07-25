@@ -1,18 +1,13 @@
 services:
-  llm-engine:
-    image: ghcr.io/mlc-ai/mlc-llm:latest
-    container_name: cvmatcher-llm
-    profiles:
-      - llm
+  ollama:
+    image: ollama/ollama:latest
+    container_name: cvmatcher-ollama
     ports:
-      - "8000:8000"
+      - "11434:11434"
     volumes:
-      - ./backend/models:/models
-      - ./backend/adapters:/adapters
+      - ollama-data:/root/.ollama
     environment:
-      MLC_MODEL_PATH: /models/FinalBoss-7B-q4f16_1
-      MLC_MODEL_LIB: /models/FinalBoss-7B/lib.so
-      MLC_ADAPTERS_DIR: /adapters
+      OLLAMA_HOST: 0.0.0.0
     deploy:
       resources:
         reservations:
@@ -20,11 +15,11 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    command: >
-      mlc_llm serve /models/FinalBoss-7B-q4f16_1
-      --model-lib-path /models/FinalBoss-7B/lib.so
-      --host 0.0.0.0
-      --port 8000
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
     networks:
       - cvmatcher-network
 
@@ -84,7 +79,7 @@ services:
       LOG_FORMAT: text
       BCRYPT_COST: "5"
       MLC_LLM_ENABLED: "true"
-      MLC_LLM_BASE_URL: http://llm-engine:8000
+      MLC_LLM_BASE_URL: http://ollama:11434
       ADMIN_API_ENABLED: "true"
     depends_on:
       postgres:
@@ -143,6 +138,7 @@ volumes:
   redis-data:
   prometheus-data:
   grafana-data:
+  ollama-data:
 
 networks:
   cvmatcher-network:
