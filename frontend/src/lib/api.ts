@@ -1,4 +1,16 @@
-export const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+function getAPIBase(): string {
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+  if (typeof window !== "undefined" &&
+    (window.location.hostname === "cvmatcherapp.vercel.app" ||
+     window.location.hostname.endsWith(".vercel.app"))) {
+    return "https://llm-decision-score-api.onrender.com";
+  }
+  return "http://localhost:8080";
+}
+
+export const API_BASE = getAPIBase();
 
 function getHeaders(): Record<string, string> {
   const headers: Record<string, string> = { "Content-Type": "application/json" };
@@ -9,6 +21,16 @@ function getHeaders(): Record<string, string> {
 
 async function handleResponse(res: Response) {
   const text = await res.text();
+
+  if (res.status === 401) {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("userName");
+    if (typeof window !== "undefined") {
+      window.location.href = "/";
+    }
+    throw new Error("Session expired. Please login again.");
+  }
 
   if (!res.ok) {
     try {
