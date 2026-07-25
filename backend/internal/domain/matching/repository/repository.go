@@ -12,4 +12,5 @@ type MatchingRepository interface {
 	FindByCVAndJD(ctx context.Context, cvID, jdID string) (*model.MatchResult, error)
 	FindByUserID(ctx context.Context, userID string, offset, limit int) ([]*model.MatchResult, int, error)
 	GetDashboardStats(ctx context.Context, userID string) (*model.DashboardStats, error)
+	Delete(ctx context.Context, id string) error
 }

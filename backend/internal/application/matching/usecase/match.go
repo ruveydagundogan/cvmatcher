@@ -155,10 +155,10 @@ func (uc *MatchUseCase) runMatch(ctx context.Context, userID string, cv *cvmodel
 	}
 
 	result := matchmodel.NewMatchResult(userID, cv.ID, jd.ID)
-	result.OverallScore = match.OverallScore
-	result.SkillMatchScore = match.SkillMatchScore
-	result.ExperienceScore = match.ExperienceScore
-	result.EducationScore = match.EducationScore
+	result.OverallScore = norm(match.OverallScore)
+	result.SkillMatchScore = norm(match.SkillMatchScore)
+	result.ExperienceScore = norm(match.ExperienceScore)
+	result.EducationScore = norm(match.EducationScore)
 	result.LLMAnalysis = match.LLMAnalysis
 	result.MatchedSkills = match.MatchedSkills
 	result.MissingSkills = match.MissingSkills
@@ -229,10 +229,10 @@ func (uc *MatchUseCase) fallbackMatch(ctx context.Context, userID string, cv *cv
 	if total > 0 {
 		skillScore = math.Round(float64(matched)/float64(total)*100) / 100
 	}
-	overallScore = skillScore * 0.8
+	overallScore = skillScore*0.6 + 0.2 + 0.2
 
-	if overallScore > 0.95 {
-		overallScore = 0.95
+	if overallScore > 1.0 {
+		overallScore = 1.0
 	}
 
 	result := matchmodel.NewMatchResult(userID, cv.ID, jd.ID)
@@ -271,15 +271,46 @@ func (uc *MatchUseCase) fallbackMatch(ctx context.Context, userID string, cv *cv
 }
 
 func (uc *MatchUseCase) GetByID(ctx context.Context, id string) (*matchmodel.MatchResult, error) {
-	return uc.matchRepo.FindByID(ctx, id)
+	m, err := uc.matchRepo.FindByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	normalizeResult(m)
+	return m, nil
 }
 
 func (uc *MatchUseCase) ListByUser(ctx context.Context, userID string, offset, limit int) ([]*matchmodel.MatchResult, int, error) {
-	return uc.matchRepo.FindByUserID(ctx, userID, offset, limit)
+	matches, total, err := uc.matchRepo.FindByUserID(ctx, userID, offset, limit)
+	if err != nil {
+		return nil, 0, err
+	}
+	for _, m := range matches {
+		normalizeResult(m)
+	}
+	return matches, total, nil
 }
 
 func (uc *MatchUseCase) GetDashboardStats(ctx context.Context, userID string) (*matchmodel.DashboardStats, error) {
-	return uc.matchRepo.GetDashboardStats(ctx, userID)
+	s, err := uc.matchRepo.GetDashboardStats(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	s.AverageScore = norm(s.AverageScore)
+	for _, m := range s.RecentMatches {
+		normalizeResult(m)
+	}
+	return s, nil
+}
+
+func (uc *MatchUseCase) Delete(ctx context.Context, id string) error {
+	return uc.matchRepo.Delete(ctx, id)
+}
+
+func normalizeResult(m *matchmodel.MatchResult) {
+	m.OverallScore = norm(m.OverallScore)
+	m.SkillMatchScore = norm(m.SkillMatchScore)
+	m.ExperienceScore = norm(m.ExperienceScore)
+	m.EducationScore = norm(m.EducationScore)
 }
 
 func extractSkillsFromContent(content string) []string {
@@ -321,4 +352,11 @@ func cleanJSON(s string) string {
 	s = strings.TrimSuffix(s, "```")
 	s = strings.TrimSpace(s)
 	return s
+}
+
+func norm(score float64) float64 {
+	if score > 1.0 {
+		return score / 100.0
+	}
+	return score
 }

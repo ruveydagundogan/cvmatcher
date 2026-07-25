@@ -105,6 +105,7 @@ func NewRouter(deps Dependencies) http.Handler {
 				r.Post("/matches", deps.MatchingHandler.RunMatch)
 				r.Get("/matches", deps.MatchingHandler.List)
 				r.Get("/matches/{id}", deps.MatchingHandler.GetByID)
+				r.Delete("/matches/{id}", deps.MatchingHandler.Delete)
 				r.Get("/dashboard/stats", deps.MatchingHandler.GetDashboardStats)
 			}
 

@@ -109,3 +109,10 @@ func (r *InMemoryMatchingRepo) GetDashboardStats(ctx context.Context, userID str
 
 	return stats, nil
 }
+
+func (r *InMemoryMatchingRepo) Delete(ctx context.Context, id string) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	delete(r.matches, id)
+	return nil
+}

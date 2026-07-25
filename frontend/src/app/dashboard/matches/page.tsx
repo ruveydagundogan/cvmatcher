@@ -88,6 +88,17 @@ export default function MatchListPage() {
     return "from-red-500 to-rose-600 bg-red-500/10 border-red-500/20 text-red-500";
   };
 
+  const removeMatch = async (id: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!confirm("Delete this match?")) return;
+    try {
+      await api.delete(`/api/v1/matches/${id}`);
+      setMatches(matches.filter((m) => m.id !== id));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
@@ -171,7 +182,11 @@ export default function MatchListPage() {
         <div className="space-y-4">
           {matches.map((m) => (
             <Link key={m.id} href={`/dashboard/matches/${m.id}`}>
-              <div className="bg-white dark:bg-slate-900/50 rounded-2xl border border-gray-200 dark:border-white/10 p-5 hover:border-purple-500/30 transition-all duration-200">
+              <div className="bg-white dark:bg-slate-900/50 rounded-2xl border border-gray-200 dark:border-white/10 p-5 hover:border-purple-500/30 transition-all duration-200 relative group">
+                <button onClick={(e) => removeMatch(m.id, e)}
+                  className="absolute top-3 right-3 w-7 h-7 rounded-full bg-red-500/10 text-red-400 hover:bg-red-500/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs">
+                  ✕
+                </button>
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">

@@ -139,3 +139,8 @@ func (r *MatchingRepository) GetDashboardStats(ctx context.Context, userID strin
 
 	return stats, nil
 }
+
+func (r *MatchingRepository) Delete(ctx context.Context, id string) error {
+	_, err := r.pool.Exec(ctx, `DELETE FROM match_results WHERE id=$1`, id)
+	return err
+}

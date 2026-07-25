@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { api } from "@/lib/api";
 
@@ -47,6 +47,7 @@ function Gauge({ value, label, color }: { value: number; label: string; color: s
 
 export default function MatchDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const id = params.id as string;
   const [match, setMatch] = useState<MatchDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -58,6 +59,16 @@ export default function MatchDetailPage() {
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, [id]);
+
+  const remove = async () => {
+    if (!confirm("Delete this match?")) return;
+    try {
+      await api.delete(`/api/v1/matches/${id}`);
+      router.push("/dashboard/matches");
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   if (loading) {
     return (
@@ -75,10 +86,18 @@ export default function MatchDetailPage() {
     <div>
       <div className="mb-6">
         <Link href="/dashboard/matches" className="text-sm text-purple-400 hover:text-purple-300 mb-2 inline-block">&larr; Back to Matches</Link>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Match Result</h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">
-          {match.cv_title} ↔ {match.jd_title}
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Match Result</h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">
+              {match.cv_title} ↔ {match.jd_title}
+            </p>
+          </div>
+          <button onClick={remove}
+            className="px-4 py-2 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 text-sm font-medium">
+            Delete Match
+          </button>
+        </div>
       </div>
 
       {error && (

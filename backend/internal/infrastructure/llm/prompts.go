@@ -42,10 +42,10 @@ JOB REQUIREMENTS:
 - Description: %s
 
 Analyze the match and return a JSON object with:
-- overall_score: 0-100 overall match percentage
-- skill_match_score: 0-100 how well skills match
-- experience_score: 0-100 how well experience matches
-- education_score: 0-100 how well education matches
+- overall_score: 0.0 to 1.0 overall match score (1.0 = perfect match)
+- skill_match_score: 0.0 to 1.0 how well skills match
+- experience_score: 0.0 to 1.0 how well experience matches
+- education_score: 0.0 to 1.0 how well education matches
 - matched_skills: array of skills the candidate has that match
 - missing_skills: array of required skills the candidate lacks
 - analysis: 3-4 sentence detailed analysis of the match, including strengths and gaps

@@ -17,6 +17,7 @@ type MatchUseCase interface {
 	GetByID(ctx context.Context, id string) (*matchmodel.MatchResult, error)
 	ListByUser(ctx context.Context, userID string, offset, limit int) ([]*matchmodel.MatchResult, int, error)
 	GetDashboardStats(ctx context.Context, userID string) (*matchmodel.DashboardStats, error)
+	Delete(ctx context.Context, id string) error
 }
 
 type Handler struct {
@@ -136,4 +137,17 @@ func (h *Handler) GetDashboardStats(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.Success(w, stats)
+}
+
+func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		response.BadRequest(w, "id is required")
+		return
+	}
+	if err := h.matchUC.Delete(r.Context(), id); err != nil {
+		response.Error(w, err)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
 }
