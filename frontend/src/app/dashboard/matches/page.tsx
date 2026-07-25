@@ -83,8 +83,8 @@ export default function MatchListPage() {
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 70) return "from-green-500 to-emerald-600 bg-green-500/10 border-green-500/20 text-green-500";
-    if (score >= 40) return "from-yellow-500 to-orange-600 bg-yellow-500/10 border-yellow-500/20 text-yellow-500";
+    if (score >= 0.7) return "from-green-500 to-emerald-600 bg-green-500/10 border-green-500/20 text-green-500";
+    if (score >= 0.4) return "from-yellow-500 to-orange-600 bg-yellow-500/10 border-yellow-500/20 text-yellow-500";
     return "from-red-500 to-rose-600 bg-red-500/10 border-red-500/20 text-red-500";
   };
 
@@ -183,7 +183,7 @@ export default function MatchListPage() {
                     </div>
                   </div>
                   <div className={`px-4 py-2 rounded-xl border font-bold bg-gradient-to-r ${getScoreColor(m.overall_score)}`}>
-                    <span className="text-white">{m.overall_score.toFixed(0)}</span>
+                    <span className="text-white">{(m.overall_score * 100).toFixed(0)}</span>
                     <span className="text-white/60 text-sm">/100</span>
                   </div>
                 </div>

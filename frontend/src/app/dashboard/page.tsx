@@ -35,7 +35,7 @@ export default function DashboardPage() {
     { label: "CVs", value: stats?.total_cvs ?? "-", href: "/dashboard/resumes", color: "from-blue-500 to-cyan-600", desc: "Upload & parse resumes" },
     { label: "Job Descriptions", value: stats?.total_jds ?? "-", href: "/dashboard/jds", color: "from-purple-500 to-pink-600", desc: "Add job postings" },
     { label: "Matches", value: stats?.total_matches ?? "-", href: "/dashboard/matches", color: "from-green-500 to-emerald-600", desc: "Run AI matching" },
-    { label: "Avg Score", value: stats ? (stats.average_score ? stats.average_score.toFixed(1) : "—") : "-", href: "/dashboard/matches", color: "from-orange-500 to-red-600", desc: "Average match score" },
+    { label: "Avg Score", value: stats ? (stats.average_score ? (stats.average_score * 100).toFixed(0) : "—") : "-", href: "/dashboard/matches", color: "from-orange-500 to-red-600", desc: "Average match score" },
   ];
 
   return (
@@ -101,11 +101,11 @@ export default function DashboardPage() {
                     <p className="text-sm text-gray-500 dark:text-gray-400">{new Date(m.created_at).toLocaleDateString()}</p>
                   </div>
                   <div className={`px-4 py-2 rounded-xl font-bold ${
-                    m.overall_score >= 70 ? "bg-green-500/10 text-green-500" :
-                    m.overall_score >= 40 ? "bg-yellow-500/10 text-yellow-500" :
+                    m.overall_score >= 0.7 ? "bg-green-500/10 text-green-500" :
+                    m.overall_score >= 0.4 ? "bg-yellow-500/10 text-yellow-500" :
                     "bg-red-500/10 text-red-500"
                   }`}>
-                    {m.overall_score.toFixed(0)}
+                    {(m.overall_score * 100).toFixed(0)}
                   </div>
                 </div>
               </Link>

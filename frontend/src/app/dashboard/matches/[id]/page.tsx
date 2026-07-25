@@ -23,9 +23,10 @@ interface MatchDetail {
 }
 
 function Gauge({ value, label, color }: { value: number; label: string; color: string }) {
+  const pct = Math.round(value * 100);
   const radius = 54;
   const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (value / 100) * circumference;
+  const offset = circumference - (pct / 100) * circumference;
 
   return (
     <div className="flex flex-col items-center">
@@ -37,7 +38,7 @@ function Gauge({ value, label, color }: { value: number; label: string; color: s
             strokeLinecap="round" className={`${color} transition-all duration-1000`}
           />
         </svg>
-        <span className="text-2xl font-bold text-gray-900 dark:text-white z-10">{value.toFixed(0)}</span>
+        <span className="text-2xl font-bold text-gray-900 dark:text-white z-10">{pct}</span>
       </div>
       <span className="text-xs text-gray-500 mt-2">{label}</span>
     </div>
@@ -97,28 +98,28 @@ export default function MatchDetailPage() {
             <div>
               <div className="flex justify-between text-sm mb-1">
                 <span className="text-gray-500">Skill Match</span>
-                <span className="text-gray-900 dark:text-white font-medium">{match.skill_match_score.toFixed(1)}</span>
+                <span className="text-gray-900 dark:text-white font-medium">{(match.skill_match_score * 100).toFixed(0)}%</span>
               </div>
               <div className="h-2 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
-                <div className="h-full rounded-full bg-blue-500 transition-all duration-500" style={{ width: `${match.skill_match_score}%` }} />
+                <div className="h-full rounded-full bg-blue-500 transition-all duration-500" style={{ width: `${match.skill_match_score * 100}%` }} />
               </div>
             </div>
             <div>
               <div className="flex justify-between text-sm mb-1">
                 <span className="text-gray-500">Experience</span>
-                <span className="text-gray-900 dark:text-white font-medium">{match.experience_score.toFixed(1)}</span>
+                <span className="text-gray-900 dark:text-white font-medium">{(match.experience_score * 100).toFixed(0)}%</span>
               </div>
               <div className="h-2 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
-                <div className="h-full rounded-full bg-green-500 transition-all duration-500" style={{ width: `${match.experience_score}%` }} />
+                <div className="h-full rounded-full bg-green-500 transition-all duration-500" style={{ width: `${match.experience_score * 100}%` }} />
               </div>
             </div>
             <div>
               <div className="flex justify-between text-sm mb-1">
                 <span className="text-gray-500">Education</span>
-                <span className="text-gray-900 dark:text-white font-medium">{match.education_score.toFixed(1)}</span>
+                <span className="text-gray-900 dark:text-white font-medium">{(match.education_score * 100).toFixed(0)}%</span>
               </div>
               <div className="h-2 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
-                <div className="h-full rounded-full bg-orange-500 transition-all duration-500" style={{ width: `${match.education_score}%` }} />
+                <div className="h-full rounded-full bg-orange-500 transition-all duration-500" style={{ width: `${match.education_score * 100}%` }} />
               </div>
             </div>
           </div>
