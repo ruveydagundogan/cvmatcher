@@ -79,7 +79,7 @@ export default function CVDetailPage() {
   return (
     <div>
       <div className="mb-6">
-        <Link href="/dashboard/cvs" className="text-sm text-purple-400 hover:text-purple-300 mb-2 inline-block">&larr; Back to CVs</Link>
+        <Link href="/dashboard/resumes" className="text-sm text-purple-400 hover:text-purple-300 mb-2 inline-block">&larr; Back to CVs</Link>
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{cv.title}</h1>
           <div className="flex items-center gap-3">

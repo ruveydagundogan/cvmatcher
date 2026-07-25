@@ -128,7 +128,7 @@ export default function CVListPage() {
           {cvs.map((cv) => (
             <div key={cv.id} className="bg-white dark:bg-slate-900/50 rounded-2xl border border-gray-200 dark:border-white/10 p-5 hover:border-purple-500/30 transition-all duration-200">
               <div className="flex items-start justify-between mb-3">
-                <Link href={`/dashboard/cvs/${cv.id}`} className="font-semibold text-gray-900 dark:text-white hover:text-purple-400">
+                <Link href={`/dashboard/resumes/${cv.id}`} className="font-semibold text-gray-900 dark:text-white hover:text-purple-400">
                   {cv.title}
                 </Link>
                 <span className={`text-xs px-3 py-1 rounded-full font-medium ${

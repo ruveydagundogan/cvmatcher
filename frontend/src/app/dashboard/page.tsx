@@ -32,7 +32,7 @@ export default function DashboardPage() {
   }, []);
 
   const statCards = [
-    { label: "CVs", value: stats?.total_cvs ?? "-", href: "/dashboard/cvs", color: "from-blue-500 to-cyan-600", desc: "Upload & parse resumes" },
+    { label: "CVs", value: stats?.total_cvs ?? "-", href: "/dashboard/resumes", color: "from-blue-500 to-cyan-600", desc: "Upload & parse resumes" },
     { label: "Job Descriptions", value: stats?.total_jds ?? "-", href: "/dashboard/jds", color: "from-purple-500 to-pink-600", desc: "Add job postings" },
     { label: "Matches", value: stats?.total_matches ?? "-", href: "/dashboard/matches", color: "from-green-500 to-emerald-600", desc: "Run AI matching" },
     { label: "Avg Score", value: stats ? (stats.average_score ? stats.average_score.toFixed(1) : "—") : "-", href: "/dashboard/matches", color: "from-orange-500 to-red-600", desc: "Average match score" },
@@ -75,7 +75,7 @@ export default function DashboardPage() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <Link href="/dashboard/cvs" className="bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-2xl border border-blue-500/20 p-6 hover:border-blue-500/40 transition-all duration-200">
+        <Link href="/dashboard/resumes" className="bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-2xl border border-blue-500/20 p-6 hover:border-blue-500/40 transition-all duration-200">
           <h3 className="font-semibold text-gray-900 dark:text-white mb-1">CV Ekle</h3>
           <p className="text-sm text-gray-500 dark:text-gray-400">CV metnini yapıştır ve AI ile parse et</p>
         </Link>
