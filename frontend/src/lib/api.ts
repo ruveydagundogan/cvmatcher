@@ -3,8 +3,7 @@ function getAPIBase(): string {
     return process.env.NEXT_PUBLIC_API_URL;
   }
   if (typeof window !== "undefined" &&
-    (window.location.hostname === "cvmatcherapp.vercel.app" ||
-     window.location.hostname.endsWith(".vercel.app"))) {
+    (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1")) {
     return "https://llm-decision-score-api.onrender.com";
   }
   return "http://localhost:8080";
