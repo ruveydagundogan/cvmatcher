@@ -221,9 +221,3 @@ Auto-deploys from the `main` branch. Configure `NEXT_PUBLIC_API_URL` environment
 ├── render.yaml               # Render config
 └── grafana/                  # Monitoring dashboards
 ```
-
----
-
-## License
-
-This project is developed as part of the **MasterFabric Academy** curriculum.
