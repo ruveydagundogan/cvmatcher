@@ -6,13 +6,16 @@ import (
 	"github.com/go-chi/chi/v5"
 	chimw "github.com/go-chi/chi/v5/middleware"
 
+	adminhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/admin"
 	backendllmhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/backendllm"
 	cvhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/cv"
 	healthhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/health"
 	iamhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/iam"
 	jdhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/jd"
+	knowledgehandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/knowledge"
 	llmhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/llmscoring"
 	matchinghandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/matching"
+	mcphandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/mcp"
 	"github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/metrics"
 	"github.com/ruveydagundogan/cvmatcher/backend/internal/shared/config"
 	"github.com/ruveydagundogan/cvmatcher/backend/internal/shared/middleware"
@@ -26,6 +29,9 @@ type Dependencies struct {
 	CVHandler          *cvhandler.Handler
 	JDHandler          *jdhandler.Handler
 	MatchingHandler    *matchinghandler.Handler
+	MCPHandler         *mcphandler.Handler
+	KnowledgeHandler   *knowledgehandler.Handler
+	AdminHandler       *adminhandler.Handler
 	JWTValidator       middleware.TokenValidator
 	Config             *config.Config
 	RateLimiter        func(http.Handler) http.Handler
@@ -63,6 +69,11 @@ func NewRouter(deps Dependencies) http.Handler {
 			r.Post("/llm/chat", deps.BackendLLMHandler.Chat)
 		}
 
+		if deps.MCPHandler != nil {
+			r.Post("/mcp/query", deps.MCPHandler.Query)
+			r.Get("/mcp/adapters", deps.MCPHandler.ListAdapters)
+		}
+
 		r.Group(func(r chi.Router) {
 			r.Use(middleware.JWTAuth(deps.JWTValidator))
 
@@ -95,6 +106,32 @@ func NewRouter(deps Dependencies) http.Handler {
 				r.Get("/matches", deps.MatchingHandler.List)
 				r.Get("/matches/{id}", deps.MatchingHandler.GetByID)
 				r.Get("/dashboard/stats", deps.MatchingHandler.GetDashboardStats)
+			}
+
+			if deps.KnowledgeHandler != nil {
+				r.Post("/knowledge", deps.KnowledgeHandler.Create)
+				r.Get("/knowledge", deps.KnowledgeHandler.List)
+				r.Get("/knowledge/search", deps.KnowledgeHandler.Search)
+				r.Get("/knowledge/categories", deps.KnowledgeHandler.ListCategories)
+				r.Get("/knowledge/{id}", deps.KnowledgeHandler.GetByID)
+				r.Delete("/knowledge/{id}", deps.KnowledgeHandler.Delete)
+			}
+
+			if deps.AdminHandler != nil {
+				r.Get("/admin/adapters", deps.AdminHandler.ListAdapters)
+				r.Post("/admin/adapters", deps.AdminHandler.CreateAdapter)
+				r.Delete("/admin/adapters/{id}", deps.AdminHandler.DeleteAdapter)
+
+				r.Get("/admin/prompts", deps.AdminHandler.ListPrompts)
+				r.Post("/admin/prompts", deps.AdminHandler.CreatePrompt)
+				r.Put("/admin/prompts/{id}", deps.AdminHandler.UpdatePrompt)
+				r.Post("/admin/prompts/{id}/activate", deps.AdminHandler.ActivatePrompt)
+				r.Delete("/admin/prompts/{id}", deps.AdminHandler.DeletePrompt)
+
+				r.Get("/admin/settings", deps.AdminHandler.GetSettings)
+				r.Put("/admin/settings", deps.AdminHandler.SaveSettings)
+
+				r.Get("/admin/logs", deps.AdminHandler.ListLogs)
 			}
 		})
 	})

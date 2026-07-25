@@ -10,27 +10,34 @@ import (
 	"syscall"
 	"time"
 
+	adminuc "github.com/ruveydagundogan/cvmatcher/backend/internal/application/admin/usecase"
 	cvusecase "github.com/ruveydagundogan/cvmatcher/backend/internal/application/cv/usecase"
 	iusecase "github.com/ruveydagundogan/cvmatcher/backend/internal/application/iam/usecase"
 	jdusecase "github.com/ruveydagundogan/cvmatcher/backend/internal/application/jobdescription/usecase"
+	knowledgeuc "github.com/ruveydagundogan/cvmatcher/backend/internal/application/knowledge/usecase"
 	llmusecase "github.com/ruveydagundogan/cvmatcher/backend/internal/application/llmscoring/usecase"
 	matchusecase "github.com/ruveydagundogan/cvmatcher/backend/internal/application/matching/usecase"
 	"github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/auth"
+	adminhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/admin"
 	cvhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/cv"
 	backendllmhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/backendllm"
 	"github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/health"
 	iamhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/iam"
 	jdhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/jd"
+	knowledgehandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/knowledge"
 	llmhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/llmscoring"
 	matchinghandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/matching"
+	mcphandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/mcp"
 	"github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/router"
 	"github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/llm"
+	mcpengine "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/mcp"
 	"github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/memory"
 	"github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/metrics"
 	pgresaudit "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/postgres/audit"
 	pgrescv "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/postgres/cv"
 	pgresiam "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/postgres/iam"
 	pgresjd "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/postgres/jobdescription"
+	pgresknowledge "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/postgres/knowledge"
 	pgresscoring "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/postgres/llmscoring"
 	pgresmatch "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/postgres/matching"
 	"github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/ratelimit"
@@ -41,10 +48,12 @@ import (
 	"github.com/ruveydagundogan/cvmatcher/backend/internal/shared/logger"
 	"github.com/ruveydagundogan/cvmatcher/backend/internal/shared/middleware"
 
+	adminrepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/admin/repository"
 	auditrepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/audit/repository"
 	cvrepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/cv/repository"
 	iamrepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/iam/repository"
 	jdrepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/jobdescription/repository"
+	knowledgerepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/knowledge/repository"
 	matchrepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/matching/repository"
 	scoringrepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/llmscoring/repository"
 )
@@ -72,14 +81,16 @@ func main() {
 	defer cancel()
 
 	var (
-		userRepo     iamrepo.UserRepository
-		roleRepo     iamrepo.RoleRepository
-		scoringRepo  scoringrepo.ScoringRepository
-		auditRepo    auditrepo.AuditRepository
-		cvRepo       cvrepo.CVRepository
-		jdRepo       jdrepo.JobDescriptionRepository
-		matchingRepo matchrepo.MatchingRepository
-		dbPool       interface{ Close() }
+		userRepo        iamrepo.UserRepository
+		roleRepo        iamrepo.RoleRepository
+		scoringRepo     scoringrepo.ScoringRepository
+		auditRepo       auditrepo.AuditRepository
+		cvRepo          cvrepo.CVRepository
+		jdRepo          jdrepo.JobDescriptionRepository
+		matchingRepo    matchrepo.MatchingRepository
+		knowledgeRepo   knowledgerepo.KnowledgeRepository
+		adminRepo       adminrepo.AdminRepository
+		dbPool          interface{ Close() }
 	)
 
 	pool, err := database.NewPostgresPool(ctx, cfg.Database, log)
@@ -93,6 +104,8 @@ func main() {
 		cvRepo = memory.NewInMemoryCVRepo()
 		jdRepo = memory.NewInMemoryJDRepo()
 		matchingRepo = memory.NewInMemoryMatchingRepo()
+		knowledgeRepo = memory.NewKnowledgeRepository()
+		adminRepo = memory.NewAdminRepository()
 	} else {
 		log.Info("postgresql connected, using persistent storage")
 		if err := database.RunMigrations(ctx, pool, log); err != nil {
@@ -105,6 +118,8 @@ func main() {
 		cvRepo = pgrescv.NewCVRepository(pool)
 		jdRepo = pgresjd.NewJobDescriptionRepository(pool)
 		matchingRepo = pgresmatch.NewMatchingRepository(pool)
+		knowledgeRepo = pgresknowledge.NewKnowledgeRepository(pool)
+		adminRepo = memory.NewAdminRepository()
 		dbPool = pool
 	}
 
@@ -171,6 +186,13 @@ func main() {
 	jdH := jdhandler.NewHandler(jdUseCase)
 	matchH := matchinghandler.NewHandler(matchUseCase)
 
+	mcpEngine := mcpengine.NewEngine(llmClient, log)
+	mcpH := mcphandler.NewHandler(mcpEngine)
+	knowledgeUseCase := knowledgeuc.NewKnowledgeUseCase(knowledgeRepo, log)
+	knowledgeH := knowledgehandler.NewHandler(knowledgeUseCase)
+	adminUseCase := adminuc.NewAdminUseCase(adminRepo, log)
+	adminH := adminhandler.NewHandler(adminUseCase, mcpEngine)
+
 	deps := router.Dependencies{
 		HealthHandler:      healthHandler,
 		IAMHandler:         iamH,
@@ -179,6 +201,9 @@ func main() {
 		CVHandler:          cvH,
 		JDHandler:          jdH,
 		MatchingHandler:    matchH,
+		MCPHandler:         mcpH,
+		KnowledgeHandler:   knowledgeH,
+		AdminHandler:       adminH,
 		JWTValidator:       jwtService,
 		Config:             cfg,
 		RateLimiter:        rateLimiter,
