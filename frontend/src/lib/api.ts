@@ -5,7 +5,11 @@ function getAPIBase(): string {
   return "https://llm-decision-score-api.onrender.com";
 }
 
-export const API_BASE = getAPIBase();
+const RAW_API_BASE = getAPIBase();
+if (typeof window !== "undefined") {
+  console.log("[cvmatcher] API_BASE =", RAW_API_BASE);
+}
+export const API_BASE = RAW_API_BASE;
 
 function getHeaders(): Record<string, string> {
   const headers: Record<string, string> = { "Content-Type": "application/json" };
