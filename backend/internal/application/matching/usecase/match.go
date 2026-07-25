@@ -207,6 +207,19 @@ func validateScores(r *matchmodel.MatchResult) {
 		r.EducationScore = 1.0
 	}
 
+	isOldBadMatch := r.OverallScore < 0.1 && r.ExperienceScore == 0 && r.EducationScore == 0
+	if isOldBadMatch {
+		r.ExperienceScore = 0.5
+		r.EducationScore = 0.5
+		if len(r.MatchedSkills) > 0 {
+			r.SkillMatchScore = math.Min(1.0, float64(len(r.MatchedSkills))*0.2)
+			r.OverallScore = r.SkillMatchScore*0.5 + 0.5*0.25 + 0.5*0.25
+		} else {
+			r.SkillMatchScore = 0
+			r.OverallScore = 0.25
+		}
+	}
+
 	if len(r.MatchedSkills) > 0 && r.OverallScore < 0.1 {
 		minScore := float64(len(r.MatchedSkills)) * 0.15
 		if minScore > 0.9 {
@@ -215,6 +228,10 @@ func validateScores(r *matchmodel.MatchResult) {
 		if r.OverallScore < minScore {
 			r.OverallScore = minScore
 		}
+	}
+
+	if r.OverallScore < 0.1 {
+		r.OverallScore = 0.1
 	}
 }
 
