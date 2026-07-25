@@ -28,20 +28,26 @@ JOB DESCRIPTION:
 Return ONLY valid JSON, no other text.`
 
 const CVJDMatchPrompt = `You are a hiring expert analyzing how well a candidate's CV matches a job description.
+You MUST return a score between 0.0 and 1.0 where 0.0 = no match and 1.0 = perfect match.
 
-CV SUMMARY:
+FULL CV TEXT:
+%s
+
+CV PARSED DATA:
 - Skills: %s
 - Experience: %s
 - Education: %s
 - Summary: %s
 
-JOB REQUIREMENTS:
+FULL JOB DESCRIPTION TEXT:
+%s
+
+JD PARSED DATA:
 - Required Skills: %s
 - Preferred Skills: %s
 - Experience Level: %s
-- Description: %s
 
-Analyze the match and return a JSON object with:
+Analyze the match carefully based on ALL the text above and return a JSON object with:
 - overall_score: 0.0 to 1.0 overall match score (1.0 = perfect match)
 - skill_match_score: 0.0 to 1.0 how well skills match
 - experience_score: 0.0 to 1.0 how well experience matches
@@ -50,4 +56,7 @@ Analyze the match and return a JSON object with:
 - missing_skills: array of required skills the candidate lacks
 - analysis: 3-4 sentence detailed analysis of the match, including strengths and gaps
 
-Return ONLY valid JSON, no other text.`
+IMPORTANT: Return ONLY valid JSON. Do not include any text before or after the JSON.
+
+Example response:
+{"overall_score":0.85,"skill_match_score":0.9,"experience_score":0.8,"education_score":0.7,"matched_skills":["Go","Docker"],"missing_skills":["Kubernetes"],"analysis":"The candidate has strong Go and Docker experience matching the role..."}`

@@ -165,10 +165,10 @@ func (uc *MatchUseCase) runMatch(ctx context.Context, userID string, cv *cvmodel
 	}
 
 	result := matchmodel.NewMatchResult(userID, cv.ID, jd.ID)
-	result.OverallScore = norm(parsed.OverallScore)
-	result.SkillMatchScore = norm(parsed.SkillMatchScore)
-	result.ExperienceScore = norm(parsed.ExperienceScore)
-	result.EducationScore = norm(parsed.EducationScore)
+	result.OverallScore = parsed.OverallScore
+	result.SkillMatchScore = parsed.SkillMatchScore
+	result.ExperienceScore = parsed.ExperienceScore
+	result.EducationScore = parsed.EducationScore
 	result.LLMAnalysis = parsed.Analysis
 	result.MatchedSkills = parsed.MatchedSkills
 	result.MissingSkills = parsed.MissingSkills
@@ -178,10 +178,42 @@ func (uc *MatchUseCase) runMatch(ctx context.Context, userID string, cv *cvmodel
 
 	deduplicateSkills(&result.MatchedSkills, &result.MissingSkills)
 
+	validateScores(result)
+
 	if err := uc.matchRepo.Save(ctx, result); err != nil {
 		return nil, fmt.Errorf("save match: %w", err)
 	}
 	return result, nil
+}
+
+func validateScores(r *matchmodel.MatchResult) {
+	r.OverallScore = norm(r.OverallScore)
+	r.SkillMatchScore = norm(r.SkillMatchScore)
+	r.ExperienceScore = norm(r.ExperienceScore)
+	r.EducationScore = norm(r.EducationScore)
+
+	if r.OverallScore > 1.0 {
+		r.OverallScore = 1.0
+	}
+	if r.SkillMatchScore > 1.0 {
+		r.SkillMatchScore = 1.0
+	}
+	if r.ExperienceScore > 1.0 {
+		r.ExperienceScore = 1.0
+	}
+	if r.EducationScore > 1.0 {
+		r.EducationScore = 1.0
+	}
+
+	if len(r.MatchedSkills) > 0 && r.OverallScore < 0.1 {
+		minScore := float64(len(r.MatchedSkills)) * 0.15
+		if minScore > 0.9 {
+			minScore = 0.9
+		}
+		if r.OverallScore < minScore {
+			r.OverallScore = minScore
+		}
+	}
 }
 
 func deduplicateSkills(matched, missing *[]string) {
@@ -206,14 +238,32 @@ func (uc *MatchUseCase) llmMatch(ctx context.Context, cv *cvmodel.CV, jd *jdmode
 	reqSkillsStr := strings.Join(jd.RequiredSkills, ", ")
 	prefSkillsStr := strings.Join(jd.PreferredSkills, ", ")
 
+	cvContent := cv.Content
+	if cvContent == "" {
+		cvContent = skillsStr
+	}
+
 	prompt := fmt.Sprintf(llm.CVJDMatchPrompt,
-		skillsStr, string(expJSON), string(eduJSON), cv.ParsedSummary,
-		reqSkillsStr, prefSkillsStr, jd.ExperienceLevel, jd.Content,
+		cvContent, skillsStr, string(expJSON), string(eduJSON), cv.ParsedSummary,
+		jd.Content,
+		reqSkillsStr, prefSkillsStr, jd.ExperienceLevel,
 	)
 
-	return uc.llmClient.ChatCompletion(ctx, []llm.ChatMessage{
+	uc.log.Info("llm match request",
+		"cv_id", cv.ID, "jd_id", jd.ID,
+		"cv_skills_len", len(cv.ParsedSkills),
+		"jd_skills_len", len(jd.RequiredSkills),
+	)
+
+	resp, err := uc.llmClient.ChatCompletion(ctx, []llm.ChatMessage{
 		{Role: "user", Content: prompt},
-	}, 1024)
+	}, 2048)
+	if err != nil {
+		return "", err
+	}
+
+	uc.log.Info("llm match response", "response_preview", truncateStr(resp, 200))
+	return resp, nil
 }
 
 func (uc *MatchUseCase) fallbackMatch(ctx context.Context, userID string, cv *cvmodel.CV, jd *jdmodel.JobDescription) (*matchmodel.MatchResult, error) {
@@ -267,6 +317,8 @@ func (uc *MatchUseCase) fallbackMatch(ctx context.Context, userID string, cv *cv
 	result.CreatedAt = time.Now().UTC()
 	result.CVTitle = cv.Title
 	result.JDTitle = jd.Title
+
+	validateScores(result)
 
 	uc.log.Info("fallback match completed",
 		"cv_id", cv.ID, "jd_id", jd.ID,
@@ -369,4 +421,11 @@ func norm(score float64) float64 {
 		return score / 100.0
 	}
 	return score
+}
+
+func truncateStr(s string, maxLen int) string {
+	if len(s) <= maxLen {
+		return s
+	}
+	return s[:maxLen] + "..."
 }
