@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"log/slog"
 	"math"
+	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -267,39 +269,79 @@ func (uc *MatchUseCase) llmMatch(ctx context.Context, cv *cvmodel.CV, jd *jdmode
 }
 
 func (uc *MatchUseCase) fallbackMatch(ctx context.Context, userID string, cv *cvmodel.CV, jd *jdmodel.JobDescription) (*matchmodel.MatchResult, error) {
-	cvSkills := make(map[string]bool)
-	for _, s := range cv.ParsedSkills {
-		cvSkills[strings.ToLower(strings.TrimSpace(s))] = true
+	cvContent := cv.Content
+	if cvContent == "" {
+		cvContent = strings.Join(cv.ParsedSkills, ", ")
+	}
+	jdContent := jd.Content
+	if jdContent == "" {
+		jdContent = strings.Join(jd.RequiredSkills, ", ")
+	}
+
+	extractedCVSkills := extractSkillsFromContent(cvContent)
+	extractedJDSkills := extractSkillsFromContent(jdContent)
+
+	cvYears := extractYearsOfExperience(cvContent)
+	jdYears := extractYearsOfExperience(jdContent)
+
+	cvEdu := extractEducationLevel(cvContent)
+	jdEdu := extractEducationLevel(jdContent)
+
+	cvSkillSet := make(map[string]bool)
+	for _, s := range extractedCVSkills {
+		cvSkillSet[s] = true
 	}
 
 	var matchedSkills, missingSkills []string
-	for _, s := range jd.RequiredSkills {
-		key := strings.ToLower(strings.TrimSpace(s))
-		if cvSkills[key] {
+	for _, s := range extractedJDSkills {
+		if cvSkillSet[s] {
 			matchedSkills = append(matchedSkills, s)
 		} else {
 			missingSkills = append(missingSkills, s)
 		}
 	}
 
-	total := len(jd.RequiredSkills)
+	total := len(extractedJDSkills)
 	matched := len(matchedSkills)
 
-	var skillScore, overallScore float64
+	var skillScore float64
 	if total > 0 {
 		skillScore = math.Round(float64(matched)/float64(total)*100) / 100
 	}
-	overallScore = skillScore*0.6 + 0.2 + 0.2
+
+	var expScore float64 = 0.5
+	if cvYears > 0 && jdYears > 0 {
+		if cvYears >= jdYears {
+			expScore = math.Min(1.0, 0.5+float64(cvYears-jdYears)*0.05)
+		} else {
+			expScore = math.Max(0.2, 0.5-float64(jdYears-cvYears)*0.1)
+		}
+	}
+
+	var eduScore float64 = 0.5
+	eduLevels := map[string]int{"unknown": 0, "bachelor": 1, "master": 2, "phd": 3}
+	cvEduLevel := eduLevels[cvEdu]
+	jdEduLevel := eduLevels[jdEdu]
+	if cvEduLevel >= jdEduLevel {
+		eduScore = 1.0
+	} else if jdEduLevel > 0 {
+		eduScore = float64(cvEduLevel) / float64(jdEduLevel)
+	}
+
+	overallScore := skillScore*0.5 + expScore*0.25 + eduScore*0.25
 
 	if overallScore > 1.0 {
 		overallScore = 1.0
+	}
+	if overallScore < 0.1 && matched > 0 {
+		overallScore = math.Min(0.3, float64(matched)*0.1)
 	}
 
 	result := matchmodel.NewMatchResult(userID, cv.ID, jd.ID)
 	result.OverallScore = overallScore
 	result.SkillMatchScore = skillScore
-	result.ExperienceScore = 0.5
-	result.EducationScore = 0.5
+	result.ExperienceScore = math.Round(expScore*100) / 100
+	result.EducationScore = math.Round(eduScore*100) / 100
 	result.MatchedSkills = matchedSkills
 	result.MissingSkills = missingSkills
 
@@ -323,6 +365,8 @@ func (uc *MatchUseCase) fallbackMatch(ctx context.Context, userID string, cv *cv
 	uc.log.Info("fallback match completed",
 		"cv_id", cv.ID, "jd_id", jd.ID,
 		"matched", matched, "total", total,
+		"cv_years", cvYears, "jd_years", jdYears,
+		"cv_edu", cvEdu, "jd_edu", jdEdu,
 		"score", overallScore,
 	)
 
@@ -373,16 +417,30 @@ func normalizeResult(m *matchmodel.MatchResult) {
 	m.SkillMatchScore = norm(m.SkillMatchScore)
 	m.ExperienceScore = norm(m.ExperienceScore)
 	m.EducationScore = norm(m.EducationScore)
+	validateScores(m)
 }
 
 func extractSkillsFromContent(content string) []string {
 	knownSkills := []string{
 		"go", "golang", "python", "java", "javascript", "typescript", "rust", "c++", "c#",
-		"react", "vue", "angular", "next.js", "node.js", "express",
-		"postgresql", "mysql", "mongodb", "redis", "sql", "database",
-		"docker", "kubernetes", "aws", "gcp", "azure", "linux", "git",
-		"rest api", "graphql", "microservices", "ci/cd", "agile",
-		"machine learning", "ai", "data science", "deep learning",
+		"ruby", "scala", "kotlin", "swift", "php", "perl", "bash", "shell", "elixir",
+		"react", "vue", "angular", "next.js", "svelte", "jquery", "html", "css", "sass",
+		"node.js", "express", "django", "flask", "fastapi", "spring boot", "rails",
+		"postgresql", "mysql", "mongodb", "redis", "sql", "database", "sqlite",
+		"oracle", "mariadb", "cassandra", "dynamodb", "elasticsearch", "bigquery",
+		"docker", "kubernetes", "k8s", "aws", "gcp", "azure", "linux", "git",
+		"terraform", "ansible", "helm", "jenkins", "gitlab ci", "github actions", "ci/cd",
+		"rest api", "graphql", "grpc", "microservices", "event-driven", "kafka",
+		"rabbitmq", "nginx", "apache", "prometheus", "grafana", "datadog",
+		"machine learning", "deep learning", "ai", "data science", "nlp", "computer vision",
+		"tensorflow", "pytorch", "scikit-learn", "pandas", "numpy", "jupyter", "spark",
+		"agile", "scrum", "jira", "confluence", "leadership", "mentoring",
+		"system design", "architecture", "distributed systems", "cloud", "devops",
+		"react native", "flutter", "android", "ios", "mobile",
+		"blockchain", "solidity", "web3", "smart contracts",
+		"cybersecurity", "penetration testing", "security", "oauth", "jwt",
+		"testing", "unit test", "integration test", "tdd", "cypress", "jest",
+		"nosql", "sql", "etl", "data pipeline", "data warehouse",
 	}
 	lower := strings.ToLower(content)
 	var skills []string
@@ -392,6 +450,45 @@ func extractSkillsFromContent(content string) []string {
 		}
 	}
 	return uniqueStrings(skills)
+}
+
+func extractYearsOfExperience(content string) int {
+	re := regexp.MustCompile(`(\d+)\+?\s*(?:years?|yrs?)`)
+	matches := re.FindAllStringSubmatch(strings.ToLower(content), -1)
+	maxYears := 0
+	for _, m := range matches {
+		if len(m) > 1 {
+			if y, err := strconv.Atoi(m[1]); err == nil && y > maxYears {
+				maxYears = y
+			}
+		}
+	}
+	if maxYears == 0 {
+		re2 := regexp.MustCompile(`(\d+)\+?\s*(?:years?|yrs?)\s+of\s+experience`)
+		matches2 := re2.FindAllStringSubmatch(strings.ToLower(content), -1)
+		for _, m := range matches2 {
+			if len(m) > 1 {
+				if y, err := strconv.Atoi(m[1]); err == nil && y > maxYears {
+					maxYears = y
+				}
+			}
+		}
+	}
+	return maxYears
+}
+
+func extractEducationLevel(content string) string {
+	lower := strings.ToLower(content)
+	if strings.Contains(lower, "phd") || strings.Contains(lower, "ph.d") || strings.Contains(lower, "doctorate") {
+		return "phd"
+	}
+	if strings.Contains(lower, "master") || strings.Contains(lower, "msc") || strings.Contains(lower, "m.s.") || strings.Contains(lower, "mba") {
+		return "master"
+	}
+	if strings.Contains(lower, "bachelor") || strings.Contains(lower, "b.s.") || strings.Contains(lower, "bsc") || strings.Contains(lower, "bs ") || strings.Contains(lower, "b.a.") || strings.Contains(lower, "degree") {
+		return "bachelor"
+	}
+	return "unknown"
 }
 
 func uniqueStrings(s []string) []string {
