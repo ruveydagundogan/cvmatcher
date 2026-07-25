@@ -184,7 +184,7 @@ export default function MatchListPage() {
             <Link key={m.id} href={`/dashboard/matches/${m.id}`}>
               <div className="bg-white dark:bg-slate-900/50 rounded-2xl border border-gray-200 dark:border-white/10 p-5 hover:border-purple-500/30 transition-all duration-200 relative group">
                 <button onClick={(e) => removeMatch(m.id, e)}
-                  className="absolute top-3 right-3 w-7 h-7 rounded-full bg-red-500/10 text-red-400 hover:bg-red-500/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs">
+                  className="absolute top-3 right-3 w-7 h-7 rounded-full bg-red-500/10 text-red-400 hover:bg-red-500/20 flex items-center justify-center transition-opacity text-xs">
                   ✕
                 </button>
                 <div className="flex items-start justify-between mb-3">
