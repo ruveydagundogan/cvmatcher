@@ -112,6 +112,7 @@ func (c *DatabaseConfig) DSN() string {
 }
 
 func loadDatabaseConfig() DatabaseConfig {
+	// Priority 1: DATABASE_URL (Render auto-injects this for linked PostgreSQL)
 	dsn := os.Getenv("DATABASE_URL")
 	if dsn != "" {
 		u, err := url.Parse(dsn)
@@ -141,11 +142,34 @@ func loadDatabaseConfig() DatabaseConfig {
 			}
 		}
 	}
+
+	// Priority 2: PGHOST/PGPORT/PGUSER/PGPASSWORD/PGDATABASE (Render's native PG env vars)
+	pgHost := os.Getenv("PGHOST")
+	if pgHost != "" {
+		port := 5432
+		if p := os.Getenv("PGPORT"); p != "" {
+			if parsed, err := strconv.Atoi(p); err == nil {
+				port = parsed
+			}
+		}
+		return DatabaseConfig{
+			Host:     pgHost,
+			Port:     port,
+			User:     getEnv("PGUSER", "postgres"),
+			Password: getEnv("PGPASSWORD", ""),
+			Name:     getEnv("PGDATABASE", "postgres"),
+			SSLMode:  "require",
+			MaxConns: getEnvInt32("DB_MAX_CONNS", 25),
+			MinConns: getEnvInt32("DB_MIN_CONNS", 5),
+		}
+	}
+
+	// Priority 3: DB_HOST/DB_PORT/DB_USER/DB_PASSWORD/DB_NAME (our custom env vars)
 	return DatabaseConfig{
 		Host:     getEnv("DB_HOST", "localhost"),
-		Port:     getEnvInt("DB_PORT", 5433),
-		User:     getEnv("DB_USER", "cvmatcher"),
-		Password: getEnv("DB_PASSWORD", "cvmatcher"),
+		Port:     getEnvInt("DB_PORT", 5432),
+		User:     getEnv("DB_USER", "postgres"),
+		Password: getEnv("DB_PASSWORD", ""),
 		Name:     getEnv("DB_NAME", "cvmatcher"),
 		SSLMode:  getEnv("DB_SSLMODE", "disable"),
 		MaxConns: getEnvInt32("DB_MAX_CONNS", 25),

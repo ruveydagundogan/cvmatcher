@@ -83,6 +83,7 @@ func (uc *RegisterUseCase) Execute(ctx context.Context, email, password, firstNa
 type LoginUseCase struct {
 	userRepo   iamrepo.UserRepository
 	jwtService service.JWTService
+	authService service.AuthService
 	auditRepo  auditrepo.AuditRepository
 	logger     *slog.Logger
 }
@@ -90,14 +91,16 @@ type LoginUseCase struct {
 func NewLoginUseCase(
 	userRepo iamrepo.UserRepository,
 	jwtService service.JWTService,
+	authService service.AuthService,
 	auditRepo auditrepo.AuditRepository,
 	logger *slog.Logger,
 ) *LoginUseCase {
 	return &LoginUseCase{
-		userRepo:   userRepo,
-		jwtService: jwtService,
-		auditRepo:  auditRepo,
-		logger:     logger,
+		userRepo:    userRepo,
+		jwtService:  jwtService,
+		authService: authService,
+		auditRepo:   auditRepo,
+		logger:      logger,
 	}
 }
 
@@ -107,6 +110,10 @@ func (uc *LoginUseCase) Execute(ctx context.Context, email, password string) (st
 
 	user, err := uc.userRepo.FindByEmail(ctx, email)
 	if err != nil || user == nil {
+		return "", nil, apperrors.Unauthorized("invalid email or password")
+	}
+
+	if !uc.authService.ComparePassword(user.PasswordHash, password) {
 		return "", nil, apperrors.Unauthorized("invalid email or password")
 	}
 

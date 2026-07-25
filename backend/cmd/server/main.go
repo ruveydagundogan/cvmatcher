@@ -131,7 +131,7 @@ func main() {
 	bcryptService := auth.NewBcryptAuthService(bcryptCost)
 
 	registerUC := iusecase.NewRegisterUseCase(userRepo, roleRepo, bcryptService, jwtService, auditRepo, log)
-	loginUC := iusecase.NewLoginUseCase(userRepo, jwtService, auditRepo, log)
+	loginUC := iusecase.NewLoginUseCase(userRepo, jwtService, bcryptService, auditRepo, log)
 	getProfileUC := iusecase.NewGetProfileUseCase(userRepo, log)
 	updateProfileUC := iusecase.NewUpdateProfileUseCase(userRepo, log)
 

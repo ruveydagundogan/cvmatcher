@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/ruveydagundogan/cvmatcher/backend/internal/domain/iam/model"
 )
@@ -14,7 +15,33 @@ type InMemoryUserRepo struct {
 }
 
 func NewInMemoryUserRepo() *InMemoryUserRepo {
-	return &InMemoryUserRepo{users: make(map[string]*model.User)}
+	repo := &InMemoryUserRepo{users: make(map[string]*model.User)}
+	repo.seed()
+	return repo
+}
+
+func (r *InMemoryUserRepo) seed() {
+	now := time.Now()
+	r.users["a0000000-0000-0000-0000-000000000001"] = &model.User{
+		ID:           "a0000000-0000-0000-0000-000000000001",
+		FirstName:    "Admin",
+		LastName:     "User",
+		Email:        "admin@cvmatcher.com",
+		PasswordHash: "$2a$10$AnorUp.ommMnkp1ZUwQ/f.QkWDgirOkanHjMzEMXDhmeeWf2Uq.x2",
+		Status:       "active",
+		CreatedAt:    now,
+		UpdatedAt:    now,
+	}
+	r.users["a0000000-0000-0000-0000-000000000002"] = &model.User{
+		ID:           "a0000000-0000-0000-0000-000000000002",
+		FirstName:    "Regular",
+		LastName:     "User",
+		Email:        "user@cvmatcher.com",
+		PasswordHash: "$2a$10$AnorUp.ommMnkp1ZUwQ/f.QkWDgirOkanHjMzEMXDhmeeWf2Uq.x2",
+		Status:       "active",
+		CreatedAt:    now,
+		UpdatedAt:    now,
+	}
 }
 
 func (r *InMemoryUserRepo) Create(_ context.Context, user *model.User) error {
