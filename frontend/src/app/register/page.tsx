@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { api } from "@/lib/api";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -16,38 +17,26 @@ export default function RegisterPage() {
   const register = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"}/api/v1/auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          first_name: firstName,
-          last_name: lastName,
-          email,
-          password,
-        }),
+      const data = await api.post("/api/v1/auth/register", {
+        first_name: firstName,
+        last_name: lastName,
+        email,
+        password,
       });
 
-      const data = await res.json();
-
-      if (data.success) {
-        if (data.data?.token) {
-          localStorage.setItem("token", data.data.token);
-        }
-        if (data.data?.user?.id) {
-          localStorage.setItem("userId", data.data.user.id);
-        }
-        if (data.data?.user?.first_name) {
-          localStorage.setItem("userName", data.data.user.first_name);
-        }
-        alert("Registration successful");
-        router.push("/dashboard");
-      } else {
-        alert(data.error || "Registration failed");
+      if (data?.token) {
+        localStorage.setItem("token", data.token);
       }
-    } catch {
-      alert("Server error");
+      if (data?.user?.id) {
+        localStorage.setItem("userId", data.user.id);
+      }
+      if (data?.user?.first_name) {
+        localStorage.setItem("userName", data.user.first_name);
+      }
+      alert("Registration successful");
+      router.push("/dashboard");
+    } catch (e: any) {
+      alert(e.message || "Registration failed");
     } finally {
       setLoading(false);
     }

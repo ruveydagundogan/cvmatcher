@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { api, API_BASE } from "@/lib/api";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -15,37 +16,21 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"}/api/v1/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      });
+      const data = await api.post("/api/v1/auth/login", { email, password });
 
-      const data = await res.json();
-
-      if (!data.success) {
-        alert(data.error || "Login failed");
-        return;
+      if (data?.token) {
+        localStorage.setItem("token", data.token);
       }
-
-      if (data.data?.token) {
-        localStorage.setItem("token", data.data.token);
+      if (data?.user?.id) {
+        localStorage.setItem("userId", data.user.id);
       }
-      if (data.data?.user?.id) {
-        localStorage.setItem("userId", data.data.user.id);
-      }
-      if (data.data?.user?.first_name) {
-        localStorage.setItem("userName", data.data.user.first_name);
+      if (data?.user?.first_name) {
+        localStorage.setItem("userName", data.user.first_name);
       }
 
       router.push("/dashboard");
-    } catch {
-      alert("Server error");
+    } catch (e: any) {
+      alert(e.message || "Login failed");
     } finally {
       setLoading(false);
     }
