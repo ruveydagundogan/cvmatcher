@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"sort"
+	"strings"
 	"sync"
 
 	"github.com/ruveydagundogan/cvmatcher/backend/internal/domain/matching/model"
@@ -95,6 +96,33 @@ func (r *InMemoryMatchingRepo) GetDashboardStats(ctx context.Context, userID str
 	if len(matches) > 0 {
 		stats.AverageScore = totalScore / float64(len(matches))
 	}
+
+	// CV ve JD sayılarını da hesapla (diğer repo'lardan gelebilir ama in-memory'de basit)
+	// Not: Bu repo sadece match tutar, CV/JD repo'ları ayrı. 
+	// İleride birleştirilebilir. Şimdilik 0 kalsın.
+	stats.TotalCVs = 0
+	stats.TotalJDs = 0
+
+	// Top skill hesapla
+	skillCounts := make(map[string]int)
+	for _, m := range matches {
+		for _, s := range m.MatchedSkills {
+			skillCounts[strings.ToLower(s)]++
+		}
+	}
+	var topSkill string
+	var topSkillCount int
+	for skill, count := range skillCounts {
+		if count > topSkillCount {
+			topSkill = skill
+			topSkillCount = count
+		}
+	}
+	stats.TopSkill = topSkill
+	stats.TopSkillCount = topSkillCount
+
+	// Match rate (basit: total matches / total CVs veya 0)
+	stats.MatchRate = 0
 
 	sort.Slice(matches, func(i, j int) bool {
 		return matches[i].CreatedAt.After(matches[j].CreatedAt)
