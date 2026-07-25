@@ -2,7 +2,7 @@ function getAPIBase(): string {
   if (process.env.NEXT_PUBLIC_API_URL) {
     return process.env.NEXT_PUBLIC_API_URL;
   }
-  return "https://llm-decision-score-api.onrender.com";
+  return "https://cvmatcher-api.onrender.com";
 }
 
 const RAW_API_BASE = getAPIBase();
