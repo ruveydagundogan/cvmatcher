@@ -1,0 +1,17 @@
+[
+  {
+    "instruction": "Parse the following CV text and extract structured information: skills, experience, education, and a brief summary.",
+    "input": "Experienced Go developer with 5 years in backend systems. Proficient in Go, PostgreSQL, Docker, Kubernetes, and AWS. Built microservices architectures and REST APIs. Previously worked at CompanyX as Senior Backend Engineer. Bachelor's in Computer Science from University of Technology.",
+    "output": "{\n  \"skills\": [\"Go\", \"PostgreSQL\", \"Docker\", \"Kubernetes\", \"AWS\", \"REST API\", \"Microservices\"],\n  \"experience\": [{\"role\": \"Senior Backend Engineer\", \"company\": \"CompanyX\", \"duration\": \"5 years\", \"description\": \"Built microservices architectures and REST APIs\"}],\n  \"education\": [{\"degree\": \"Bachelor's in Computer Science\", \"institution\": \"University of Technology\"}],\n  \"summary\": \"Experienced Go developer with 5 years in backend systems, proficient in cloud-native technologies and microservices.\"\n}"
+  },
+  {
+    "instruction": "Parse the following CV text and extract structured information: skills, experience, education, and a brief summary.",
+    "input": "Frontend developer with 3 years of React experience. Skilled in TypeScript, Next.js, Tailwind CSS, and GraphQL. Worked at StartupY building customer-facing web applications. Master's in Human-Computer Interaction from Design Institute.",
+    "output": "{\n  \"skills\": [\"React\", \"TypeScript\", \"Next.js\", \"Tailwind CSS\", \"GraphQL\", \"JavaScript\", \"HTML\", \"CSS\"],\n  \"experience\": [{\"role\": \"Frontend Developer\", \"company\": \"StartupY\", \"duration\": \"3 years\", \"description\": \"Building customer-facing web applications with React and TypeScript\"}],\n  \"education\": [{\"degree\": \"Master's in Human-Computer Interaction\", \"institution\": \"Design Institute\"}],\n  \"summary\": \"Frontend developer with 3 years of React and TypeScript experience, focused on building modern web applications.\"\n}"
+  },
+  {
+    "instruction": "Parse the following CV text and extract structured information: skills, experience, education, and a brief summary.",
+    "input": "Data scientist with 4 years of experience in machine learning and AI. Expert in Python, TensorFlow, PyTorch, and SQL. Led ML projects at AI Corp including recommendation systems and NLP pipelines. PhD in Machine Learning from Stanford University.",
+    "output": "{\n  \"skills\": [\"Python\", \"TensorFlow\", \"PyTorch\", \"SQL\", \"Machine Learning\", \"NLP\", \"Deep Learning\", \"Data Science\"],\n  \"experience\": [{\"role\": \"Data Scientist\", \"company\": \"AI Corp\", \"duration\": \"4 years\", \"description\": \"Led ML projects including recommendation systems and NLP pipelines\"}],\n  \"education\": [{\"degree\": \"PhD in Machine Learning\", \"institution\": \"Stanford University\"}],\n  \"summary\": \"Data scientist with 4 years of ML/AI experience, expert in deep learning frameworks and NLP.\"\n}"
+  }
+]

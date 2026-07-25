@@ -2,6 +2,7 @@ package admin
 
 import (
 	"encoding/json"
+	"fmt"
 	"log/slog"
 	"net/http"
 
@@ -27,12 +28,12 @@ func NewHandlerFromRepos(repo adminrepo.AdminRepository, mcpEngine *mcpengine.En
 	return &Handler{adminUC: adminuc.NewAdminUseCase(repo, log), mcpEngine: mcpEngine}
 }
 
-type createAdapterRequest struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	FilePath    string `json:"file_path"`
-	ModelName   string `json:"model_name"`
-}
+	type createAdapterRequest struct {
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		FilePath    string `json:"file_path"`
+		ModelName   string `json:"model_name"`
+	}
 
 func (h *Handler) ListAdapters(w http.ResponseWriter, r *http.Request) {
 	adapters, err := h.adminUC.ListAdapters(r.Context())
@@ -66,6 +67,48 @@ func (h *Handler) DeleteAdapter(w http.ResponseWriter, r *http.Request) {
 	}
 	h.mcpEngine.UnloadAdapter(id)
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *Handler) ActivateAdapter(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	adapters, err := h.adminUC.ListAdapters(r.Context())
+	if err != nil {
+		response.Error(w, err)
+		return
+	}
+
+	var target *adminmodel.Adapter
+	for _, a := range adapters {
+		if a.ID == id {
+			target = a
+		} else {
+			a.Active = false
+			h.adminUC.UpdateAdapter(r.Context(), a)
+		}
+	}
+
+	if target == nil {
+		response.NotFound(w, "adapter not found")
+		return
+	}
+
+	target.Active = true
+	h.adminUC.UpdateAdapter(r.Context(), target)
+
+	adapterModelName := target.ModelName
+	if adapterModelName == "" {
+		adapterModelName = target.Name
+	}
+
+	modelfile := fmt.Sprintf("FROM gemma:2b\nADAPTER %s", target.FilePath)
+	if err := h.mcpEngine.LLMClient().CreateModel(r.Context(), adapterModelName, modelfile); err != nil {
+		h.mcpEngine.LoadAdapter(target.Name, target.Description)
+		response.Success(w, target)
+		return
+	}
+
+	h.mcpEngine.LoadAdapter(target.Name, target.Description)
+	response.Success(w, target)
 }
 
 type promptRequest struct {

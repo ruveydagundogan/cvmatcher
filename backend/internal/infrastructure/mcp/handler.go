@@ -110,6 +110,10 @@ func (e *Engine) ListAdapters() []AdapterInfo {
 	return e.loadedAdapters
 }
 
+func (e *Engine) LLMClient() *llm.Client {
+	return e.llmClient
+}
+
 func (e *Engine) LoadAdapter(name, description string) error {
 	for i, a := range e.loadedAdapters {
 		if a.Name == name {

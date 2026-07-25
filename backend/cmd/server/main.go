@@ -189,7 +189,7 @@ func main() {
 	mcpEngine := mcpengine.NewEngine(llmClient, log)
 	mcpH := mcphandler.NewHandler(mcpEngine)
 	knowledgeUseCase := knowledgeuc.NewKnowledgeUseCase(knowledgeRepo, log)
-	knowledgeH := knowledgehandler.NewHandler(knowledgeUseCase)
+	knowledgeH := knowledgehandler.NewHandler(knowledgeUseCase, mcpEngine)
 	adminUseCase := adminuc.NewAdminUseCase(adminRepo, log)
 	adminH := adminhandler.NewHandler(adminUseCase, mcpEngine)
 

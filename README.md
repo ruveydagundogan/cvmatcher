@@ -21,7 +21,7 @@
 </p>
 
 [![Deployed on Render](https://img.shields.io/badge/Render-46E3B7?logo=render&logoColor=fff)](https://llm-decision-score-api.onrender.com)
-[![Deployed on Vercel](https://img.shields.io/badge/Vercel-000?logo=vercel)](https://llm-decision-score.vercel.app)
+[![Deployed on Vercel](https://img.shields.io/badge/Vercel-000?logo=vercel)](https://cvmatcherapp.vercel.app)
 [![Go](https://img.shields.io/badge/Go-1.26-00ADD8?logo=go)](https://go.dev)
 [![Next.js](https://img.shields.io/badge/Next.js-16-000?logo=next.js)](https://nextjs.org)
 

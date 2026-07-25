@@ -22,7 +22,7 @@ export default function AdaptersPage() {
 
   const load = async () => {
     try {
-      setAdapters(await api.get("/api/v1/admin/adapters"));
+      setAdapters(await api.get("/api/v1/admin/adapters") || []);
     } catch (e) {
       console.error(e);
     } finally {
@@ -46,6 +46,15 @@ export default function AdaptersPage() {
   const remove = async (id: string) => {
     try {
       await api.delete(`/api/v1/admin/adapters/${id}`);
+      load();
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const activate = async (id: string) => {
+    try {
+      await api.post(`/api/v1/admin/adapters/${id}/activate`, {});
       load();
     } catch (e) {
       console.error(e);
@@ -101,7 +110,10 @@ export default function AdaptersPage() {
                       {a.active ? "Active" : "Inactive"}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-6 py-4 text-right space-x-3">
+                    {!a.active && (
+                      <button onClick={() => activate(a.id)} className="text-xs text-green-400 hover:text-green-300">Activate</button>
+                    )}
                     <button onClick={() => remove(a.id)} className="text-xs text-red-400 hover:text-red-300">Remove</button>
                   </td>
                 </tr>

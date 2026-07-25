@@ -29,7 +29,7 @@ func NewAdminRepository() *AdminRepository {
 func (r *AdminRepository) ListAdapters(ctx context.Context) ([]*model.Adapter, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	var result []*model.Adapter
+	result := make([]*model.Adapter, 0)
 	for _, a := range r.adapters {
 		result = append(result, a)
 	}
@@ -60,7 +60,7 @@ func (r *AdminRepository) DeleteAdapter(ctx context.Context, id string) error {
 func (r *AdminRepository) ListPrompts(ctx context.Context) ([]*model.SystemPrompt, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	var result []*model.SystemPrompt
+	result := make([]*model.SystemPrompt, 0)
 	for _, p := range r.prompts {
 		result = append(result, p)
 	}

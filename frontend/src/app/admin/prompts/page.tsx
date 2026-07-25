@@ -18,7 +18,7 @@ export default function PromptsPage() {
 
   const load = async () => {
     try {
-      setPrompts(await api.get("/api/v1/admin/prompts"));
+      setPrompts(await api.get("/api/v1/admin/prompts") || []);
     } catch (e) {
       console.error(e);
     } finally {

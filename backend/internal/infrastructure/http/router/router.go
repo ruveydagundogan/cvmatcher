@@ -115,11 +115,13 @@ func NewRouter(deps Dependencies) http.Handler {
 				r.Get("/knowledge/categories", deps.KnowledgeHandler.ListCategories)
 				r.Get("/knowledge/{id}", deps.KnowledgeHandler.GetByID)
 				r.Delete("/knowledge/{id}", deps.KnowledgeHandler.Delete)
+				r.Post("/knowledge/query-ai", deps.KnowledgeHandler.QueryAI)
 			}
 
 			if deps.AdminHandler != nil {
 				r.Get("/admin/adapters", deps.AdminHandler.ListAdapters)
 				r.Post("/admin/adapters", deps.AdminHandler.CreateAdapter)
+				r.Post("/admin/adapters/{id}/activate", deps.AdminHandler.ActivateAdapter)
 				r.Delete("/admin/adapters/{id}", deps.AdminHandler.DeleteAdapter)
 
 				r.Get("/admin/prompts", deps.AdminHandler.ListPrompts)
