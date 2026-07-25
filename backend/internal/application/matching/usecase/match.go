@@ -166,10 +166,26 @@ func (uc *MatchUseCase) runMatch(ctx context.Context, userID string, cv *cvmodel
 	result.CVTitle = cv.Title
 	result.JDTitle = jd.Title
 
+	deduplicateSkills(&result.MatchedSkills, &result.MissingSkills)
+
 	if err := uc.matchRepo.Save(ctx, result); err != nil {
 		return nil, fmt.Errorf("save match: %w", err)
 	}
 	return result, nil
+}
+
+func deduplicateSkills(matched, missing *[]string) {
+	matchedSet := make(map[string]bool)
+	for _, s := range *matched {
+		matchedSet[strings.ToLower(strings.TrimSpace(s))] = true
+	}
+	var filtered []string
+	for _, s := range *missing {
+		if !matchedSet[strings.ToLower(strings.TrimSpace(s))] {
+			filtered = append(filtered, s)
+		}
+	}
+	*missing = filtered
 }
 
 func (uc *MatchUseCase) llmMatch(ctx context.Context, cv *cvmodel.CV, jd *jdmodel.JobDescription) (string, error) {
@@ -226,6 +242,8 @@ func (uc *MatchUseCase) fallbackMatch(ctx context.Context, userID string, cv *cv
 	result.EducationScore = 0.5
 	result.MatchedSkills = matchedSkills
 	result.MissingSkills = missingSkills
+
+	deduplicateSkills(&result.MatchedSkills, &result.MissingSkills)
 
 	analysis := fmt.Sprintf("Fallback analysis: %d of %d required skills matched. ", matched, total)
 	if overallScore >= 0.7 {

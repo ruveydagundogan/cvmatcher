@@ -29,15 +29,17 @@ function Gauge({ value, label, color }: { value: number; label: string; color: s
 
   return (
     <div className="flex flex-col items-center">
-      <svg width="130" height="130" className="transform -rotate-90">
-        <circle cx="65" cy="65" r={radius} fill="none" stroke="currentColor" strokeWidth="8" className="text-gray-200 dark:text-gray-700" />
-        <circle cx="65" cy="65" r={radius} fill="none" stroke="currentColor" strokeWidth="8"
-          strokeDasharray={circumference} strokeDashoffset={offset}
-          strokeLinecap="round" className={`${color} transition-all duration-1000`}
-        />
-      </svg>
-      <span className="text-2xl font-bold text-gray-900 dark:text-white -mt-8">{value.toFixed(0)}</span>
-      <span className="text-xs text-gray-500 mt-1">{label}</span>
+      <div className="relative flex items-center justify-center" style={{ width: 130, height: 130 }}>
+        <svg width="130" height="130" className="absolute transform -rotate-90">
+          <circle cx="65" cy="65" r={radius} fill="none" stroke="currentColor" strokeWidth="8" className="text-gray-200 dark:text-gray-700" />
+          <circle cx="65" cy="65" r={radius} fill="none" stroke="currentColor" strokeWidth="8"
+            strokeDasharray={circumference} strokeDashoffset={offset}
+            strokeLinecap="round" className={`${color} transition-all duration-1000`}
+          />
+        </svg>
+        <span className="text-2xl font-bold text-gray-900 dark:text-white z-10">{value.toFixed(0)}</span>
+      </div>
+      <span className="text-xs text-gray-500 mt-2">{label}</span>
     </div>
   );
 }
