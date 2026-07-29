@@ -1,4 +1,4 @@
--- LLM Decision Score Database Schema
+-- CV Matcher Database Schema
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 

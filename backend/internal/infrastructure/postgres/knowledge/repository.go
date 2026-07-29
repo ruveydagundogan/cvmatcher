@@ -19,8 +19,11 @@ func NewKnowledgeRepository(pool *pgxpool.Pool) *KnowledgeRepository {
 }
 
 func (r *KnowledgeRepository) Save(ctx context.Context, entry *model.KnowledgeEntry) error {
-	tags, _ := json.Marshal(entry.Tags)
-	_, err := r.pool.Exec(ctx,
+	tags, err := json.Marshal(entry.Tags)
+	if err != nil {
+		return fmt.Errorf("marshal tags: %w", err)
+	}
+	_, err = r.pool.Exec(ctx,
 		`INSERT INTO knowledge_entries (id, user_id, title, content, tags, category, source, created_at, updated_at)
 		 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
 		entry.ID, entry.UserID, entry.Title, entry.Content, string(tags), entry.Category, entry.Source, entry.CreatedAt, entry.UpdatedAt,
@@ -42,7 +45,9 @@ func (r *KnowledgeRepository) FindByID(ctx context.Context, id string) (*model.K
 	if err != nil {
 		return nil, fmt.Errorf("find knowledge entry: %w", err)
 	}
-	json.Unmarshal([]byte(tagsStr), &entry.Tags)
+	if err := json.Unmarshal([]byte(tagsStr), &entry.Tags); err != nil {
+		return nil, fmt.Errorf("unmarshal tags: %w", err)
+	}
 	return &entry, nil
 }
 
@@ -67,7 +72,9 @@ func (r *KnowledgeRepository) FindByUserID(ctx context.Context, userID string, o
 		if err := rows.Scan(&entry.ID, &entry.UserID, &entry.Title, &entry.Content, &tagsStr, &entry.Category, &entry.Source, &entry.CreatedAt, &entry.UpdatedAt); err != nil {
 			return nil, 0, fmt.Errorf("scan knowledge entry: %w", err)
 		}
-		json.Unmarshal([]byte(tagsStr), &entry.Tags)
+		if err := json.Unmarshal([]byte(tagsStr), &entry.Tags); err != nil {
+			return nil, 0, fmt.Errorf("unmarshal tags: %w", err)
+		}
 		entries = append(entries, &entry)
 	}
 	return entries, total, nil
@@ -80,7 +87,9 @@ func (r *KnowledgeRepository) Search(ctx context.Context, query string, tags []s
 
 	if query != "" {
 		where = append(where, fmt.Sprintf("(to_tsvector('english', title || ' ' || content) @@ plainto_tsquery('english', $%d) OR title ILIKE $%d OR content ILIKE $%d)", argIdx, argIdx+1, argIdx+1))
-		likeQuery := "%" + query + "%"
+		escaped := strings.ReplaceAll(strings.ReplaceAll(query, "\\", "\\\\"), "%", "\\%")
+		escaped = strings.ReplaceAll(escaped, "_", "\\_")
+		likeQuery := "%" + escaped + "%"
 		args = append(args, query, likeQuery)
 		argIdx += 2
 	}
@@ -116,15 +125,20 @@ func (r *KnowledgeRepository) Search(ctx context.Context, query string, tags []s
 		if err := rows.Scan(&entry.ID, &entry.UserID, &entry.Title, &entry.Content, &tagsStr, &entry.Category, &entry.Source, &entry.CreatedAt, &entry.UpdatedAt); err != nil {
 			return nil, fmt.Errorf("scan search result: %w", err)
 		}
-		json.Unmarshal([]byte(tagsStr), &entry.Tags)
+		if err := json.Unmarshal([]byte(tagsStr), &entry.Tags); err != nil {
+			return nil, fmt.Errorf("unmarshal search tags: %w", err)
+		}
 		results = append(results, &model.KnowledgeSearchResult{Entry: entry, Score: 1.0})
 	}
 	return results, nil
 }
 
 func (r *KnowledgeRepository) Update(ctx context.Context, entry *model.KnowledgeEntry) error {
-	tags, _ := json.Marshal(entry.Tags)
-	_, err := r.pool.Exec(ctx,
+	tags, err := json.Marshal(entry.Tags)
+	if err != nil {
+		return fmt.Errorf("marshal tags: %w", err)
+	}
+	_, err = r.pool.Exec(ctx,
 		`UPDATE knowledge_entries SET title=$1, content=$2, tags=$3, category=$4, source=$5, updated_at=NOW() WHERE id=$6`,
 		entry.Title, entry.Content, string(tags), entry.Category, entry.Source, entry.ID,
 	)

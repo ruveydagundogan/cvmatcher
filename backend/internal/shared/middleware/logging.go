@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"log/slog"
+	"net"
 	"net/http"
-	"strings"
 	"time"
 )
 
@@ -38,9 +38,10 @@ func (w *statusResponseWriter) WriteHeader(code int) {
 	w.ResponseWriter.WriteHeader(code)
 }
 
-func maskIP(ip string) string {
-	if idx := strings.LastIndex(ip, ":"); idx != -1 {
-		return ip[:idx] + ":***"
+func maskIP(addr string) string {
+	host, _, err := net.SplitHostPort(addr)
+	if err != nil {
+		host = addr
 	}
-	return ip
+	return host + ":***"
 }

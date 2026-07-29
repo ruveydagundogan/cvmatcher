@@ -15,8 +15,8 @@ type Handler struct {
 	logger *slog.Logger
 }
 
-func NewHandler(pool *pgxpool.Pool) *Handler {
-	return &Handler{pool: pool}
+func NewHandler(pool *pgxpool.Pool, logger *slog.Logger) *Handler {
+	return &Handler{pool: pool, logger: logger}
 }
 
 func (h *Handler) Live(w http.ResponseWriter, r *http.Request) {

@@ -193,33 +193,6 @@ func validateScores(r *matchmodel.MatchResult) {
 	r.SkillMatchScore = norm(r.SkillMatchScore)
 	r.ExperienceScore = norm(r.ExperienceScore)
 	r.EducationScore = norm(r.EducationScore)
-
-	if r.OverallScore > 1.0 {
-		r.OverallScore = 1.0
-	}
-	if r.SkillMatchScore > 1.0 {
-		r.SkillMatchScore = 1.0
-	}
-	if r.ExperienceScore > 1.0 {
-		r.ExperienceScore = 1.0
-	}
-	if r.EducationScore > 1.0 {
-		r.EducationScore = 1.0
-	}
-
-	if r.OverallScore < 0.1 || (r.OverallScore < 0.4 && len(r.MatchedSkills) == 0 && len(r.MissingSkills) == 0) {
-		r.ExperienceScore = 0.5
-		r.EducationScore = 0.5
-		if len(r.MatchedSkills) > 0 {
-			r.SkillMatchScore = math.Min(1.0, float64(len(r.MatchedSkills))*0.2)
-			r.OverallScore = r.SkillMatchScore*0.5 + 0.5*0.25 + 0.5*0.25
-		} else if len(r.MissingSkills) > 0 && r.OverallScore < 0.4 {
-			r.OverallScore = 0.4
-		} else {
-			r.SkillMatchScore = 0
-			r.OverallScore = 0.25
-		}
-	}
 }
 
 func deduplicateSkills(matched, missing *[]string) {
@@ -530,10 +503,10 @@ func cleanJSON(s string) string {
 }
 
 func norm(score float64) float64 {
-	if score > 1.0 {
-		return score / 100.0
+	if score > 1.0 && score <= 100.0 {
+		return math.Max(0.0, math.Min(1.0, score/100.0))
 	}
-	return score
+	return math.Max(0.0, math.Min(1.0, score))
 }
 
 func truncateStr(s string, maxLen int) string {

@@ -120,21 +120,25 @@ func NewRouter(deps Dependencies) http.Handler {
 			}
 
 			if deps.AdminHandler != nil {
-				r.Get("/admin/adapters", deps.AdminHandler.ListAdapters)
-				r.Post("/admin/adapters", deps.AdminHandler.CreateAdapter)
-				r.Post("/admin/adapters/{id}/activate", deps.AdminHandler.ActivateAdapter)
-				r.Delete("/admin/adapters/{id}", deps.AdminHandler.DeleteAdapter)
+				r.Group(func(r chi.Router) {
+					r.Use(middleware.RequirePermission("admin"))
 
-				r.Get("/admin/prompts", deps.AdminHandler.ListPrompts)
-				r.Post("/admin/prompts", deps.AdminHandler.CreatePrompt)
-				r.Put("/admin/prompts/{id}", deps.AdminHandler.UpdatePrompt)
-				r.Post("/admin/prompts/{id}/activate", deps.AdminHandler.ActivatePrompt)
-				r.Delete("/admin/prompts/{id}", deps.AdminHandler.DeletePrompt)
+					r.Get("/admin/adapters", deps.AdminHandler.ListAdapters)
+					r.Post("/admin/adapters", deps.AdminHandler.CreateAdapter)
+					r.Post("/admin/adapters/{id}/activate", deps.AdminHandler.ActivateAdapter)
+					r.Delete("/admin/adapters/{id}", deps.AdminHandler.DeleteAdapter)
 
-				r.Get("/admin/settings", deps.AdminHandler.GetSettings)
-				r.Put("/admin/settings", deps.AdminHandler.SaveSettings)
+					r.Get("/admin/prompts", deps.AdminHandler.ListPrompts)
+					r.Post("/admin/prompts", deps.AdminHandler.CreatePrompt)
+					r.Put("/admin/prompts/{id}", deps.AdminHandler.UpdatePrompt)
+					r.Post("/admin/prompts/{id}/activate", deps.AdminHandler.ActivatePrompt)
+					r.Delete("/admin/prompts/{id}", deps.AdminHandler.DeletePrompt)
 
-				r.Get("/admin/logs", deps.AdminHandler.ListLogs)
+					r.Get("/admin/settings", deps.AdminHandler.GetSettings)
+					r.Put("/admin/settings", deps.AdminHandler.SaveSettings)
+
+					r.Get("/admin/logs", deps.AdminHandler.ListLogs)
+				})
 			}
 		})
 	})

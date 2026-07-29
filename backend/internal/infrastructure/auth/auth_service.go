@@ -26,11 +26,10 @@ type JWTServiceImpl struct {
 func NewJWTService(cfg config.JWTConfig) *JWTServiceImpl {
 	secret := cfg.Secret
 	if secret == "" {
-		env := os.Getenv("GO_ENV")
-		if env == "production" || env == "staging" {
-			panic("JWT_SECRET is required in production/staging")
-		}
-		secret = "dev-only-secret-not-for-production"
+		secret = os.Getenv("JWT_SECRET")
+	}
+	if secret == "" {
+		panic("JWT_SECRET environment variable is required")
 	}
 	return &JWTServiceImpl{
 		secret:          []byte(secret),

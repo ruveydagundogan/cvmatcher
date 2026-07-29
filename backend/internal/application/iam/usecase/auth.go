@@ -45,7 +45,10 @@ func (uc *RegisterUseCase) Execute(ctx context.Context, email, password, firstNa
 	defer cancel()
 
 	existing, err := uc.userRepo.FindByEmail(ctx, email)
-	if err == nil && existing != nil {
+	if err != nil {
+		uc.logger.Warn("failed to check existing email", "error", err)
+	}
+	if existing != nil {
 		return "", nil, apperrors.AlreadyExists("email already registered")
 	}
 
@@ -62,7 +65,9 @@ func (uc *RegisterUseCase) Execute(ctx context.Context, email, password, firstNa
 
 	defaultRole, err := uc.roleRepo.FindByName(ctx, "user")
 	if err == nil && defaultRole != nil {
-		_ = uc.roleRepo.AssignToUser(ctx, user.ID, defaultRole.ID)
+		if err := uc.roleRepo.AssignToUser(ctx, user.ID, defaultRole.ID); err != nil {
+			uc.logger.Warn("failed to assign role", "user_id", user.ID, "error", err)
+		}
 	}
 
 	token, err := uc.jwtService.GenerateToken(user.ID, user.Email, "user")
@@ -70,10 +75,12 @@ func (uc *RegisterUseCase) Execute(ctx context.Context, email, password, firstNa
 		return "", nil, apperrors.Internal("failed to generate token", err)
 	}
 
-	_ = uc.auditRepo.Save(ctx, auditmodel.NewAuditLog(
+	if err := uc.auditRepo.Save(ctx, auditmodel.NewAuditLog(
 		user.ID, "register", "user", user.ID,
 		"", "", map[string]string{"email": email},
-	))
+	)); err != nil {
+		uc.logger.Warn("failed to save audit log", "error", err)
+	}
 
 	uc.logger.Info("user registered", "user_id", user.ID, "email", email)
 
@@ -122,10 +129,12 @@ func (uc *LoginUseCase) Execute(ctx context.Context, email, password string) (st
 		return "", nil, apperrors.Internal("failed to generate token", err)
 	}
 
-	_ = uc.auditRepo.Save(ctx, auditmodel.NewAuditLog(
+	if err := uc.auditRepo.Save(ctx, auditmodel.NewAuditLog(
 		user.ID, "login", "user", user.ID,
 		"", "", nil,
-	))
+	)); err != nil {
+		uc.logger.Warn("failed to save audit log", "error", err)
+	}
 
 	uc.logger.Info("user logged in", "user_id", user.ID)
 

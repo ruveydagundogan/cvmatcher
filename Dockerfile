@@ -1,5 +1,5 @@
 # Backend Dockerfile — Render Deploy
-FROM golang:1.23-alpine AS builder
+FROM golang:1.26-alpine AS builder
 
 WORKDIR /app
 
@@ -24,5 +24,7 @@ RUN chown -R appuser:appuser /app
 USER appuser
 
 EXPOSE 8080
+
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD wget -qO- http://localhost:8080/health/live || exit 1
 
 CMD ["./server"]

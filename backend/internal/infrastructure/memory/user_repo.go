@@ -2,7 +2,6 @@ package memory
 
 import (
 	"context"
-	"fmt"
 	"sync"
 	"time"
 
@@ -57,7 +56,7 @@ func (r *InMemoryUserRepo) FindByID(_ context.Context, id string) (*model.User, 
 	if u, ok := r.users[id]; ok {
 		return u, nil
 	}
-	return nil, fmt.Errorf("not found")
+	return nil, nil
 }
 
 func (r *InMemoryUserRepo) FindByEmail(_ context.Context, email string) (*model.User, error) {
@@ -68,7 +67,7 @@ func (r *InMemoryUserRepo) FindByEmail(_ context.Context, email string) (*model.
 			return u, nil
 		}
 	}
-	return nil, fmt.Errorf("not found")
+	return nil, nil
 }
 
 func (r *InMemoryUserRepo) Update(_ context.Context, user *model.User) error {

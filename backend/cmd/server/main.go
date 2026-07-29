@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -60,15 +59,6 @@ import (
 
 func main() {
 	cfg := config.Load()
-
-	if cfg.JWT.Secret == "" {
-		env := os.Getenv("GO_ENV")
-		if env == "production" || env == "staging" {
-			slog.Error("JWT_SECRET is required in production/staging")
-			os.Exit(1)
-		}
-		slog.Warn("JWT_SECRET not set, using development fallback")
-	}
 
 	log := logger.New(cfg.Log.Level, cfg.Log.Format)
 
@@ -148,7 +138,7 @@ func main() {
 
 	m := metrics.New("cvmatcher")
 
-	healthHandler := health.NewHandler(pool)
+	healthHandler := health.NewHandler(pool, log)
 	iamH := iamhandler.NewHandler(registerUC, loginUC, getProfileUC, updateProfileUC)
 	llmH := llmhandler.NewHandler(scoreUC, historyUC, deleteHistoryUC, statsUC, m)
 

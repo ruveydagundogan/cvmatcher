@@ -13,8 +13,28 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const register = async () => {
+    setError("");
+
+    if (!firstName.trim()) {
+      setError("First name is required");
+      return;
+    }
+    if (!lastName.trim()) {
+      setError("Last name is required");
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setError("Please enter a valid email address");
+      return;
+    }
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
     setLoading(true);
     try {
       const data = await api.post("/api/v1/auth/register", {
@@ -33,10 +53,9 @@ export default function RegisterPage() {
       if (data?.user?.first_name) {
         localStorage.setItem("userName", data.user.first_name);
       }
-      alert("Registration successful");
       router.push("/dashboard");
     } catch (e: any) {
-      alert(e.message || "Registration failed");
+      setError(e.message || "Registration failed");
     } finally {
       setLoading(false);
     }
@@ -107,6 +126,12 @@ export default function RegisterPage() {
               />
             </div>
           </div>
+
+          {error && (
+            <div className="mt-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+              {error}
+            </div>
+          )}
 
           <button
             onClick={register}

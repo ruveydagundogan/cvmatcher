@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+import { API_BASE_URL } from "@/lib/config";
 
 export interface ScoreResult {
   prompt: string;
@@ -37,7 +36,7 @@ export function useLLM() {
       if (token) headers["Authorization"] = `Bearer ${token}`;
 
       const startTime = performance.now();
-      const chatRes = await fetch(`${API_BASE}/api/v1/llm/chat`, {
+      const chatRes = await fetch(`${API_BASE_URL}/api/v1/llm/chat`, {
         method: "POST",
         headers,
         body: JSON.stringify({ prompt, max_tokens: 256 }),
@@ -66,7 +65,7 @@ export function useLLM() {
 
       let scoreValue: number | null = null;
       try {
-        const scoreRes = await fetch(`${API_BASE}/api/v1/score`, {
+        const scoreRes = await fetch(`${API_BASE_URL}/api/v1/score`, {
           method: "POST",
           headers,
           body: JSON.stringify({ prompt, response: responseContent }),
@@ -101,8 +100,6 @@ export function useLLM() {
 
   return {
     loadStatus: error ? "error" as const : "loaded" as const,
-    initProgress: 1,
-    progressText: "",
     loadError: error,
     isInferenceRunning,
     responseText,

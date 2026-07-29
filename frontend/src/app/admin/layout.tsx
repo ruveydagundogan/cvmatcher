@@ -1,5 +1,8 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Sidebar } from "@/components/Sidebar";
 import { Header } from "@/components/Header";
 
@@ -8,6 +11,15 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.replace("/");
+    }
+  }, [router]);
+
   return (
     <div className="flex min-h-screen">
       <Sidebar />
@@ -15,10 +27,10 @@ export default function AdminLayout({
         <Header />
         <main className="flex-1 p-6 overflow-auto">
           <div className="flex gap-2 mb-6">
-            <a href="/admin/adapters" className="text-sm px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-purple-500/10 hover:text-purple-400">Adapters</a>
-            <a href="/admin/prompts" className="text-sm px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-purple-500/10 hover:text-purple-400">Prompts</a>
-            <a href="/admin/settings" className="text-sm px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-purple-500/10 hover:text-purple-400">Settings</a>
-            <a href="/admin/logs" className="text-sm px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-purple-500/10 hover:text-purple-400">Logs</a>
+            <Link href="/admin/adapters" className="text-sm px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-purple-500/10 hover:text-purple-400">Adapters</Link>
+            <Link href="/admin/prompts" className="text-sm px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-purple-500/10 hover:text-purple-400">Prompts</Link>
+            <Link href="/admin/settings" className="text-sm px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-purple-500/10 hover:text-purple-400">Settings</Link>
+            <Link href="/admin/logs" className="text-sm px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-purple-500/10 hover:text-purple-400">Logs</Link>
           </div>
           {children}
         </main>

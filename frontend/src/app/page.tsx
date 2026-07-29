@@ -11,8 +11,24 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const login = async () => {
+    setError("");
+
+    if (!email.trim()) {
+      setError("Email is required");
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setError("Please enter a valid email address");
+      return;
+    }
+    if (!password) {
+      setError("Password is required");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -30,7 +46,7 @@ export default function LoginPage() {
 
       router.push("/dashboard");
     } catch (e: any) {
-      alert(e.message || "Login failed");
+      setError(e.message || "Login failed");
     } finally {
       setLoading(false);
     }
@@ -80,6 +96,12 @@ export default function LoginPage() {
               />
             </div>
           </div>
+
+          {error && (
+            <div className="mt-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+              {error}
+            </div>
+          )}
 
           <button
             onClick={login}

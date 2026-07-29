@@ -1,19 +1,22 @@
-function getAPIBase(): string {
-  if (process.env.NEXT_PUBLIC_API_URL) {
-    return process.env.NEXT_PUBLIC_API_URL;
-  }
-  return "https://cvmatcher-api.onrender.com";
+import { API_BASE_URL } from "./config";
+
+export const API_BASE = API_BASE_URL;
+
+function getToken(): string | null {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem("token");
 }
 
-const RAW_API_BASE = getAPIBase();
-if (typeof window !== "undefined") {
-  console.log("[cvmatcher] API_BASE =", RAW_API_BASE);
+function clearAuth(): void {
+  if (typeof window === "undefined") return;
+  localStorage.removeItem("token");
+  localStorage.removeItem("userId");
+  localStorage.removeItem("userName");
 }
-export const API_BASE = RAW_API_BASE;
 
 function getHeaders(): Record<string, string> {
   const headers: Record<string, string> = { "Content-Type": "application/json" };
-  const token = localStorage.getItem("token");
+  const token = getToken();
   if (token) headers["Authorization"] = `Bearer ${token}`;
   return headers;
 }
@@ -22,9 +25,7 @@ async function handleResponse(res: Response) {
   const text = await res.text();
 
   if (res.status === 401) {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userId");
-    localStorage.removeItem("userName");
+    clearAuth();
     if (typeof window !== "undefined") {
       window.location.href = "/";
     }
