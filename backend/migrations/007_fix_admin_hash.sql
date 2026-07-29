@@ -1,9 +1,8 @@
 -- Fix bcrypt hashes for seed users
--- Previous hash was incorrect (did not match 'admin123')
--- Verified hash for "admin123": $2a$10$AnorUp.ommMnkp1ZUwQ/f.QkWDgirOkanHjMzEMXDhmeeWf2Uq.x2
+-- admin@cvmatcher.com / admin123
+UPDATE users SET password_hash = '$2a$10$DKWAxFLoN1JjjwjLxQ503.z/YkZW58X4yJVWSnxY0GSyeb0JTnOXC'
+WHERE email = 'admin@cvmatcher.com' AND password_hash != '$2a$10$DKWAxFLoN1JjjwjLxQ503.z/YkZW58X4yJVWSnxY0GSyeb0JTnOXC';
 
-UPDATE users SET password_hash = '$2a$10$AnorUp.ommMnkp1ZUwQ/f.QkWDgirOkanHjMzEMXDhmeeWf2Uq.x2'
-WHERE email = 'admin@cvmatcher.com' AND password_hash != '$2a$10$AnorUp.ommMnkp1ZUwQ/f.QkWDgirOkanHjMzEMXDhmeeWf2Uq.x2';
-
-UPDATE users SET password_hash = '$2a$10$AnorUp.ommMnkp1ZUwQ/f.QkWDgirOkanHjMzEMXDhmeeWf2Uq.x2'
-WHERE email = 'user@cvmatcher.com' AND password_hash != '$2a$10$AnorUp.ommMnkp1ZUwQ/f.QkWDgirOkanHjMzEMXDhmeeWf2Uq.x2';
+-- user@cvmatcher.com / user123
+UPDATE users SET password_hash = '$2a$10$HIfA2/GDBT0kCisl/7kpG.YDRhMD3Cgmyr55TUcZNCjBRqgvH4i7.'
+WHERE email = 'user@cvmatcher.com' AND password_hash != '$2a$10$HIfA2/GDBT0kCisl/7kpG.YDRhMD3Cgmyr55TUcZNCjBRqgvH4i7.';

@@ -89,6 +89,7 @@ func (uc *RegisterUseCase) Execute(ctx context.Context, email, password, firstNa
 
 type LoginUseCase struct {
 	userRepo   iamrepo.UserRepository
+	roleRepo   iamrepo.RoleRepository
 	jwtService service.JWTService
 	authService service.AuthService
 	auditRepo  auditrepo.AuditRepository
@@ -97,6 +98,7 @@ type LoginUseCase struct {
 
 func NewLoginUseCase(
 	userRepo iamrepo.UserRepository,
+	roleRepo iamrepo.RoleRepository,
 	jwtService service.JWTService,
 	authService service.AuthService,
 	auditRepo auditrepo.AuditRepository,
@@ -104,6 +106,7 @@ func NewLoginUseCase(
 ) *LoginUseCase {
 	return &LoginUseCase{
 		userRepo:    userRepo,
+		roleRepo:    roleRepo,
 		jwtService:  jwtService,
 		authService: authService,
 		auditRepo:   auditRepo,
@@ -124,7 +127,13 @@ func (uc *LoginUseCase) Execute(ctx context.Context, email, password string) (st
 		return "", nil, apperrors.Unauthorized("invalid email or password")
 	}
 
-	token, err := uc.jwtService.GenerateToken(user.ID, user.Email, "user")
+	role := "user"
+	userRole, err := uc.roleRepo.GetUserRole(ctx, user.ID)
+	if err == nil && userRole != nil {
+		role = userRole.RoleName
+	}
+
+	token, err := uc.jwtService.GenerateToken(user.ID, user.Email, role)
 	if err != nil {
 		return "", nil, apperrors.Internal("failed to generate token", err)
 	}
