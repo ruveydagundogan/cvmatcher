@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -42,13 +43,20 @@ type Client struct {
 	model      string
 }
 
+func getDefaultModel() string {
+	if m := os.Getenv("OLLAMA_MODEL"); m != "" {
+		return m
+	}
+	return "gemma:2b"
+}
+
 func NewClient(baseURL string, timeout time.Duration) *Client {
 	return &Client{
 		baseURL: baseURL,
 		httpClient: &http.Client{
 			Timeout: timeout,
 		},
-		model: "gemma:2b",
+		model: getDefaultModel(),
 	}
 }
 
