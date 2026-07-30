@@ -90,21 +90,15 @@ func (uc *MatchUseCase) parseCV(ctx context.Context, cv *cvmodel.CV) error {
 		return fmt.Errorf("llm parse cv: %w", err)
 	}
 
-	cleaned := cleanJSON(response)
-	var parsed struct {
-		Skills     []string                 `json:"skills"`
-		Experience []cvmodel.ParsedExperience `json:"experience"`
-		Education  []cvmodel.ParsedEducation  `json:"education"`
-		Summary    string                   `json:"summary"`
-	}
-	if err := json.Unmarshal([]byte(cleaned), &parsed); err != nil {
-		return fmt.Errorf("parse cv response: %w", err)
+	skills, exp, edu, summary := parseCVResponse(cleanJSON(response))
+	if len(skills) == 0 {
+		return fmt.Errorf("parse cv response: no skills extracted")
 	}
 
-	cv.ParsedSkills = parsed.Skills
-	cv.ParsedExperience = parsed.Experience
-	cv.ParsedEducation = parsed.Education
-	cv.ParsedSummary = parsed.Summary
+	cv.ParsedSkills = skills
+	cv.ParsedExperience = exp
+	cv.ParsedEducation = edu
+	cv.ParsedSummary = summary
 	cv.Status = "completed"
 	return uc.cvRepo.Update(ctx, cv)
 }
@@ -514,4 +508,78 @@ func truncateStr(s string, maxLen int) string {
 		return s
 	}
 	return s[:maxLen] + "..."
+}
+
+func parseCVResponse(raw string) (skills []string, exp []cvmodel.ParsedExperience, edu []cvmodel.ParsedEducation, summary string) {
+	type skillObj struct {
+		Name  string `json:"name"`
+		Level int    `json:"level,omitempty"`
+	}
+
+	type parsedExp struct {
+		Title       string `json:"title"`
+		Company     string `json:"company"`
+		CompanyName string `json:"company_name"`
+		StartDate   string `json:"start_date"`
+		EndDate     string `json:"end_date"`
+		Description string `json:"description"`
+	}
+
+	type parsedEdu struct {
+		Degree      string `json:"degree"`
+		Field       string `json:"field"`
+		Institution string `json:"institution"`
+		StartYear   any    `json:"start_year"`
+		EndYear     any    `json:"end_year"`
+	}
+
+	var parsed struct {
+		Skills     json.RawMessage `json:"skills"`
+		Experience []parsedExp     `json:"experience"`
+		Education  []parsedEdu     `json:"education"`
+		Summary    string          `json:"summary"`
+	}
+
+	if err := json.Unmarshal([]byte(raw), &parsed); err != nil {
+		return nil, nil, nil, ""
+	}
+
+	if len(parsed.Skills) > 0 {
+		if err := json.Unmarshal(parsed.Skills, &skills); err != nil {
+			var objs []skillObj
+			if err := json.Unmarshal(parsed.Skills, &objs); err == nil {
+				for _, s := range objs {
+					if s.Name != "" {
+						skills = append(skills, s.Name)
+					}
+				}
+			}
+		}
+	}
+
+	for _, e := range parsed.Experience {
+		company := e.Company
+		if company == "" {
+			company = e.CompanyName
+		}
+		exp = append(exp, cvmodel.ParsedExperience{
+			Title:       e.Title,
+			Company:     company,
+			StartDate:   e.StartDate,
+			EndDate:     e.EndDate,
+			Description: e.Description,
+		})
+	}
+
+	for _, e := range parsed.Education {
+		edu = append(edu, cvmodel.ParsedEducation{
+			Degree:      e.Degree,
+			Field:       e.Field,
+			Institution: e.Institution,
+			StartYear:   fmt.Sprintf("%v", e.StartYear),
+			EndYear:     fmt.Sprintf("%v", e.EndYear),
+		})
+	}
+
+	return skills, exp, edu, parsed.Summary
 }

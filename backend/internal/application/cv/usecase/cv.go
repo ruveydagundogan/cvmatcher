@@ -67,21 +67,11 @@ func (uc *CVUseCase) ParseWithLLM(ctx context.Context, cvID string) (*cvmodel.CV
 	}
 
 	response = cleanJSON(response)
-	var parsed struct {
-		Skills     []string                 `json:"skills"`
-		Experience []cvmodel.ParsedExperience `json:"experience"`
-		Education  []cvmodel.ParsedEducation  `json:"education"`
-		Summary    string                   `json:"summary"`
-	}
-	if err := json.Unmarshal([]byte(response), &parsed); err != nil {
-		uc.log.Warn("llm response parse failed, using fallback", "error", err)
+	cv.ParsedSkills, cv.ParsedExperience, cv.ParsedEducation, cv.ParsedSummary = parseCVResponse(response)
+	if len(cv.ParsedSkills) == 0 {
+		uc.log.Warn("llm response parse failed, using fallback")
 		return uc.fallbackParse(ctx, cv)
 	}
-
-	cv.ParsedSkills = parsed.Skills
-	cv.ParsedExperience = parsed.Experience
-	cv.ParsedEducation = parsed.Education
-	cv.ParsedSummary = parsed.Summary
 	cv.Status = "completed"
 	cv.UpdatedAt = time.Now().UTC()
 	if err := uc.repo.Update(ctx, cv); err != nil {
@@ -174,6 +164,83 @@ func uniqueStrings(s []string) []string {
 		}
 	}
 	return result
+}
+
+func parseCVResponse(raw string) (skills []string, exp []cvmodel.ParsedExperience, edu []cvmodel.ParsedEducation, summary string) {
+	type skillObj struct {
+		Name  string `json:"name"`
+		Level int    `json:"level,omitempty"`
+	}
+
+	type parsedExp struct {
+		Title       string `json:"title"`
+		Company     string `json:"company"`
+		CompanyName string `json:"company_name"`
+		StartDate   string `json:"start_date"`
+		EndDate     string `json:"end_date"`
+		Description string `json:"description"`
+	}
+
+	type parsedEdu struct {
+		Degree      string `json:"degree"`
+		Field       string `json:"field"`
+		Institution string `json:"institution"`
+		StartYear   any    `json:"start_year"`
+		EndYear     any    `json:"end_year"`
+	}
+
+	var parsed struct {
+		Skills     json.RawMessage `json:"skills"`
+		Experience []parsedExp     `json:"experience"`
+		Education  []parsedEdu     `json:"education"`
+		Summary    string          `json:"summary"`
+	}
+
+	if err := json.Unmarshal([]byte(raw), &parsed); err != nil {
+		return nil, nil, nil, ""
+	}
+
+	// Skills: try flat strings first, then object array
+	if len(parsed.Skills) > 0 {
+		if err := json.Unmarshal(parsed.Skills, &skills); err != nil {
+			var objs []skillObj
+			if err := json.Unmarshal(parsed.Skills, &objs); err == nil {
+				for _, s := range objs {
+					if s.Name != "" {
+						skills = append(skills, s.Name)
+					}
+				}
+			}
+		}
+	}
+
+	// Experience: map both company and company_name
+	for _, e := range parsed.Experience {
+		company := e.Company
+		if company == "" {
+			company = e.CompanyName
+		}
+		exp = append(exp, cvmodel.ParsedExperience{
+			Title:       e.Title,
+			Company:     company,
+			StartDate:   e.StartDate,
+			EndDate:     e.EndDate,
+			Description: e.Description,
+		})
+	}
+
+	// Education: handle start_year/end_year as string or number
+	for _, e := range parsed.Education {
+		edu = append(edu, cvmodel.ParsedEducation{
+			Degree:      e.Degree,
+			Field:       e.Field,
+			Institution: e.Institution,
+			StartYear:   fmt.Sprintf("%v", e.StartYear),
+			EndYear:     fmt.Sprintf("%v", e.EndYear),
+		})
+	}
+
+	return skills, exp, edu, parsed.Summary
 }
 
 func cleanJSON(s string) string {
