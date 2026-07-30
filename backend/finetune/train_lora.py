@@ -21,6 +21,8 @@ from transformers import (
     AutoTokenizer,
     BitsAndBytesConfig,
     TrainingArguments,
+    Trainer,
+    DataCollatorForLanguageModeling,
     pipeline,
 )
 from peft import (
@@ -30,7 +32,6 @@ from peft import (
     PeftModel,
     PeftConfig,
 )
-from trl import SFTTrainer
 
 
 def parse_args():
@@ -149,13 +150,19 @@ def train(model, tokenizer, dataset, output_dir, args):
         report_to="none",
     )
 
-    trainer = SFTTrainer(
+    def tokenize_fn(examples):
+        return tokenizer(examples["text"], truncation=True, max_length=args.max_length, padding=False)
+
+    tokenized = dataset.map(tokenize_fn, batched=True, remove_columns=["text"])
+
+    collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
+
+    trainer = Trainer(
         model=model,
         tokenizer=tokenizer,
         args=training_args,
-        train_dataset=dataset,
-        dataset_text_field="text",
-        max_seq_length=args.max_length,
+        train_dataset=tokenized,
+        data_collator=collator,
     )
 
     trainer.train()
