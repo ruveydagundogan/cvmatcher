@@ -177,17 +177,19 @@ def create_ollama_modelfile(adapter_path, base_model, output_name="cv-parser"):
     ollama_model = base_model.replace("google/", "").replace("-it", "")
     if "/" in ollama_model:
         ollama_model = ollama_model.split("/")[-1].lower()
+    adapter_dirname = os.path.basename(adapter_path)
     modelfile_content = f"""FROM {ollama_model}
-ADAPTER {adapter_path}
+ADAPTER ./{adapter_dirname}
 """
-    modelfile_path = os.path.join(os.path.dirname(adapter_path), "Modelfile")
+    modelfile_path = os.path.join(adapter_path, "Modelfile")
     with open(modelfile_path, "w") as f:
         f.write(modelfile_content)
 
     print(f"[INFO] Modelfile created at {modelfile_path}")
     print(f"[INFO] Pull base model if needed: ollama pull {ollama_model}")
     print(f"[INFO] To load into Ollama, run:")
-    print(f"  ollama create {output_name} -f {modelfile_path}")
+    print(f"  cd {os.path.dirname(adapter_path)}")
+    print(f"  ollama create {output_name} -f {os.path.join(adapter_dirname, 'Modelfile')}")
     print(f"  ollama run {output_name}")
 
     return modelfile_path
