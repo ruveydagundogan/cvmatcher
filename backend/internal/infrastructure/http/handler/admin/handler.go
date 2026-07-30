@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 
@@ -100,7 +101,12 @@ func (h *Handler) ActivateAdapter(w http.ResponseWriter, r *http.Request) {
 		adapterModelName = target.Name
 	}
 
-	modelfile := fmt.Sprintf("FROM gemma:2b\nADAPTER %s", target.FilePath)
+	var modelfile string
+	if strings.HasSuffix(target.FilePath, ".gguf") {
+		modelfile = fmt.Sprintf("FROM %s", target.FilePath)
+	} else {
+		modelfile = fmt.Sprintf("FROM qwen2.5:1.5b-instruct\nADAPTER %s", target.FilePath)
+	}
 	if err := h.mcpEngine.LLMClient().CreateModel(r.Context(), adapterModelName, modelfile); err == nil {
 		h.mcpEngine.LLMClient().SetModel(adapterModelName)
 		h.mcpEngine.LoadAdapter(target.Name, target.Description)

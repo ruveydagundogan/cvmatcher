@@ -2,11 +2,11 @@
 """
 PEFT/LoRA Fine-Tuning Pipeline for CV Matcher
 
-Fine-tunes Gemma-2B using LoRA (Low-Rank Adaptation) on a CV parsing dataset.
+Fine-tunes Qwen2.5-1.5B-Instruct using LoRA (Low-Rank Adaptation) on a CV parsing dataset.
 Outputs a LoRA adapter that can be loaded into Ollama via Modelfile.
 
 Usage:
-    python train_lora.py --base-model gemma:2b --data data/cv_parse_dataset.json --output-dir ./adapters/cv-parser-v1
+    python train_lora.py --base-model Qwen/Qwen2.5-1.5B-Instruct --data data/cv_parse_dataset.json --output-dir ./adapters/cv-parser-v1
 """
 
 import argparse
@@ -36,7 +36,7 @@ from peft import (
 
 def parse_args():
     parser = argparse.ArgumentParser(description="LoRA fine-tuning for CV Matcher")
-    parser.add_argument("--base-model", type=str, default="google/gemma-2b-it",
+    parser.add_argument("--base-model", type=str, default="Qwen/Qwen2.5-1.5B-Instruct",
                         help="Base model name or path")
     parser.add_argument("--data", type=str, required=True,
                         help="Path to training data JSON")
@@ -178,8 +178,12 @@ def create_ollama_modelfile(adapter_path, base_model, output_name="cv-parser"):
     if "/" in ollama_model:
         ollama_model = ollama_model.split("/")[-1].lower()
     adapter_dirname = os.path.basename(adapter_path)
+
+    # Qwen2.5 requires GGUF adapter format (Safetensors ADAPTER not supported)
+    model_id = base_model.replace("/", "--")
+    gguf_path = os.path.join(adapter_path, f"{output_name}.gguf")
     modelfile_content = f"""FROM {ollama_model}
-ADAPTER ./{adapter_dirname}
+ADAPTER {gguf_path}
 """
     modelfile_path = os.path.join(adapter_path, "Modelfile")
     with open(modelfile_path, "w") as f:
@@ -187,7 +191,13 @@ ADAPTER ./{adapter_dirname}
 
     print(f"[INFO] Modelfile created at {modelfile_path}")
     print(f"[INFO] Pull base model if needed: ollama pull {ollama_model}")
-    print(f"[INFO] To load into Ollama, run:")
+    print(f"[INFO] NOTE: Qwen2.5 does not support Safetensors ADAPTER in Ollama.")
+    print(f"[INFO] Convert to GGUF first:")
+    print(f"  python3 /tmp/llama.cpp/convert_lora_to_gguf.py \\")
+    print(f"    --base-model ~/.cache/huggingface/hub/models--{model_id}/snapshots/*/ \\")
+    print(f"    --lora-model {adapter_path} \\")
+    print(f"    --output {gguf_path}")
+    print(f"[INFO] Then load into Ollama:")
     print(f"  cd {os.path.dirname(adapter_path)}")
     print(f"  ollama create {output_name} -f {os.path.join(adapter_dirname, 'Modelfile')}")
     print(f"  ollama run {output_name}")

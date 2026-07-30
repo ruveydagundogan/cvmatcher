@@ -99,7 +99,7 @@ func (h *Handler) Score(w http.ResponseWriter, r *http.Request) {
 	req.Response = strings.TrimSpace(req.Response)
 
 	if req.Model == "" {
-		req.Model = "Gemma-2B"
+		req.Model = "qwen2.5:1.5b-instruct"
 	}
 
 	result, err := h.scoreUC.Execute(r.Context(), userID, req)
@@ -175,6 +175,6 @@ func (h *Handler) GetStats(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) GetModels(w http.ResponseWriter, r *http.Request) {
 	response.Success(w, map[string]interface{}{
-		"models": []string{"Gemma-2B", "Gemma-7B"},
+		"models": []string{"qwen2.5:1.5b-instruct", "cv-parser", "cv-jd-matcher"},
 	})
 }

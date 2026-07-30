@@ -22,3 +22,10 @@ frontend/.next/
 frontend/out/
 .vercel
 .env*
+
+# Fine-tuning adapters & checkpoints (large binary files)
+backend/finetune/adapters/
+backend/finetune/adapters-clean/
+
+# Ollama working directory (local GGUF/safetensors)
+ollama-work/

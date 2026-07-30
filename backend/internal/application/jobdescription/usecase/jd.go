@@ -61,7 +61,7 @@ func (uc *JDUseCase) AnalyzeWithLLM(ctx context.Context, jdID string) (*jdmodel.
 	}
 
 	prompt := fmt.Sprintf(llm.JDAnalyzePrompt, jd.Content)
-	response, err := uc.llmClient.ChatCompletion(ctx, []llm.ChatMessage{
+	response, err := uc.llmClient.ChatCompletionWithModel(ctx, llm.ModelCVParse, []llm.ChatMessage{
 		{Role: "user", Content: prompt},
 	}, 1024)
 	if err != nil {

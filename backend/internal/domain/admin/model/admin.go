@@ -72,7 +72,7 @@ func DefaultSettings() *LLMSettings {
 		Temperature:   0.7,
 		TopP:          0.9,
 		ContextLength: 4096,
-		ModelName:     "gemma:2b",
+		ModelName:     "qwen2.5:1.5b-instruct",
 		UpdatedAt:     time.Now().UTC(),
 	}
 }

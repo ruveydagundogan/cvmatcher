@@ -110,9 +110,9 @@ All AI processing runs locally via **Ollama** (Gemma-2B) — no external API cal
 ### 1. Start AI Model
 
 ```bash
-# Install and run Ollama with Gemma
-ollama pull gemma:2b
-ollama run gemma:2b
+# Install and run Ollama with Qwen
+ollama pull qwen2.5:1.5b-instruct
+ollama run qwen2.5:1.5b-instruct
 ```
 
 ### 2. Start Backend

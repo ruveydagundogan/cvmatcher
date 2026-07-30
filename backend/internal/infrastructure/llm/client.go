@@ -43,11 +43,17 @@ type Client struct {
 	model      string
 }
 
+const (
+	ModelCVParse    = "cv-parser"
+	ModelCVJDMatch  = "cv-jd-matcher"
+	ModelBase    = "qwen2.5:1.5b-instruct"
+)
+
 func getDefaultModel() string {
 	if m := os.Getenv("OLLAMA_MODEL"); m != "" {
 		return m
 	}
-	return "gemma:2b"
+	return "qwen2.5:1.5b-instruct"
 }
 
 func NewClient(baseURL string, timeout time.Duration) *Client {
@@ -61,8 +67,16 @@ func NewClient(baseURL string, timeout time.Duration) *Client {
 }
 
 func (c *Client) ChatCompletion(ctx context.Context, messages []ChatMessage, maxTokens int) (string, error) {
+	return c.chatCompletion(ctx, c.model, messages, maxTokens)
+}
+
+func (c *Client) ChatCompletionWithModel(ctx context.Context, model string, messages []ChatMessage, maxTokens int) (string, error) {
+	return c.chatCompletion(ctx, model, messages, maxTokens)
+}
+
+func (c *Client) chatCompletion(ctx context.Context, model string, messages []ChatMessage, maxTokens int) (string, error) {
 	reqBody := ChatCompletionRequest{
-		Model:    c.model,
+		Model:    model,
 		Messages: messages,
 		MaxTokens: maxTokens,
 	}

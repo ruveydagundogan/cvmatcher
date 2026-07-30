@@ -8,7 +8,7 @@ export default function SettingsPage() {
   const [temperature, setTemperature] = useState(0.7);
   const [topP, setTopP] = useState(0.9);
   const [contextLength, setContextLength] = useState(4096);
-  const [modelName, setModelName] = useState("gemma:2b");
+  const [modelName, setModelName] = useState("qwen2.5:1.5b-instruct");
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
 
@@ -20,7 +20,7 @@ export default function SettingsPage() {
           setTemperature(s.temperature ?? 0.7);
           setTopP(s.top_p ?? 0.9);
           setContextLength(s.context_length ?? 4096);
-          setModelName(s.model_name ?? "gemma:2b");
+          setModelName(s.model_name ?? "qwen2.5:1.5b-instruct");
         }
       })
       .catch(console.error)

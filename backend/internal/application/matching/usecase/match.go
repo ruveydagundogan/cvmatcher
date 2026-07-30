@@ -83,7 +83,7 @@ func (uc *MatchUseCase) RunMatch(ctx context.Context, userID, cvID, jdID string)
 
 func (uc *MatchUseCase) parseCV(ctx context.Context, cv *cvmodel.CV) error {
 	prompt := fmt.Sprintf(llm.CVParsePrompt, cv.Content)
-	response, err := uc.llmClient.ChatCompletion(ctx, []llm.ChatMessage{
+	response, err := uc.llmClient.ChatCompletionWithModel(ctx, llm.ModelCVParse, []llm.ChatMessage{
 		{Role: "user", Content: prompt},
 	}, 1024)
 	if err != nil {
@@ -111,7 +111,7 @@ func (uc *MatchUseCase) parseCV(ctx context.Context, cv *cvmodel.CV) error {
 
 func (uc *MatchUseCase) analyzeJD(ctx context.Context, jd *jdmodel.JobDescription) error {
 	prompt := fmt.Sprintf(llm.JDAnalyzePrompt, jd.Content)
-	response, err := uc.llmClient.ChatCompletion(ctx, []llm.ChatMessage{
+	response, err := uc.llmClient.ChatCompletionWithModel(ctx, llm.ModelCVParse, []llm.ChatMessage{
 		{Role: "user", Content: prompt},
 	}, 1024)
 	if err != nil {
@@ -234,7 +234,7 @@ func (uc *MatchUseCase) llmMatch(ctx context.Context, cv *cvmodel.CV, jd *jdmode
 		"jd_skills_len", len(jd.RequiredSkills),
 	)
 
-	resp, err := uc.llmClient.ChatCompletion(ctx, []llm.ChatMessage{
+	resp, err := uc.llmClient.ChatCompletionWithModel(ctx, llm.ModelCVJDMatch, []llm.ChatMessage{
 		{Role: "user", Content: prompt},
 	}, 2048)
 	if err != nil {

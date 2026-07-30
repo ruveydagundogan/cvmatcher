@@ -18,7 +18,7 @@ export default function AdaptersPage() {
   const [name, setName] = useState("");
   const [desc, setDesc] = useState("");
   const [filePath, setFilePath] = useState("");
-  const [modelName, setModelName] = useState("gemma:2b");
+  const [modelName, setModelName] = useState("qwen2.5:1.5b-instruct");
 
   const load = async () => {
     try {
@@ -36,7 +36,7 @@ export default function AdaptersPage() {
     if (!name.trim()) return;
     try {
       await api.post("/api/v1/admin/adapters", { name, description: desc, file_path: filePath, model_name: modelName });
-      setName(""); setDesc(""); setFilePath(""); setModelName("gemma:2b");
+      setName(""); setDesc(""); setFilePath(""); setModelName("qwen2.5:1.5b-instruct");
       load();
     } catch (e) {
       console.error(e);

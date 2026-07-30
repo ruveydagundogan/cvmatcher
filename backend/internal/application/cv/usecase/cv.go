@@ -58,7 +58,7 @@ func (uc *CVUseCase) ParseWithLLM(ctx context.Context, cvID string) (*cvmodel.CV
 	}
 
 	prompt := fmt.Sprintf(llm.CVParsePrompt, cv.Content)
-	response, err := uc.llmClient.ChatCompletion(ctx, []llm.ChatMessage{
+	response, err := uc.llmClient.ChatCompletionWithModel(ctx, llm.ModelCVParse, []llm.ChatMessage{
 		{Role: "user", Content: prompt},
 	}, 1024)
 	if err != nil {

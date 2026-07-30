@@ -29,7 +29,7 @@ func NewEngine(llmClient *llm.Client, log *slog.Logger) *Engine {
 	return &Engine{
 		llmClient:    llmClient,
 		log:          log,
-		defaultModel: "gemma:2b",
+		defaultModel: "qwen2.5:1.5b-instruct",
 	}
 }
 
