@@ -70,34 +70,24 @@ def get_system_prompt(mode):
     return "You are a CV parsing assistant. Extract structured information from CV texts."
 
 
-def format_prompt(example, mode="cv-parse"):
-    system = get_system_prompt(mode)
-    prompt = f"""<start_of_turn>system
-{system}
-<end_of_turn>
-<start_of_turn>user
-{example['instruction']}
-
-{example['input']}
-<end_of_turn>
-<start_of_turn>model
-"""
-    return prompt + example["output"] + "<end_of_turn>"
-
-
-def load_dataset(data_path, mode="cv-parse"):
-    """Load and prepare the training dataset."""
+def load_dataset(data_path, mode, tokenizer):
+    """Load and prepare the training dataset using the model's chat template."""
     with open(data_path, "r") as f:
         raw_data = json.load(f)
 
     formatted = []
     for item in raw_data:
-        formatted.append({"text": format_prompt(item, mode)})
+        messages = [
+            {"role": "user", "content": f"{item['instruction']}\n\n{item['input']}"},
+            {"role": "assistant", "content": item["output"]},
+        ]
+        text = tokenizer.apply_chat_template(messages, tokenize=False)
+        formatted.append({"text": text})
 
     return Dataset.from_list(formatted)
 
 
-def create_lora_model(base_model_name, quantize=False):
+def create_lora_model(base_model_name, tokenizer, quantize=False):
     """Load base model and apply LoRA configuration."""
     print(f"[INFO] Loading base model: {base_model_name}")
 
@@ -109,10 +99,6 @@ def create_lora_model(base_model_name, quantize=False):
             bnb_4bit_compute_dtype=torch.bfloat16,
             bnb_4bit_use_double_quant=True,
         )
-
-    tokenizer = AutoTokenizer.from_pretrained(base_model_name)
-    tokenizer.pad_token = tokenizer.eos_token
-    tokenizer.padding_side = "right"
 
     model = AutoModelForCausalLM.from_pretrained(
         base_model_name,
@@ -138,7 +124,7 @@ def create_lora_model(base_model_name, quantize=False):
     model = get_peft_model(model, lora_config)
     model.print_trainable_parameters()
 
-    return model, tokenizer
+    return model
 
 
 def train(model, tokenizer, dataset, output_dir, args):
@@ -180,9 +166,12 @@ def train(model, tokenizer, dataset, output_dir, args):
     return trainer
 
 
-def create_ollama_modelfile(adapter_path, base_model="gemma:2b", output_name="cv-parser"):
+def create_ollama_modelfile(adapter_path, base_model, output_name="cv-parser"):
     """Create a Modelfile for Ollama to load the LoRA adapter."""
-    modelfile_content = f"""FROM {base_model}
+    ollama_model = base_model.replace("google/", "").replace("-it", "")
+    if "/" in ollama_model:
+        ollama_model = ollama_model.split("/")[-1].lower()
+    modelfile_content = f"""FROM {ollama_model}
 ADAPTER {adapter_path}
 """
     modelfile_path = os.path.join(os.path.dirname(adapter_path), "Modelfile")
@@ -190,6 +179,7 @@ ADAPTER {adapter_path}
         f.write(modelfile_content)
 
     print(f"[INFO] Modelfile created at {modelfile_path}")
+    print(f"[INFO] Pull base model if needed: ollama pull {ollama_model}")
     print(f"[INFO] To load into Ollama, run:")
     print(f"  ollama create {output_name} -f {modelfile_path}")
     print(f"  ollama run {output_name}")
@@ -219,12 +209,15 @@ def main():
 
     os.makedirs(args.output_dir, exist_ok=True)
 
+    tokenizer = AutoTokenizer.from_pretrained(args.base_model)
+    tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.padding_side = "right"
+
     if args.test_only:
         print("[INFO] Test mode: loading existing adapter")
         peft_config = PeftConfig.from_pretrained(args.output_dir)
         base_model_name = peft_config.base_model_name_or_path
 
-        tokenizer = AutoTokenizer.from_pretrained(base_model_name)
         model = AutoModelForCausalLM.from_pretrained(
             base_model_name,
             device_map="auto",
@@ -233,28 +226,25 @@ def main():
         model = PeftModel.from_pretrained(model, args.output_dir)
         model.eval()
 
-        test_prompt = """<start_of_turn>user
-Parse the following CV text and extract structured information: skills, experience, education, and a brief summary.
-
-Python developer with 6 years of backend experience. Skilled in Django, FastAPI, Redis, and Celery. Led team of 5 engineers at TechCo. Master's in Software Engineering.
-<end_of_turn>
-<start_of_turn>model
-"""
+        test_messages = [
+            {"role": "user", "content": "Parse the following CV text and extract structured information: skills, experience, education, and a brief summary.\n\nPython developer with 6 years of backend experience. Skilled in Django, FastAPI, Redis, and Celery. Led team of 5 engineers at TechCo. Master's in Software Engineering."}
+        ]
+        test_prompt = tokenizer.apply_chat_template(test_messages, tokenize=False, add_generation_prompt=True)
         result = test_inference(model, tokenizer, test_prompt)
         print(f"[RESULT]\n{result}")
         return
 
-    dataset = load_dataset(args.data, args.mode)
+    dataset = load_dataset(args.data, args.mode, tokenizer)
     print(f"[INFO] Loaded {len(dataset)} training examples")
 
-    model, tokenizer = create_lora_model(args.base_model, args.quantize)
+    model = create_lora_model(args.base_model, tokenizer, args.quantize)
 
     trainer = train(model, tokenizer, dataset, args.output_dir, args)
 
     output_name = "cv-parser" if args.mode == "cv-parse" else "cv-jd-matcher"
     create_ollama_modelfile(
         adapter_path=os.path.abspath(args.output_dir),
-        base_model=args.base_model.replace("google/", "").replace("-it", ""),
+        base_model=args.base_model,
         output_name=output_name
     )
 
