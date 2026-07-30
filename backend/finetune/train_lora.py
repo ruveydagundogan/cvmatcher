@@ -159,7 +159,6 @@ def train(model, tokenizer, dataset, output_dir, args):
 
     trainer = Trainer(
         model=model,
-        tokenizer=tokenizer,
         args=training_args,
         train_dataset=tokenized,
         data_collator=collator,
