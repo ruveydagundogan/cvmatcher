@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { api } from "@/lib/api";
+import { api, chatApi } from "@/lib/api";
 
 interface MatchDetail {
   id: string;
@@ -70,6 +70,15 @@ export default function MatchDetailPage() {
     }
   };
 
+  const discussWithCoach = async () => {
+    try {
+      const conv = await chatApi.createConversation(undefined, match?.cv_id, match?.jd_id, match?.id);
+      router.push(`/dashboard/coach?conv=${conv.id}`);
+    } catch (e: any) {
+      setError(e.message);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -93,10 +102,16 @@ export default function MatchDetailPage() {
               {match.cv_title} ↔ {match.jd_title}
             </p>
           </div>
-          <button onClick={remove}
-            className="px-4 py-2 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 text-sm font-medium">
-            Delete Match
-          </button>
+          <div className="flex gap-3">
+            <button onClick={discussWithCoach}
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-medium hover:opacity-90 transition-opacity">
+              💬 CV Coach ile Tartış
+            </button>
+            <button onClick={remove}
+              className="px-4 py-2 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 text-sm font-medium">
+              Delete Match
+            </button>
+          </div>
         </div>
       </div>
 

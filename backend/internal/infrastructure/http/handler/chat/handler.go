@@ -14,7 +14,7 @@ import (
 )
 
 type ChatUseCase interface {
-	CreateConversation(ctx context.Context, userID, title, cvID string) (*chatmodel.Conversation, error)
+	CreateConversation(ctx context.Context, userID, title, cvID, jdID, matchID string) (*chatmodel.Conversation, error)
 	ListConversations(ctx context.Context, userID string) ([]*chatmodel.Conversation, error)
 	GetConversation(ctx context.Context, userID, convID string) (*chatuc.ConversationDetail, error)
 	DeleteConversation(ctx context.Context, userID, convID string) error
@@ -30,8 +30,10 @@ func NewHandler(chatUC ChatUseCase) *Handler {
 }
 
 type createConversationRequest struct {
-	Title string `json:"title"`
-	CVID  string `json:"cv_id"`
+	Title   string `json:"title"`
+	CVID    string `json:"cv_id"`
+	JDID    string `json:"jd_id"`
+	MatchID string `json:"match_id"`
 }
 
 type sendMessageRequest struct {
@@ -51,7 +53,7 @@ func (h *Handler) CreateConversation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	conv, err := h.chatUC.CreateConversation(r.Context(), userID, req.Title, req.CVID)
+	conv, err := h.chatUC.CreateConversation(r.Context(), userID, req.Title, req.CVID, req.JDID, req.MatchID)
 	if err != nil {
 		response.Error(w, err)
 		return

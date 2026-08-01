@@ -20,7 +20,7 @@ func NewChatRepository(pool *pgxpool.Pool) *ChatRepository {
 
 func (r *ChatRepository) ListByUser(ctx context.Context, userID string) ([]*chatmodel.Conversation, error) {
 	rows, err := r.pool.Query(ctx,
-		`SELECT id, user_id, title, cv_id, created_at, updated_at
+		`SELECT id, user_id, title, cv_id, jd_id, match_id, created_at, updated_at
 		 FROM conversations WHERE user_id=$1 ORDER BY updated_at DESC`, userID)
 	if err != nil {
 		return nil, err
@@ -30,12 +30,18 @@ func (r *ChatRepository) ListByUser(ctx context.Context, userID string) ([]*chat
 	convs := make([]*chatmodel.Conversation, 0)
 	for rows.Next() {
 		c := &chatmodel.Conversation{}
-		var cvID sql.NullString
-		if err := rows.Scan(&c.ID, &c.UserID, &c.Title, &cvID, &c.CreatedAt, &c.UpdatedAt); err != nil {
+		var cvID, jdID, matchID sql.NullString
+		if err := rows.Scan(&c.ID, &c.UserID, &c.Title, &cvID, &jdID, &matchID, &c.CreatedAt, &c.UpdatedAt); err != nil {
 			return nil, err
 		}
 		if cvID.Valid {
 			c.CVID = cvID.String
+		}
+		if jdID.Valid {
+			c.JDID = jdID.String
+		}
+		if matchID.Valid {
+			c.MatchID = matchID.String
 		}
 		convs = append(convs, c)
 	}
@@ -44,10 +50,10 @@ func (r *ChatRepository) ListByUser(ctx context.Context, userID string) ([]*chat
 
 func (r *ChatRepository) FindByID(ctx context.Context, id string) (*chatmodel.Conversation, error) {
 	c := &chatmodel.Conversation{}
-	var cvID sql.NullString
+	var cvID, jdID, matchID sql.NullString
 	err := r.pool.QueryRow(ctx,
-		`SELECT id, user_id, title, cv_id, created_at, updated_at FROM conversations WHERE id=$1`, id,
-	).Scan(&c.ID, &c.UserID, &c.Title, &cvID, &c.CreatedAt, &c.UpdatedAt)
+		`SELECT id, user_id, title, cv_id, jd_id, match_id, created_at, updated_at FROM conversations WHERE id=$1`, id,
+	).Scan(&c.ID, &c.UserID, &c.Title, &cvID, &jdID, &matchID, &c.CreatedAt, &c.UpdatedAt)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
 	}
@@ -57,18 +63,30 @@ func (r *ChatRepository) FindByID(ctx context.Context, id string) (*chatmodel.Co
 	if cvID.Valid {
 		c.CVID = cvID.String
 	}
+	if jdID.Valid {
+		c.JDID = jdID.String
+	}
+	if matchID.Valid {
+		c.MatchID = matchID.String
+	}
 	return c, nil
 }
 
 func (r *ChatRepository) SaveConversation(ctx context.Context, conv *chatmodel.Conversation) error {
-	var cvID any
+	var cvID, jdID, matchID any
 	if conv.CVID != "" {
 		cvID = conv.CVID
 	}
+	if conv.JDID != "" {
+		jdID = conv.JDID
+	}
+	if conv.MatchID != "" {
+		matchID = conv.MatchID
+	}
 	_, err := r.pool.Exec(ctx,
-		`INSERT INTO conversations (id, user_id, title, cv_id, created_at, updated_at)
-		 VALUES ($1,$2,$3,$4,$5,$6)`,
-		conv.ID, conv.UserID, conv.Title, cvID, conv.CreatedAt, conv.UpdatedAt,
+		`INSERT INTO conversations (id, user_id, title, cv_id, jd_id, match_id, created_at, updated_at)
+		 VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
+		conv.ID, conv.UserID, conv.Title, cvID, jdID, matchID, conv.CreatedAt, conv.UpdatedAt,
 	)
 	return err
 }

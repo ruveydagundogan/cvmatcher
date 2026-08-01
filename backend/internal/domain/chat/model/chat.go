@@ -11,6 +11,8 @@ type Conversation struct {
 	UserID    string    `json:"user_id"`
 	Title     string    `json:"title"`
 	CVID      string    `json:"cv_id,omitempty"`
+	JDID      string    `json:"jd_id,omitempty"`
+	MatchID   string    `json:"match_id,omitempty"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
@@ -24,7 +26,7 @@ type Message struct {
 	CreatedAt      time.Time `json:"created_at"`
 }
 
-func NewConversation(userID, title, cvID string) *Conversation {
+func NewConversation(userID, title, cvID, jdID, matchID string) *Conversation {
 	if title == "" {
 		title = "New Chat"
 	}
@@ -33,6 +35,8 @@ func NewConversation(userID, title, cvID string) *Conversation {
 		UserID:    userID,
 		Title:     title,
 		CVID:      cvID,
+		JDID:      jdID,
+		MatchID:   matchID,
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
 	}

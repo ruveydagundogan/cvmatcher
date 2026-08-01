@@ -191,7 +191,7 @@ func main() {
 	adminUseCase := adminuc.NewAdminUseCase(adminRepo, log)
 	adminH := adminhandler.NewHandler(adminUseCase, mcpEngine)
 
-	chatUC := chatusecase.NewChatUseCase(chatRepo, cvRepo, llmClient, log)
+	chatUC := chatusecase.NewChatUseCase(chatRepo, cvRepo, jdRepo, matchingRepo, llmClient, log)
 	chatH := chathandler.NewHandler(chatUC)
 
 	deps := router.Dependencies{

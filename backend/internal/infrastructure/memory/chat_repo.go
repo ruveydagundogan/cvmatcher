@@ -49,7 +49,6 @@ func (r *InMemoryChatRepository) SaveConversation(ctx context.Context, conv *cha
 	r.convs[conv.ID] = conv
 	return nil
 }
-
 func (r *InMemoryChatRepository) DeleteConversation(ctx context.Context, id string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()

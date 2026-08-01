@@ -100,8 +100,13 @@ export const chatApi = {
   async listConversations() {
     return api.get("/api/v1/chat/conversations");
   },
-  async createConversation(title?: string, cvId?: string) {
-    return api.post("/api/v1/chat/conversations", { title: title || "New Chat", cv_id: cvId });
+  async createConversation(title?: string, cvId?: string, jdId?: string, matchId?: string) {
+    return api.post("/api/v1/chat/conversations", {
+      title: title || "New Chat",
+      cv_id: cvId,
+      jd_id: jdId,
+      match_id: matchId,
+    });
   },
   async getConversation(id: string) {
     return api.get(`/api/v1/chat/conversations/${id}`);
