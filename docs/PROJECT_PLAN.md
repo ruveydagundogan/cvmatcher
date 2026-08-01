@@ -22,27 +22,27 @@ Uygulama iki persona tarafından kullanılır:
 ## Faz 0 — Temel Sağlamlaştırma
 
 - [x] F0-3: JD analiz modeli kararı — `cv-parser` korundu (ikisi de eşit başarı; cv-parser yapılandırılmış çıkarım için eğitilmiş)
-- [ ] F0-1: Admin repo → Postgres (restart'ta veri kalıcılığı)
-- [ ] F0-2: Rol bazlı frontend routing (`/admin` admin'e, `/ik` hr'ya)
-- [ ] F0-4: Kayıtta rol seçimi (`user` / `hr`)
+- [x] F0-1: Admin repo → Postgres (restart'ta veri kalıcılığı) — `postgres/admin/repository.go` + main.go wiring
+- [x] F0-2: Rol bazlı frontend routing (`/admin` admin'e, `/ik` hr'ya)
+- [x] F0-4: Kayıtta rol seçimi (`user` / `hr`) — migration 008 ile `hr` rolü + izinler
 
 ## Faz 1 — CV Asistanı Chat (bireysel)
 
 ### 1a. cv-coach modeli
-- `train_lora.py`'ye `--mode cv-coach` eklenir
-- Eğitim verisi: CV geliştirme konuşmaları (Q&A çiftleri)
+- [x] `train_lora.py`'ye `--mode cv-coach` eklendi
+- [x] Eğitim verisi üretici: `generate_cv_coach_dataset.py` → 80 Q&A örneği (`data/cv_coach_dataset.json`)
 - Konular: eksik skill tespiti, deneyim yazımı, özet iyileştirme, JD'ye göre uyarlama, mülakat hazırlığı
-- Pipeline: safetensors → GGUF → Ollama `cv-coach` modeli
+- [ ] Pipeline: safetensors → GGUF → Ollama `cv-coach` modeli (eğitim lokal, henüz yapılmadı; şu an base model fallback çalışıyor)
 
 ### 1b. Backend
-- Migration `008`: `conversations` + `messages`
-- API: `GET/POST /api/v1/chat/conversations`, `DELETE /{id}`, `POST /{id}/messages` (SSE stream)
-- Sistem promptu kullanıcının parse edilmiş CV verisini içerir; son N mesaj bağlam
-- `ChatCompletionWithModel` stream varyantı
+- [x] Migration `008`: `conversations` + `messages` (canlıda uygulandı)
+- [x] API: `GET/POST /api/v1/chat/conversations`, `DELETE /{id}`, `POST /{id}/messages` (canlı test edildi)
+- [x] Sistem promptu kullanıcının parse edilmiş CV verisini içerir; son 10 mesaj bağlam
+- [ ] `ChatCompletionWithModel` stream varyantı (tunnel agent tam yanıtı buffer'ladığı için şu an non-stream; UI'da typing animasyonu)
 
 ### 1c. Frontend
-- `/dashboard/coach`: solda konuşma geçmişi, sağda sohbet, SSE akışı
-- Mevcut ölü kod (`PromptInput`, `useLLM`) burada kullanılır
+- [x] `/dashboard/coach`: solda konuşma geçmişi, sağda sohbet (canlıda çalışıyor)
+- [x] Sidebar'a CV Coach linki eklendi
 
 ## Faz 2 — İK Paneli (hr)
 
