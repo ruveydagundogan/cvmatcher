@@ -29,3 +29,4 @@ backend/finetune/adapters-clean/
 
 # Ollama working directory (local GGUF/safetensors)
 ollama-work/
+backend/.next/
