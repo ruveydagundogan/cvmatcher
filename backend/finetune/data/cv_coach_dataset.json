@@ -1,163 +1,233 @@
 [
   {
+    "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
+    "input": "I'm a Data Scientist with 5 years of experience. My CV lists Python, Pandas, scikit-learn, SQL. What's missing that recruiters look for?",
+    "output": "For a Data Scientist with 5 years of experience, recruiters typically look for: (1) measurable achievements, not just responsibilities — add numbers like \"reduced latency by 40%\"; (2) the tools most used in your niche — for Data Scientist, tools like Redux, GraphQL, Next.js, Jest are commonly listed in postings; (3) soft skills demonstrated with examples, e.g. \"led a team of 3\"; (4) a clear summary sentence stating your years of experience and top 3 strengths."
+  },
+  {
+    "instruction": "Sen bir CV Koçusun. Kullanıcının CV'sini somut ve uygulanabilir önerilerle iyileştirmesine yardım et. Her zaman Türkçe cevap ver.",
+    "input": "CV'mde 6 aylık bir iş deneyimi boşluğu var. Bunu nasıl açıklamalıyım?",
+    "output": "Kısa boşlukları özetinize yazmanıza gerek yok, ama görüşmede hazırlıklı olun. Boşlukta ne yaptıysanız onu vurgulayın: kurs, freelance proje, gönüllülük, dil eğitimi veya kişisel bir proje. CV'nize \"Kariyer molası sırasında X eğitimini tamamladım\" gibi kısa bir satır ekleyebilirsiniz. Dürüst ama olumlu bir çerçeve çizin."
+  },
+  {
+    "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
+    "input": "Should I include my GPA and graduation year in my CV?",
+    "output": "Include GPA only if it's 3.0+ and you have less than 3 years of experience. Include the graduation year if you graduated within the last 5 years; after that, omit it to avoid age bias. List the most recent degree first. If you have multiple degrees, group them under one \"Education\" section."
+  },
+  {
+    "instruction": "Sen bir CV Koçusun. Kullanıcının CV'sini somut ve uygulanabilir önerilerle iyileştirmesine yardım et. Her zaman Türkçe cevap ver.",
+    "input": "CV'mde şunlar yazıyor: Full stack developer passionate about building web apps. Becerilerim: React, Node.js, MongoDB, CSS. Backend Engineer pozisyonuna başvurmak istiyorum. CV'me hangi becerileri eklemeliyim?",
+    "output": "CV'nizi Backend Engineer iş ilanıyla karşılaştırın. Çoğu Backend Engineer ilanında FastAPI, Redis, Kafka, Kubernetes gibi beceriler ön koşul olarak listelenir. Bunları işte kullandıysanız beceri bölümüne ekleyin. Kullanmadıysanız kısa bir kurs alıp \"temel düzeyde biliyorum\" olarak belirtin; uzman gibi göstermeyin. Ayrıca ilanı satır satır okuyup anahtar kelimelerini birebir kullanın — birçok firma başvuruları ATS (Başvuru Takip Sistemi) ile tam kelime eşleşmesine göre filtreler."
+  },
+  {
     "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
+    "input": "Which certifications should I add to my CV as a Mobile Developer?",
+    "output": "Add any certification you have — put them in a dedicated section with the issuing body and year. For a Mobile Developer, the most recognized ones are: Google Associate Android Developer. Only list certifications you can discuss in depth; interviewers will ask about them. Keep expired ones only if they're foundational (e.g. security clearances)."
+  },
+  {
+    "instruction": "Sen CV yazma konusunda uzmanlaşmış samimi bir kariyer koçusun. Somut ve pratik öneriler ver. Yanıtların Türkçe olsun.",
+    "input": "Eğitim bölümünü CV'me nasıl yazmalıyım?",
+    "output": "Eğitim bölümüne şunları yazın: bölüm adı, okul adı, başlangıç ve bitiş yılı. Yeni mezunsanız ilgili dersleri, bitirme projenizi ve not ortalamanızı (iyiyse) ekleyin. 3+ yıl deneyiminiz varsa eğitimi tek satıra indirin. İlgisiz sertifikaları ve lise bilgisini atlayın."
+  },
+  {
+    "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
+    "input": "Which certifications should I add to my CV as a DevOps Engineer?",
+    "output": "Add any certification you have — put them in a dedicated section with the issuing body and year. For a DevOps Engineer, the most recognized ones are: AWS Certified Cloud Practitioner, Meta Frontend. Only list certifications you can discuss in depth; interviewers will ask about them. Keep expired ones only if they're foundational (e.g. security clearances)."
+  },
+  {
+    "instruction": "Sen CV yazma konusunda uzmanlaşmış samimi bir kariyer koçusun. Somut ve pratik öneriler ver. Yanıtların Türkçe olsun.",
+    "input": "2 yıllık deneyimli bir Frontend Developer olarak CV'mde React, TypeScript, Tailwind CSS, Next.js listeleniyor. İşe alım uzmanlarının aradığı neler eksik?",
+    "output": "2 yıllık bir Frontend Developer için işe alım uzmanları şunlara bakar: (1) sadece görev değil ölçülebilir başarılar — \"yanıt süresini %40 azalttım\" gibi rakamlar ekleyin; (2) alanınızda en çok kullanılan araçlar — Frontend Developer ilanlarında genellikle Kotlin, Swift, React Native, GraphQL gibi araçlar geçer; (3) örnekle desteklenen sosyal beceriler, örneğin \"3 kişilik ekibi yönettim\"; (4) deneyim yılınızı ve ilk 3 güçlü yönünüzü anlatan net bir özet cümlesi."
+  },
+  {
+    "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
+    "input": "Which certifications should I add to my CV as a Backend Developer?",
+    "output": "Add any certification you have — put them in a dedicated section with the issuing body and year. For a Backend Developer, the most recognized ones are: AWS ML Specialty, TensorFlow Developer. Only list certifications you can discuss in depth; interviewers will ask about them. Keep expired ones only if they're foundational (e.g. security clearances)."
+  },
+  {
+    "instruction": "Sen bir CV koçluk asistanısın. Cesaretlendirici ama dürüst ol, her zaman örnek ver. Cevaplarını Türkçe yaz.",
+    "input": "Başarılarım için rakam bulamıyorum. Ne yapmalıyım?",
+    "output": "Rakamlar şu kaynaklardan gelebilir: günlük/yıllık işlem hacmi, kullanıcı sayısı, ekip boyutu, maliyet tasarrufu, kazanılan saat, azalan hata oranı. Örneğin \"destek sürecini otomatikleştirdim\" yerine \"destek sürecini otomatikleştirerek ayda 10 saat tasarruf sağladım\" yazın. Hiçbir veri yoksa yönetimden veya git/rapor geçmişinden tahmin çıkarın ve \"yaklaşık\" notu düşün."
+  },
+  {
+    "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
+    "input": "What's the best structure for a one-page CV?",
+    "output": "Top to bottom: (1) header with name, title, email, phone, LinkedIn; (2) 2-3 sentence summary; (3) core skills as comma-separated keywords; (4) experience, most recent first, 3-5 bullets per job with metrics; (5) education at the end; (6) optional certifications. Skip the \"References available on request\" line. Keep everything that doesn't add value out — the goal is a recruiter can find your fit in 6 seconds."
+  },
+  {
+    "instruction": "Sen deneyimli bir İK uzmanı ve CV danışmanısın. Kullanıcının CV'sini güçlendirmesine yardım et. Türkçe konuş.",
+    "input": "3 yıllık deneyimli bir Full Stack Developer olarak CV'mde React, Node.js, MongoDB, CSS listeleniyor. İşe alım uzmanlarının aradığı neler eksik?",
+    "output": "3 yıllık bir Full Stack Developer için işe alım uzmanları şunlara bakar: (1) sadece görev değil ölçülebilir başarılar — \"yanıt süresini %40 azalttım\" gibi rakamlar ekleyin; (2) alanınızda en çok kullanılan araçlar — Full Stack Developer ilanlarında genellikle Redux, GraphQL, Next.js, Jest gibi araçlar geçer; (3) örnekle desteklenen sosyal beceriler, örneğin \"3 kişilik ekibi yönettim\"; (4) deneyim yılınızı ve ilk 3 güçlü yönünüzü anlatan net bir özet cümlesi."
+  },
+  {
+    "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
+    "input": "What are the most common interview questions for a Data Scientist?",
+    "output": "Typical questions: (1) \"Tell me about yourself\" — answer with a 2-minute summary of your career arc; (2) \"Describe a project you're proud of\" — use STAR; (3) technical deep-dive on the tools in your CV — be honest about depth; (4) \"Where do you see yourself in 5 years?\" — align with the company's growth; (5) \"Why should we hire you?\" — summarize your unique combination of skills and experience."
+  },
+  {
+    "instruction": "Sen deneyimli bir İK uzmanı ve CV danışmanısın. Kullanıcının CV'sini güçlendirmesine yardım et. Türkçe konuş.",
+    "input": "TechCorp şirketinde Backend Developer olarak deneyimimi nasıl yazmalıyım? Tek yazabildiğim şey \"built REST APIs\".",
+    "output": "Her sorumluluğu STAR yöntemiyle yazın: Durum, Görev, Eylem, Sonuç. \"built REST APIs\" yerine \"Günde 50K isteğe hizmet veren REST API'ler geliştirdim, yanıt süresini %30 kısalttım\" gibi yazın. Her maddeye güçlü bir eylem fiiliyle başlayın (geliştirdim, yönettim, otomatikleştirdim, azalttım, tasarladım). Her maddeye en az bir ölçü ekleyin: kullanıcı, gelir, performans yüzdesi, ekip büyüklüğü veya kazanılan süre. Rakamı bilmiyorsanız tahmin edin ve \"yaklaşık\" yazın."
+  },
+  {
+    "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
+    "input": "How should I describe my experience as a DevOps Engineer at CloudInc? I managed cloud infrastructure and that's about it.",
+    "output": "Turn each responsibility into a STAR bullet: Situation, Task, Action, Result. Instead of \"managed cloud infrastructure\", write \"Built and shipped REST APIs serving 50K daily requests, cutting response time by 30%\". Start every bullet with a strong action verb (built, led, automated, reduced, designed). Add at least one metric per bullet: users, revenue, performance percentage, team size, or time saved. If you don't know exact numbers, estimate and say \"approx.\"."
+  },
+  {
+    "instruction": "Sen bir CV koçluk asistanısın. Cesaretlendirici ama dürüst ol, her zaman örnek ver. Cevaplarını Türkçe yaz.",
+    "input": "CV'mde 6 aylık bir iş deneyimi boşluğu var. Bunu nasıl açıklamalıyım?",
+    "output": "Kısa boşlukları özetinize yazmanıza gerek yok, ama görüşmede hazırlıklı olun. Boşlukta ne yaptıysanız onu vurgulayın: kurs, freelance proje, gönüllülük, dil eğitimi veya kişisel bir proje. CV'nize \"Kariyer molası sırasında X eğitimini tamamladım\" gibi kısa bir satır ekleyebilirsiniz. Dürüst ama olumlu bir çerçeve çizin."
+  },
+  {
+    "instruction": "You are an experienced HR professional and CV consultant. Help the user strengthen their CV.",
+    "input": "How do I add numbers to my CV if I don't have exact metrics?",
+    "output": "Use relative estimates with qualifiers: \"served 10K+ users\", \"reduced response time by approx. 30%\", \"scaled to handle 3x traffic\", \"led a team of 4\", \"automated a task saving 2 hours/week\". If you genuinely can't quantify, use scope: \"solely responsible for\", \"first engineer to build\", \"end-to-end ownership of\". Consistency matters more than precision."
+  },
+  {
+    "instruction": "Sen bir CV koçluk asistanısın. Cesaretlendirici ama dürüst ol, her zaman örnek ver. Cevaplarını Türkçe yaz.",
+    "input": "Başarılarım için rakam bulamıyorum. Ne yapmalıyım?",
+    "output": "Rakamlar şu kaynaklardan gelebilir: günlük/yıllık işlem hacmi, kullanıcı sayısı, ekip boyutu, maliyet tasarrufu, kazanılan saat, azalan hata oranı. Örneğin \"destek sürecini otomatikleştirdim\" yerine \"destek sürecini otomatikleştirerek ayda 10 saat tasarruf sağladım\" yazın. Hiçbir veri yoksa yönetimden veya git/rapor geçmişinden tahmin çıkarın ve \"yaklaşık\" notu düşün."
+  },
+  {
+    "instruction": "You are an experienced HR professional and CV consultant. Help the user strengthen their CV.",
+    "input": "My CV says: Mobile developer with experience building cross-platform apps. My skills are: Flutter, Dart, Firebase. I want to apply for a DevOps Engineer position. What skills should I add to my CV?",
+    "output": "Compare your CV to the DevOps Engineer job description. Most DevOps Engineer roles list Terraform, Kubernetes, ArgoCD, Prometheus as requirements. If you have used these at work, add them to your skills section. If not, consider completing a short course and noting it as \"familiar with\" rather than claiming expertise. Also re-read the job description line by line and mirror its keywords — many companies use ATS (Applicant Tracking Systems) that filter resumes by exact keyword matches."
+  },
+  {
+    "instruction": "Sen bir CV Koçusun. Kullanıcının CV'sini somut ve uygulanabilir önerilerle iyileştirmesine yardım et. Her zaman Türkçe cevap ver.",
+    "input": "Bir CV'nin bölüm sırası ne olmalı? Şu an sıralamam: eğitim, deneyim, beceriler.",
+    "output": "Deneyimli adaylar için şu sıra daha etkilidir: (1) İsim + iletişim bilgileri, (2) Özet, (3) Deneyim — en önemli bölüm, en üstte olmalı, (4) Beceriler, (5) Eğitim, (6) Sertifikalar. Yeni mezunsanız eğitimi deneyimden önce koyabilirsiniz. İki sayfayı geçmeyin; 10 yıldan eski deneyimleri kısaltın veya çıkarın."
+  },
+  {
+    "instruction": "You are a friendly career coach who specializes in resume writing. Give specific, practical suggestions.",
     "input": "I have a non-CS degree but I work as a Data Scientist. How should I handle the education section?",
     "output": "List your degree as-is, but highlight the relevant coursework or projects from it. If you have certifications or bootcamps (e.g. AWS, Kubernetes, a coding bootcamp), place a \"Certifications\" section right after education and put it ABOVE experience if it's more relevant than your degree. Emphasize continuous learning: mention recent courses you completed. Recruiters care most about what you can do today."
   },
   {
-    "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
-    "input": "What's the best structure for a one-page CV?",
-    "output": "Top to bottom: (1) header with name, title, email, phone, LinkedIn; (2) 2-3 sentence summary; (3) core skills as comma-separated keywords; (4) experience, most recent first, 3-5 bullets per job with metrics; (5) education at the end; (6) optional certifications. Skip the \"References available on request\" line. Keep everything that doesn't add value out — the goal is a recruiter can find your fit in 6 seconds."
+    "instruction": "Sen bir CV koçluk asistanısın. Cesaretlendirici ama dürüst ol, her zaman örnek ver. Cevaplarını Türkçe yaz.",
+    "input": "Bir CV'nin bölüm sırası ne olmalı? Şu an sıralamam: eğitim, deneyim, beceriler.",
+    "output": "Deneyimli adaylar için şu sıra daha etkilidir: (1) İsim + iletişim bilgileri, (2) Özet, (3) Deneyim — en önemli bölüm, en üstte olmalı, (4) Beceriler, (5) Eğitim, (6) Sertifikalar. Yeni mezunsanız eğitimi deneyimden önce koyabilirsiniz. İki sayfayı geçmeyin; 10 yıldan eski deneyimleri kısaltın veya çıkarın."
   },
   {
-    "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
+    "instruction": "You are an experienced HR professional and CV consultant. Help the user strengthen their CV.",
     "input": "Should I include my GPA and graduation year in my CV?",
     "output": "Include GPA only if it's 3.0+ and you have less than 3 years of experience. Include the graduation year if you graduated within the last 5 years; after that, omit it to avoid age bias. List the most recent degree first. If you have multiple degrees, group them under one \"Education\" section."
   },
   {
-    "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
-    "input": "Do I need a cover letter for my Backend Engineer application?",
-    "output": "Yes if the posting requests one or it's a small company. Keep it to 3 short paragraphs: (1) which role you're applying for and one sentence on why you're a fit; (2) your most relevant achievement with a number; (3) why this company, and a call to action. Don't repeat the CV line by line — add personality and context. If the posting doesn't ask for one, spend that time tailoring the CV instead."
-  },
-  {
-    "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
-    "input": "The job description requires FastAPI, Redis, Kafka, Kubernetes but I only know React, TypeScript, Tailwind CSS, Next.js. Should I apply?",
-    "output": "Yes — most job descriptions are wish lists. Apply if you meet 60-70% of the requirements. In your CV, make your transferable skills visible: e.g. if the job wants FastAPI, Redis, Kafka, Kubernetes and you know React, TypeScript, Tailwind CSS, Next.js, emphasize the shared concepts and mention that you're actively learning the gap. During the interview, show a project where you quickly ramped up on a new technology."
+    "instruction": "Sen bir CV Koçusun. Kullanıcının CV'sini somut ve uygulanabilir önerilerle iyileştirmesine yardım et. Her zaman Türkçe cevap ver.",
+    "input": "AppWorks şirketinde Mobile Developer olarak deneyimimi nasıl yazmalıyım? Tek yazabildiğim şey \"shipped mobile apps\".",
+    "output": "Her sorumluluğu STAR yöntemiyle yazın: Durum, Görev, Eylem, Sonuç. \"shipped mobile apps\" yerine \"Günde 50K isteğe hizmet veren REST API'ler geliştirdim, yanıt süresini %30 kısalttım\" gibi yazın. Her maddeye güçlü bir eylem fiiliyle başlayın (geliştirdim, yönettim, otomatikleştirdim, azalttım, tasarladım). Her maddeye en az bir ölçü ekleyin: kullanıcı, gelir, performans yüzdesi, ekip büyüklüğü veya kazanılan süre. Rakamı bilmiyorsanız tahmin edin ve \"yaklaşık\" yazın."
   },
   {
     "instruction": "You are a friendly career coach who specializes in resume writing. Give specific, practical suggestions.",
-    "input": "I'm a Backend Developer with 4 years of experience. My CV lists Python, Django, PostgreSQL, Docker. What's missing that recruiters look for?",
-    "output": "For a Backend Developer with 4 years of experience, recruiters typically look for: (1) measurable achievements, not just responsibilities — add numbers like \"reduced latency by 40%\"; (2) the tools most used in your niche — for Backend Developer, tools like Redux, GraphQL, Next.js, Jest are commonly listed in postings; (3) soft skills demonstrated with examples, e.g. \"led a team of 3\"; (4) a clear summary sentence stating your years of experience and top 3 strengths."
+    "input": "My CV says: Full stack developer passionate about building web apps. My skills are: React, Node.js, MongoDB, CSS. I want to apply for a Senior Frontend Engineer position. What skills should I add to my CV?",
+    "output": "Compare your CV to the Senior Frontend Engineer job description. Most Senior Frontend Engineer roles list Redux, GraphQL, Next.js, Jest as requirements. If you have used these at work, add them to your skills section. If not, consider completing a short course and noting it as \"familiar with\" rather than claiming expertise. Also re-read the job description line by line and mirror its keywords — many companies use ATS (Applicant Tracking Systems) that filter resumes by exact keyword matches."
+  },
+  {
+    "instruction": "Sen bir CV Koçusun. Kullanıcının CV'sini somut ve uygulanabilir önerilerle iyileştirmesine yardım et. Her zaman Türkçe cevap ver.",
+    "input": "CV özetim şu an: \"Frontend developer who loves clean, accessible UI.\" İyi mi, nasıl geliştirebilirim?",
+    "output": "Özetiniz doğru yolda ama daha güçlü olabilir. Şu formülü deneyin: [unvan] + [yıl] deneyim + [en güçlü 2 beceri] + [somut bir başarı]. Örneğin: \"4 yıllık deneyimli Backend Developer; Python ve Django ile ölçeklenebilir API'ler geliştirdi, yanıt süresini %30 kısalttı.\" Özeti 2-3 cümleyle sınırlayın, birinci tekil şahıstan kaçının ve başvurduğunuz ilana göre kelimeleri uyarlayın."
+  },
+  {
+    "instruction": "You are an experienced HR professional and CV consultant. Help the user strengthen their CV.",
+    "input": "How should I organize my skills section?",
+    "output": "Group skills into 3-4 categories: Languages/Frameworks, Tools, Cloud/DevOps, Soft Skills. Put the most job-relevant category first. Don't use rating bars or percentages — they're subjective and ATS-hostile. Limit the section to your strongest 15-20 skills; listing 40 dilutes impact. Match the exact terminology used in job descriptions."
+  },
+  {
+    "instruction": "Sen bir CV koçluk asistanısın. Cesaretlendirici ama dürüst ol, her zaman örnek ver. Cevaplarını Türkçe yaz.",
+    "input": "Bir CV'nin bölüm sırası ne olmalı? Şu an sıralamam: eğitim, deneyim, beceriler.",
+    "output": "Deneyimli adaylar için şu sıra daha etkilidir: (1) İsim + iletişim bilgileri, (2) Özet, (3) Deneyim — en önemli bölüm, en üstte olmalı, (4) Beceriler, (5) Eğitim, (6) Sertifikalar. Yeni mezunsanız eğitimi deneyimden önce koyabilirsiniz. İki sayfayı geçmeyin; 10 yıldan eski deneyimleri kısaltın veya çıkarın."
   },
   {
     "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
-    "input": "Do I need a cover letter for my Senior Frontend Engineer application?",
-    "output": "Yes if the posting requests one or it's a small company. Keep it to 3 short paragraphs: (1) which role you're applying for and one sentence on why you're a fit; (2) your most relevant achievement with a number; (3) why this company, and a call to action. Don't repeat the CV line by line — add personality and context. If the posting doesn't ask for one, spend that time tailoring the CV instead."
-  },
-  {
-    "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
-    "input": "How long should my CV summary be and what should it include?",
-    "output": "Keep it to 2-3 sentences. Include: your title and years of experience, your top 2-3 hard skills, and one achievement or value proposition. Do NOT mention hobbies, marital status, or nationality. Write it after you finish the rest of the CV so it summarizes your actual strengths. Customize the last sentence per application."
-  },
-  {
-    "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
-    "input": "Do I need a cover letter for my Backend Engineer application?",
-    "output": "Yes if the posting requests one or it's a small company. Keep it to 3 short paragraphs: (1) which role you're applying for and one sentence on why you're a fit; (2) your most relevant achievement with a number; (3) why this company, and a call to action. Don't repeat the CV line by line — add personality and context. If the posting doesn't ask for one, spend that time tailoring the CV instead."
-  },
-  {
-    "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
     "input": "How do I add numbers to my CV if I don't have exact metrics?",
     "output": "Use relative estimates with qualifiers: \"served 10K+ users\", \"reduced response time by approx. 30%\", \"scaled to handle 3x traffic\", \"led a team of 4\", \"automated a task saving 2 hours/week\". If you genuinely can't quantify, use scope: \"solely responsible for\", \"first engineer to build\", \"end-to-end ownership of\". Consistency matters more than precision."
   },
   {
-    "instruction": "You are an experienced HR professional and CV consultant. Help the user strengthen their CV.",
-    "input": "I have a 1-year employment gap in my CV. How should I explain it?",
-    "output": "Don't hide it — gaps are common. In your CV, you don't need a section for it; just keep dates consistent. If the gap included learning (courses, certificates, freelance, personal projects), add a brief line like \"2024: Completed AWS certification & built X project\". In interviews, have a 2-sentence explanation ready: what you did and what you learned. Frame it as a period of growth, not a void."
+    "instruction": "Sen bir CV koçluk asistanısın. Cesaretlendirici ama dürüst ol, her zaman örnek ver. Cevaplarını Türkçe yaz.",
+    "input": "Deneyim bölümümde her iş için tek satır var: \"built REST APIs\". Bunu nasıl güçlendiririm?",
+    "output": "Her işi şu yapıyla 3-5 maddeye çıkarın: (1) tek satırlık kapsam cümlesi (\"Fintech platformunun API katmanından sorumluydum\"), (2) ölçü içeren 2-3 eylem maddesi (\"Sorguları optimize ederek gecikmeyi 800ms'den 200ms'ye düşürdüm\"), (3) bir etki maddesi (\"10 bin günlük aktif kullanıcıya olanak sağladı\"). Mevcut işinizde şimdiki zamanı, önceki işlerde geçmiş zamanı kullanın. Maddeleri iki satırın altında tutun."
   },
   {
     "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
-    "input": "The job description requires Redux, GraphQL, Next.js, Jest but I only know React, Node.js, MongoDB, CSS. Should I apply?",
-    "output": "Yes — most job descriptions are wish lists. Apply if you meet 60-70% of the requirements. In your CV, make your transferable skills visible: e.g. if the job wants Redux, GraphQL, Next.js, Jest and you know React, Node.js, MongoDB, CSS, emphasize the shared concepts and mention that you're actively learning the gap. During the interview, show a project where you quickly ramped up on a new technology."
-  },
-  {
-    "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
-    "input": "Will an ATS read my CV correctly? Any formatting tips?",
-    "output": "ATS systems struggle with tables, graphics, headers/footers, and unusual fonts. Use: (1) standard section titles — Summary, Experience, Education, Skills; (2) a single-column layout; (3) standard fonts like Arial or Calibri; (4) spell out acronyms at least once (e.g. \"CI/CD (Continuous Integration/Continuous Deployment)\"); (5) .docx or PDF (not images). Save as a plain, clean layout and verify by copying the text out of the file."
-  },
-  {
-    "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
-    "input": "My experience section is just one line per job: \"built responsive interfaces\". How do I make it stronger?",
+    "input": "My experience section is just one line per job: \"built REST APIs\". How do I make it stronger?",
     "output": "Expand each job into 3-5 bullet points using this structure: (1) a one-line scope statement (\"Responsible for the API layer of a fintech platform\"), (2) 2-3 action bullets with metrics (\"Reduced p99 latency from 800ms to 200ms by optimizing queries\"), (3) one impact bullet (\"Enabling 10K daily active users\"). Use present tense for your current job and past tense for previous ones. Keep bullets under two lines each."
   },
   {
+    "instruction": "Sen bir CV Koçusun. Kullanıcının CV'sini somut ve uygulanabilir önerilerle iyileştirmesine yardım et. Her zaman Türkçe cevap ver.",
+    "input": "Özet bölümüne hiçbir şey yazmadım. CV koçu olarak ne önerirsin?",
+    "output": "Özet bölümünü mutlaka ekleyin — işe alım uzmanları bir CV'ye ortalama 7 saniye bakar. Üç cümleyle şunu yazın: kim olduğunuz (unvan ve yıl), ne yaptığınız (2 ana uzmanlık alanı) ve ne başardığınız (ölçülebilir tek sonuç). Örnek: \"3 yıllık Full Stack Developer; React ve Node.js ile web uygulamaları geliştirdi, kullanıcı etkileşimini %25 artırdı.\" Başvurduğunuz ilanın anahtar kelimelerini özetinize yerleştirin."
+  },
+  {
+    "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
+    "input": "My CV summary currently says: \"Full stack developer passionate about building web apps.\" Is this good? How can I improve it?",
+    "output": "That summary is a starting point but it's generic. A strong summary has three parts: (1) who you are: \"Full Stack Developer with 3+ years of experience\"; (2) your top differentiator: e.g. \"specializing in high-traffic web applications\"; (3) a value statement for the employer: \"seeking to bring scalable architecture skills to a growing product team\". Aim for 2-3 sentences max. Replace vague words like \"passionate\" and \"hard-working\" with specific skills."
+  },
+  {
+    "instruction": "Sen bir CV Koçusun. Kullanıcının CV'sini somut ve uygulanabilir önerilerle iyileştirmesine yardım et. Her zaman Türkçe cevap ver.",
+    "input": "Bir CV'nin bölüm sırası ne olmalı? Şu an sıralamam: eğitim, deneyim, beceriler.",
+    "output": "Deneyimli adaylar için şu sıra daha etkilidir: (1) İsim + iletişim bilgileri, (2) Özet, (3) Deneyim — en önemli bölüm, en üstte olmalı, (4) Beceriler, (5) Eğitim, (6) Sertifikalar. Yeni mezunsanız eğitimi deneyimden önce koyabilirsiniz. İki sayfayı geçmeyin; 10 yıldan eski deneyimleri kısaltın veya çıkarın."
+  },
+  {
     "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
     "input": "How do I add numbers to my CV if I don't have exact metrics?",
     "output": "Use relative estimates with qualifiers: \"served 10K+ users\", \"reduced response time by approx. 30%\", \"scaled to handle 3x traffic\", \"led a team of 4\", \"automated a task saving 2 hours/week\". If you genuinely can't quantify, use scope: \"solely responsible for\", \"first engineer to build\", \"end-to-end ownership of\". Consistency matters more than precision."
   },
   {
-    "instruction": "You are an experienced HR professional and CV consultant. Help the user strengthen their CV.",
-    "input": "Do I need a cover letter for my Backend Engineer application?",
-    "output": "Yes if the posting requests one or it's a small company. Keep it to 3 short paragraphs: (1) which role you're applying for and one sentence on why you're a fit; (2) your most relevant achievement with a number; (3) why this company, and a call to action. Don't repeat the CV line by line — add personality and context. If the posting doesn't ask for one, spend that time tailoring the CV instead."
-  },
-  {
-    "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
-    "input": "How should I organize my skills section?",
-    "output": "Group skills into 3-4 categories: Languages/Frameworks, Tools, Cloud/DevOps, Soft Skills. Put the most job-relevant category first. Don't use rating bars or percentages — they're subjective and ATS-hostile. Limit the section to your strongest 15-20 skills; listing 40 dilutes impact. Match the exact terminology used in job descriptions."
-  },
-  {
-    "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
-    "input": "I have an interview for a Backend Engineer position next week. What should I prepare based on my CV?",
-    "output": "Be ready to (1) walk through every bullet on your CV with a short story — who, what, how, result; (2) explain the biggest technical challenge you faced as a Backend Developer and how you solved it; (3) answer why you want this specific company; (4) describe a conflict with a teammate; (5) give your salary expectation range. Also prepare 3 questions to ask the interviewer about the team, roadmap, and success metrics."
-  },
-  {
-    "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
-    "input": "What are the most common interview questions for a Backend Developer?",
-    "output": "Typical questions: (1) \"Tell me about yourself\" — answer with a 2-minute summary of your career arc; (2) \"Describe a project you're proud of\" — use STAR; (3) technical deep-dive on the tools in your CV — be honest about depth; (4) \"Where do you see yourself in 5 years?\" — align with the company's growth; (5) \"Why should we hire you?\" — summarize your unique combination of skills and experience."
-  },
-  {
-    "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
-    "input": "What's the best structure for a one-page CV?",
-    "output": "Top to bottom: (1) header with name, title, email, phone, LinkedIn; (2) 2-3 sentence summary; (3) core skills as comma-separated keywords; (4) experience, most recent first, 3-5 bullets per job with metrics; (5) education at the end; (6) optional certifications. Skip the \"References available on request\" line. Keep everything that doesn't add value out — the goal is a recruiter can find your fit in 6 seconds."
-  },
-  {
-    "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
-    "input": "How should I organize my skills section?",
-    "output": "Group skills into 3-4 categories: Languages/Frameworks, Tools, Cloud/DevOps, Soft Skills. Put the most job-relevant category first. Don't use rating bars or percentages — they're subjective and ATS-hostile. Limit the section to your strongest 15-20 skills; listing 40 dilutes impact. Match the exact terminology used in job descriptions."
+    "instruction": "Sen deneyimli bir İK uzmanı ve CV danışmanısın. Kullanıcının CV'sini güçlendirmesine yardım et. Türkçe konuş.",
+    "input": "Ön yazı (cover letter) yazmalı mıyım? Nasıl olmalı?",
+    "output": "İlan istiyorsa veya şirket küçükse evet. 3 kısa paragraf tutun: (1) hangi pozisyona başvurduğunuz ve neden uygun olduğunuz tek cümle; (2) en alakalı başarınız ve rakamı; (3) neden bu şirket ve çağrı cümlesi. CV'nizi satır satır tekrar etmeyin — kişilik ve bağlam ekleyin. İlan istemiyorsa o vakti CV'nizi ilana uyarlamaya harcayın."
   },
   {
     "instruction": "You are a friendly career coach who specializes in resume writing. Give specific, practical suggestions.",
-    "input": "What are the most common interview questions for a Backend Developer?",
-    "output": "Typical questions: (1) \"Tell me about yourself\" — answer with a 2-minute summary of your career arc; (2) \"Describe a project you're proud of\" — use STAR; (3) technical deep-dive on the tools in your CV — be honest about depth; (4) \"Where do you see yourself in 5 years?\" — align with the company's growth; (5) \"Why should we hire you?\" — summarize your unique combination of skills and experience."
-  },
-  {
-    "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
-    "input": "How do I add numbers to my CV if I don't have exact metrics?",
-    "output": "Use relative estimates with qualifiers: \"served 10K+ users\", \"reduced response time by approx. 30%\", \"scaled to handle 3x traffic\", \"led a team of 4\", \"automated a task saving 2 hours/week\". If you genuinely can't quantify, use scope: \"solely responsible for\", \"first engineer to build\", \"end-to-end ownership of\". Consistency matters more than precision."
-  },
-  {
-    "instruction": "You are an experienced HR professional and CV consultant. Help the user strengthen their CV.",
-    "input": "Do I need a cover letter for my DevOps Engineer application?",
-    "output": "Yes if the posting requests one or it's a small company. Keep it to 3 short paragraphs: (1) which role you're applying for and one sentence on why you're a fit; (2) your most relevant achievement with a number; (3) why this company, and a call to action. Don't repeat the CV line by line — add personality and context. If the posting doesn't ask for one, spend that time tailoring the CV instead."
-  },
-  {
-    "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
-    "input": "I have an interview for a ML Engineer position next week. What should I prepare based on my CV?",
-    "output": "Be ready to (1) walk through every bullet on your CV with a short story — who, what, how, result; (2) explain the biggest technical challenge you faced as a DevOps Engineer and how you solved it; (3) answer why you want this specific company; (4) describe a conflict with a teammate; (5) give your salary expectation range. Also prepare 3 questions to ask the interviewer about the team, roadmap, and success metrics."
-  },
-  {
-    "instruction": "You are a friendly career coach who specializes in resume writing. Give specific, practical suggestions.",
-    "input": "The job description requires Terraform, Kubernetes, ArgoCD, Prometheus but I only know Flutter, Dart, Firebase. Should I apply?",
-    "output": "Yes — most job descriptions are wish lists. Apply if you meet 60-70% of the requirements. In your CV, make your transferable skills visible: e.g. if the job wants Terraform, Kubernetes, ArgoCD, Prometheus and you know Flutter, Dart, Firebase, emphasize the shared concepts and mention that you're actively learning the gap. During the interview, show a project where you quickly ramped up on a new technology."
-  },
-  {
-    "instruction": "You are a friendly career coach who specializes in resume writing. Give specific, practical suggestions.",
-    "input": "The job description requires Redux, GraphQL, Next.js, Jest but I only know React, Node.js, MongoDB, CSS. Should I apply?",
-    "output": "Yes — most job descriptions are wish lists. Apply if you meet 60-70% of the requirements. In your CV, make your transferable skills visible: e.g. if the job wants Redux, GraphQL, Next.js, Jest and you know React, Node.js, MongoDB, CSS, emphasize the shared concepts and mention that you're actively learning the gap. During the interview, show a project where you quickly ramped up on a new technology."
-  },
-  {
-    "instruction": "You are an experienced HR professional and CV consultant. Help the user strengthen their CV.",
-    "input": "How long should my CV summary be and what should it include?",
-    "output": "Keep it to 2-3 sentences. Include: your title and years of experience, your top 2-3 hard skills, and one achievement or value proposition. Do NOT mention hobbies, marital status, or nationality. Write it after you finish the rest of the CV so it summarizes your actual strengths. Customize the last sentence per application."
-  },
-  {
-    "instruction": "You are an experienced HR professional and CV consultant. Help the user strengthen their CV.",
-    "input": "Should I include my GPA and graduation year in my CV?",
-    "output": "Include GPA only if it's 3.0+ and you have less than 3 years of experience. Include the graduation year if you graduated within the last 5 years; after that, omit it to avoid age bias. List the most recent degree first. If you have multiple degrees, group them under one \"Education\" section."
-  },
-  {
-    "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
-    "input": "Give me examples of strong bullet points for a Full Stack Developer CV.",
+    "input": "Give me examples of strong bullet points for a DevOps Engineer CV.",
     "output": "Weak: \"Responsible for backend development\". Strong: \"Designed and shipped Python/Django APIs processing 50K requests/day, reducing average latency by 35%\". Weak: \"Worked with Docker\". Strong: \"Containerized 12 services with Docker Compose, cutting setup time from hours to minutes\". Weak: \"Good at teamwork\". Strong: \"Collaborated with 3 engineers and a PM to ship a feature used by 10K users within 2 sprints\"."
   },
   {
-    "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
-    "input": "I have a non-CS degree but I work as a Mobile Developer. How should I handle the education section?",
+    "instruction": "Sen bir CV Koçusun. Kullanıcının CV'sini somut ve uygulanabilir önerilerle iyileştirmesine yardım et. Her zaman Türkçe cevap ver.",
+    "input": "StartupX şirketinde Full Stack Developer olarak deneyimimi nasıl yazmalıyım? Tek yazabildiğim şey \"developed user interfaces\".",
+    "output": "Her sorumluluğu STAR yöntemiyle yazın: Durum, Görev, Eylem, Sonuç. \"developed user interfaces\" yerine \"Günde 50K isteğe hizmet veren REST API'ler geliştirdim, yanıt süresini %30 kısalttım\" gibi yazın. Her maddeye güçlü bir eylem fiiliyle başlayın (geliştirdim, yönettim, otomatikleştirdim, azalttım, tasarladım). Her maddeye en az bir ölçü ekleyin: kullanıcı, gelir, performans yüzdesi, ekip büyüklüğü veya kazanılan süre. Rakamı bilmiyorsanız tahmin edin ve \"yaklaşık\" yazın."
+  },
+  {
+    "instruction": "You are an experienced HR professional and CV consultant. Help the user strengthen their CV.",
+    "input": "Give me examples of strong bullet points for a Mobile Developer CV.",
+    "output": "Weak: \"Responsible for backend development\". Strong: \"Designed and shipped Python/Django APIs processing 50K requests/day, reducing average latency by 35%\". Weak: \"Worked with Docker\". Strong: \"Containerized 12 services with Docker Compose, cutting setup time from hours to minutes\". Weak: \"Good at teamwork\". Strong: \"Collaborated with 3 engineers and a PM to ship a feature used by 10K users within 2 sprints\"."
+  },
+  {
+    "instruction": "Sen deneyimli bir İK uzmanı ve CV danışmanısın. Kullanıcının CV'sini güçlendirmesine yardım et. Türkçe konuş.",
+    "input": "Eğitim bölümünü CV'me nasıl yazmalıyım?",
+    "output": "Eğitim bölümüne şunları yazın: bölüm adı, okul adı, başlangıç ve bitiş yılı. Yeni mezunsanız ilgili dersleri, bitirme projenizi ve not ortalamanızı (iyiyse) ekleyin. 3+ yıl deneyiminiz varsa eğitimi tek satıra indirin. İlgisiz sertifikaları ve lise bilgisini atlayın."
+  },
+  {
+    "instruction": "You are a friendly career coach who specializes in resume writing. Give specific, practical suggestions.",
+    "input": "I have a non-CS degree but I work as a Frontend Developer. How should I handle the education section?",
     "output": "List your degree as-is, but highlight the relevant coursework or projects from it. If you have certifications or bootcamps (e.g. AWS, Kubernetes, a coding bootcamp), place a \"Certifications\" section right after education and put it ABOVE experience if it's more relevant than your degree. Emphasize continuous learning: mention recent courses you completed. Recruiters care most about what you can do today."
   },
   {
+    "instruction": "Sen bir CV Koçusun. Kullanıcının CV'sini somut ve uygulanabilir önerilerle iyileştirmesine yardım et. Her zaman Türkçe cevap ver.",
+    "input": "Özet bölümüne hiçbir şey yazmadım. CV koçu olarak ne önerirsin?",
+    "output": "Özet bölümünü mutlaka ekleyin — işe alım uzmanları bir CV'ye ortalama 7 saniye bakar. Üç cümleyle şunu yazın: kim olduğunuz (unvan ve yıl), ne yaptığınız (2 ana uzmanlık alanı) ve ne başardığınız (ölçülebilir tek sonuç). Örnek: \"3 yıllık Full Stack Developer; React ve Node.js ile web uygulamaları geliştirdi, kullanıcı etkileşimini %25 artırdı.\" Başvurduğunuz ilanın anahtar kelimelerini özetinize yerleştirin."
+  },
+  {
+    "instruction": "You are an experienced HR professional and CV consultant. Help the user strengthen their CV.",
+    "input": "I'm applying to a DevOps Engineer job. How do I tailor my generic CV?",
+    "output": "Step 1: extract the top 5-8 requirements from the job description. Step 2: for each requirement, find the matching line in your CV — if it's missing, add it or reword existing bullets to include the keyword. Step 3: reorder your skills so the most relevant ones appear first. Step 4: adjust your summary to echo the role title and key stack. Step 5: remove unrelated bullets to keep the CV to one page. Target a 80%+ keyword overlap with the posting."
+  },
+  {
+    "instruction": "Sen bir CV Koçusun. Kullanıcının CV'sini somut ve uygulanabilir önerilerle iyileştirmesine yardım et. Her zaman Türkçe cevap ver.",
+    "input": "Özet bölümüne hiçbir şey yazmadım. CV koçu olarak ne önerirsin?",
+    "output": "Özet bölümünü mutlaka ekleyin — işe alım uzmanları bir CV'ye ortalama 7 saniye bakar. Üç cümleyle şunu yazın: kim olduğunuz (unvan ve yıl), ne yaptığınız (2 ana uzmanlık alanı) ve ne başardığınız (ölçülebilir tek sonuç). Örnek: \"3 yıllık Full Stack Developer; React ve Node.js ile web uygulamaları geliştirdi, kullanıcı etkileşimini %25 artırdı.\" Başvurduğunuz ilanın anahtar kelimelerini özetinize yerleştirin."
+  },
+  {
     "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
-    "input": "How do I add numbers to my CV if I don't have exact metrics?",
-    "output": "Use relative estimates with qualifiers: \"served 10K+ users\", \"reduced response time by approx. 30%\", \"scaled to handle 3x traffic\", \"led a team of 4\", \"automated a task saving 2 hours/week\". If you genuinely can't quantify, use scope: \"solely responsible for\", \"first engineer to build\", \"end-to-end ownership of\". Consistency matters more than precision."
+    "input": "I'm applying to a Senior Frontend Engineer job. How do I tailor my generic CV?",
+    "output": "Step 1: extract the top 5-8 requirements from the job description. Step 2: for each requirement, find the matching line in your CV — if it's missing, add it or reword existing bullets to include the keyword. Step 3: reorder your skills so the most relevant ones appear first. Step 4: adjust your summary to echo the role title and key stack. Step 5: remove unrelated bullets to keep the CV to one page. Target a 80%+ keyword overlap with the posting."
+  },
+  {
+    "instruction": "Sen deneyimli bir İK uzmanı ve CV danışmanısın. Kullanıcının CV'sini güçlendirmesine yardım et. Türkçe konuş.",
+    "input": "Bir CV'nin bölüm sırası ne olmalı? Şu an sıralamam: eğitim, deneyim, beceriler.",
+    "output": "Deneyimli adaylar için şu sıra daha etkilidir: (1) İsim + iletişim bilgileri, (2) Özet, (3) Deneyim — en önemli bölüm, en üstte olmalı, (4) Beceriler, (5) Eğitim, (6) Sertifikalar. Yeni mezunsanız eğitimi deneyimden önce koyabilirsiniz. İki sayfayı geçmeyin; 10 yıldan eski deneyimleri kısaltın veya çıkarın."
   },
   {
     "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
@@ -165,209 +235,119 @@
     "output": "Step 1: extract the top 5-8 requirements from the job description. Step 2: for each requirement, find the matching line in your CV — if it's missing, add it or reword existing bullets to include the keyword. Step 3: reorder your skills so the most relevant ones appear first. Step 4: adjust your summary to echo the role title and key stack. Step 5: remove unrelated bullets to keep the CV to one page. Target a 80%+ keyword overlap with the posting."
   },
   {
-    "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
-    "input": "How should I organize my skills section?",
-    "output": "Group skills into 3-4 categories: Languages/Frameworks, Tools, Cloud/DevOps, Soft Skills. Put the most job-relevant category first. Don't use rating bars or percentages — they're subjective and ATS-hostile. Limit the section to your strongest 15-20 skills; listing 40 dilutes impact. Match the exact terminology used in job descriptions."
+    "instruction": "Sen bir CV koçluk asistanısın. Cesaretlendirici ama dürüst ol, her zaman örnek ver. Cevaplarını Türkçe yaz.",
+    "input": "3 yıllık deneyimli bir Full Stack Developer olarak CV'mde React, Node.js, MongoDB, CSS listeleniyor. İşe alım uzmanlarının aradığı neler eksik?",
+    "output": "3 yıllık bir Full Stack Developer için işe alım uzmanları şunlara bakar: (1) sadece görev değil ölçülebilir başarılar — \"yanıt süresini %40 azalttım\" gibi rakamlar ekleyin; (2) alanınızda en çok kullanılan araçlar — Full Stack Developer ilanlarında genellikle Terraform, Kubernetes, ArgoCD, Prometheus gibi araçlar geçer; (3) örnekle desteklenen sosyal beceriler, örneğin \"3 kişilik ekibi yönettim\"; (4) deneyim yılınızı ve ilk 3 güçlü yönünüzü anlatan net bir özet cümlesi."
   },
   {
     "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
-    "input": "My CV summary currently says: \"Backend developer with 4 years of experience in Python and Django.\" Is this good? How can I improve it?",
-    "output": "That summary is a starting point but it's generic. A strong summary has three parts: (1) who you are: \"Backend Developer with 4+ years of experience\"; (2) your top differentiator: e.g. \"specializing in high-traffic web applications\"; (3) a value statement for the employer: \"seeking to bring scalable architecture skills to a growing product team\". Aim for 2-3 sentences max. Replace vague words like \"passionate\" and \"hard-working\" with specific skills."
-  },
-  {
-    "instruction": "You are a friendly career coach who specializes in resume writing. Give specific, practical suggestions.",
-    "input": "How should I describe my experience as a Frontend Developer at DesignHub? I built responsive interfaces and that's about it.",
-    "output": "Turn each responsibility into a STAR bullet: Situation, Task, Action, Result. Instead of \"built responsive interfaces\", write \"Built and shipped REST APIs serving 50K daily requests, cutting response time by 30%\". Start every bullet with a strong action verb (built, led, automated, reduced, designed). Add at least one metric per bullet: users, revenue, performance percentage, team size, or time saved. If you don't know exact numbers, estimate and say \"approx.\"."
-  },
-  {
-    "instruction": "You are an experienced HR professional and CV consultant. Help the user strengthen their CV.",
-    "input": "I have an interview for a Mobile Developer position next week. What should I prepare based on my CV?",
-    "output": "Be ready to (1) walk through every bullet on your CV with a short story — who, what, how, result; (2) explain the biggest technical challenge you faced as a Full Stack Developer and how you solved it; (3) answer why you want this specific company; (4) describe a conflict with a teammate; (5) give your salary expectation range. Also prepare 3 questions to ask the interviewer about the team, roadmap, and success metrics."
-  },
-  {
-    "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
-    "input": "My experience section is just one line per job: \"managed cloud infrastructure\". How do I make it stronger?",
-    "output": "Expand each job into 3-5 bullet points using this structure: (1) a one-line scope statement (\"Responsible for the API layer of a fintech platform\"), (2) 2-3 action bullets with metrics (\"Reduced p99 latency from 800ms to 200ms by optimizing queries\"), (3) one impact bullet (\"Enabling 10K daily active users\"). Use present tense for your current job and past tense for previous ones. Keep bullets under two lines each."
-  },
-  {
-    "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
-    "input": "What are the most common interview questions for a DevOps Engineer?",
-    "output": "Typical questions: (1) \"Tell me about yourself\" — answer with a 2-minute summary of your career arc; (2) \"Describe a project you're proud of\" — use STAR; (3) technical deep-dive on the tools in your CV — be honest about depth; (4) \"Where do you see yourself in 5 years?\" — align with the company's growth; (5) \"Why should we hire you?\" — summarize your unique combination of skills and experience."
-  },
-  {
-    "instruction": "You are an experienced HR professional and CV consultant. Help the user strengthen their CV.",
-    "input": "Will an ATS read my CV correctly? Any formatting tips?",
-    "output": "ATS systems struggle with tables, graphics, headers/footers, and unusual fonts. Use: (1) standard section titles — Summary, Experience, Education, Skills; (2) a single-column layout; (3) standard fonts like Arial or Calibri; (4) spell out acronyms at least once (e.g. \"CI/CD (Continuous Integration/Continuous Deployment)\"); (5) .docx or PDF (not images). Save as a plain, clean layout and verify by copying the text out of the file."
-  },
-  {
-    "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
-    "input": "Give me examples of strong bullet points for a Mobile Developer CV.",
-    "output": "Weak: \"Responsible for backend development\". Strong: \"Designed and shipped Python/Django APIs processing 50K requests/day, reducing average latency by 35%\". Weak: \"Worked with Docker\". Strong: \"Containerized 12 services with Docker Compose, cutting setup time from hours to minutes\". Weak: \"Good at teamwork\". Strong: \"Collaborated with 3 engineers and a PM to ship a feature used by 10K users within 2 sprints\"."
-  },
-  {
-    "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
-    "input": "My CV summary currently says: \"Frontend developer who loves clean, accessible UI.\" Is this good? How can I improve it?",
-    "output": "That summary is a starting point but it's generic. A strong summary has three parts: (1) who you are: \"Frontend Developer with 2+ years of experience\"; (2) your top differentiator: e.g. \"specializing in high-traffic web applications\"; (3) a value statement for the employer: \"seeking to bring scalable architecture skills to a growing product team\". Aim for 2-3 sentences max. Replace vague words like \"passionate\" and \"hard-working\" with specific skills."
-  },
-  {
-    "instruction": "You are an experienced HR professional and CV consultant. Help the user strengthen their CV.",
-    "input": "I have an interview for a Backend Engineer position next week. What should I prepare based on my CV?",
-    "output": "Be ready to (1) walk through every bullet on your CV with a short story — who, what, how, result; (2) explain the biggest technical challenge you faced as a Mobile Developer and how you solved it; (3) answer why you want this specific company; (4) describe a conflict with a teammate; (5) give your salary expectation range. Also prepare 3 questions to ask the interviewer about the team, roadmap, and success metrics."
-  },
-  {
-    "instruction": "You are an experienced HR professional and CV consultant. Help the user strengthen their CV.",
-    "input": "Do I need a cover letter for my Senior Frontend Engineer application?",
-    "output": "Yes if the posting requests one or it's a small company. Keep it to 3 short paragraphs: (1) which role you're applying for and one sentence on why you're a fit; (2) your most relevant achievement with a number; (3) why this company, and a call to action. Don't repeat the CV line by line — add personality and context. If the posting doesn't ask for one, spend that time tailoring the CV instead."
-  },
-  {
-    "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
-    "input": "The job description requires Redux, GraphQL, Next.js, Jest but I only know React, TypeScript, Tailwind CSS, Next.js. Should I apply?",
-    "output": "Yes — most job descriptions are wish lists. Apply if you meet 60-70% of the requirements. In your CV, make your transferable skills visible: e.g. if the job wants Redux, GraphQL, Next.js, Jest and you know React, TypeScript, Tailwind CSS, Next.js, emphasize the shared concepts and mention that you're actively learning the gap. During the interview, show a project where you quickly ramped up on a new technology."
-  },
-  {
-    "instruction": "You are an experienced HR professional and CV consultant. Help the user strengthen their CV.",
-    "input": "How do I add numbers to my CV if I don't have exact metrics?",
-    "output": "Use relative estimates with qualifiers: \"served 10K+ users\", \"reduced response time by approx. 30%\", \"scaled to handle 3x traffic\", \"led a team of 4\", \"automated a task saving 2 hours/week\". If you genuinely can't quantify, use scope: \"solely responsible for\", \"first engineer to build\", \"end-to-end ownership of\". Consistency matters more than precision."
-  },
-  {
-    "instruction": "You are an experienced HR professional and CV consultant. Help the user strengthen their CV.",
-    "input": "How do I add numbers to my CV if I don't have exact metrics?",
-    "output": "Use relative estimates with qualifiers: \"served 10K+ users\", \"reduced response time by approx. 30%\", \"scaled to handle 3x traffic\", \"led a team of 4\", \"automated a task saving 2 hours/week\". If you genuinely can't quantify, use scope: \"solely responsible for\", \"first engineer to build\", \"end-to-end ownership of\". Consistency matters more than precision."
-  },
-  {
-    "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
-    "input": "What's the best structure for a one-page CV?",
-    "output": "Top to bottom: (1) header with name, title, email, phone, LinkedIn; (2) 2-3 sentence summary; (3) core skills as comma-separated keywords; (4) experience, most recent first, 3-5 bullets per job with metrics; (5) education at the end; (6) optional certifications. Skip the \"References available on request\" line. Keep everything that doesn't add value out — the goal is a recruiter can find your fit in 6 seconds."
-  },
-  {
-    "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
-    "input": "The job description requires FastAPI, Redis, Kafka, Kubernetes but I only know Python, Pandas, scikit-learn, SQL. Should I apply?",
-    "output": "Yes — most job descriptions are wish lists. Apply if you meet 60-70% of the requirements. In your CV, make your transferable skills visible: e.g. if the job wants FastAPI, Redis, Kafka, Kubernetes and you know Python, Pandas, scikit-learn, SQL, emphasize the shared concepts and mention that you're actively learning the gap. During the interview, show a project where you quickly ramped up on a new technology."
-  },
-  {
-    "instruction": "You are a friendly career coach who specializes in resume writing. Give specific, practical suggestions.",
-    "input": "Will an ATS read my CV correctly? Any formatting tips?",
-    "output": "ATS systems struggle with tables, graphics, headers/footers, and unusual fonts. Use: (1) standard section titles — Summary, Experience, Education, Skills; (2) a single-column layout; (3) standard fonts like Arial or Calibri; (4) spell out acronyms at least once (e.g. \"CI/CD (Continuous Integration/Continuous Deployment)\"); (5) .docx or PDF (not images). Save as a plain, clean layout and verify by copying the text out of the file."
-  },
-  {
-    "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
-    "input": "My CV says: Frontend developer who loves clean, accessible UI. My skills are: React, TypeScript, Tailwind CSS, Next.js. I want to apply for a ML Engineer position. What skills should I add to my CV?",
-    "output": "Compare your CV to the ML Engineer job description. Most ML Engineer roles list PyTorch, MLflow, Docker, ONNX as requirements. If you have used these at work, add them to your skills section. If not, consider completing a short course and noting it as \"familiar with\" rather than claiming expertise. Also re-read the job description line by line and mirror its keywords — many companies use ATS (Applicant Tracking Systems) that filter resumes by exact keyword matches."
-  },
-  {
-    "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
-    "input": "My experience section is just one line per job: \"shipped mobile apps\". How do I make it stronger?",
-    "output": "Expand each job into 3-5 bullet points using this structure: (1) a one-line scope statement (\"Responsible for the API layer of a fintech platform\"), (2) 2-3 action bullets with metrics (\"Reduced p99 latency from 800ms to 200ms by optimizing queries\"), (3) one impact bullet (\"Enabling 10K daily active users\"). Use present tense for your current job and past tense for previous ones. Keep bullets under two lines each."
-  },
-  {
-    "instruction": "You are an experienced HR professional and CV consultant. Help the user strengthen their CV.",
-    "input": "Should I include my GPA and graduation year in my CV?",
-    "output": "Include GPA only if it's 3.0+ and you have less than 3 years of experience. Include the graduation year if you graduated within the last 5 years; after that, omit it to avoid age bias. List the most recent degree first. If you have multiple degrees, group them under one \"Education\" section."
-  },
-  {
-    "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
-    "input": "I have a 1-year employment gap in my CV. How should I explain it?",
-    "output": "Don't hide it — gaps are common. In your CV, you don't need a section for it; just keep dates consistent. If the gap included learning (courses, certificates, freelance, personal projects), add a brief line like \"2024: Completed AWS certification & built X project\". In interviews, have a 2-sentence explanation ready: what you did and what you learned. Frame it as a period of growth, not a void."
-  },
-  {
-    "instruction": "You are a friendly career coach who specializes in resume writing. Give specific, practical suggestions.",
     "input": "How long should my CV summary be and what should it include?",
     "output": "Keep it to 2-3 sentences. Include: your title and years of experience, your top 2-3 hard skills, and one achievement or value proposition. Do NOT mention hobbies, marital status, or nationality. Write it after you finish the rest of the CV so it summarizes your actual strengths. Customize the last sentence per application."
   },
   {
+    "instruction": "Sen bir CV koçluk asistanısın. Cesaretlendirici ama dürüst ol, her zaman örnek ver. Cevaplarını Türkçe yaz.",
+    "input": "CV'mde 6 aylık bir iş deneyimi boşluğu var. Bunu nasıl açıklamalıyım?",
+    "output": "Kısa boşlukları özetinize yazmanıza gerek yok, ama görüşmede hazırlıklı olun. Boşlukta ne yaptıysanız onu vurgulayın: kurs, freelance proje, gönüllülük, dil eğitimi veya kişisel bir proje. CV'nize \"Kariyer molası sırasında X eğitimini tamamladım\" gibi kısa bir satır ekleyebilirsiniz. Dürüst ama olumlu bir çerçeve çizin."
+  },
+  {
+    "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
+    "input": "What's the best structure for a one-page CV?",
+    "output": "Top to bottom: (1) header with name, title, email, phone, LinkedIn; (2) 2-3 sentence summary; (3) core skills as comma-separated keywords; (4) experience, most recent first, 3-5 bullets per job with metrics; (5) education at the end; (6) optional certifications. Skip the \"References available on request\" line. Keep everything that doesn't add value out — the goal is a recruiter can find your fit in 6 seconds."
+  },
+  {
+    "instruction": "Sen bir CV Koçusun. Kullanıcının CV'sini somut ve uygulanabilir önerilerle iyileştirmesine yardım et. Her zaman Türkçe cevap ver.",
+    "input": "CV'mde şunlar yazıyor: Frontend developer who loves clean, accessible UI. Becerilerim: React, TypeScript, Tailwind CSS, Next.js. ML Engineer pozisyonuna başvurmak istiyorum. CV'me hangi becerileri eklemeliyim?",
+    "output": "CV'nizi ML Engineer iş ilanıyla karşılaştırın. Çoğu ML Engineer ilanında PyTorch, MLflow, Docker, ONNX gibi beceriler ön koşul olarak listelenir. Bunları işte kullandıysanız beceri bölümüne ekleyin. Kullanmadıysanız kısa bir kurs alıp \"temel düzeyde biliyorum\" olarak belirtin; uzman gibi göstermeyin. Ayrıca ilanı satır satır okuyup anahtar kelimelerini birebir kullanın — birçok firma başvuruları ATS (Başvuru Takip Sistemi) ile tam kelime eşleşmesine göre filtreler."
+  },
+  {
     "instruction": "You are a friendly career coach who specializes in resume writing. Give specific, practical suggestions.",
+    "input": "Should I include my GPA and graduation year in my CV?",
+    "output": "Include GPA only if it's 3.0+ and you have less than 3 years of experience. Include the graduation year if you graduated within the last 5 years; after that, omit it to avoid age bias. List the most recent degree first. If you have multiple degrees, group them under one \"Education\" section."
+  },
+  {
+    "instruction": "Sen deneyimli bir İK uzmanı ve CV danışmanısın. Kullanıcının CV'sini güçlendirmesine yardım et. Türkçe konuş.",
+    "input": "Deneyim bölümümde her iş için tek satır var: \"developed user interfaces\". Bunu nasıl güçlendiririm?",
+    "output": "Her işi şu yapıyla 3-5 maddeye çıkarın: (1) tek satırlık kapsam cümlesi (\"Fintech platformunun API katmanından sorumluydum\"), (2) ölçü içeren 2-3 eylem maddesi (\"Sorguları optimize ederek gecikmeyi 800ms'den 200ms'ye düşürdüm\"), (3) bir etki maddesi (\"10 bin günlük aktif kullanıcıya olanak sağladı\"). Mevcut işinizde şimdiki zamanı, önceki işlerde geçmiş zamanı kullanın. Maddeleri iki satırın altında tutun."
+  },
+  {
+    "instruction": "You are an experienced HR professional and CV consultant. Help the user strengthen their CV.",
+    "input": "Do I need a cover letter for my Data Engineer application?",
+    "output": "Yes if the posting requests one or it's a small company. Keep it to 3 short paragraphs: (1) which role you're applying for and one sentence on why you're a fit; (2) your most relevant achievement with a number; (3) why this company, and a call to action. Don't repeat the CV line by line — add personality and context. If the posting doesn't ask for one, spend that time tailoring the CV instead."
+  },
+  {
+    "instruction": "Sen bir CV koçluk asistanısın. Cesaretlendirici ama dürüst ol, her zaman örnek ver. Cevaplarını Türkçe yaz.",
+    "input": "Bir CV'nin bölüm sırası ne olmalı? Şu an sıralamam: eğitim, deneyim, beceriler.",
+    "output": "Deneyimli adaylar için şu sıra daha etkilidir: (1) İsim + iletişim bilgileri, (2) Özet, (3) Deneyim — en önemli bölüm, en üstte olmalı, (4) Beceriler, (5) Eğitim, (6) Sertifikalar. Yeni mezunsanız eğitimi deneyimden önce koyabilirsiniz. İki sayfayı geçmeyin; 10 yıldan eski deneyimleri kısaltın veya çıkarın."
+  },
+  {
+    "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
     "input": "I have a 1-year employment gap in my CV. How should I explain it?",
     "output": "Don't hide it — gaps are common. In your CV, you don't need a section for it; just keep dates consistent. If the gap included learning (courses, certificates, freelance, personal projects), add a brief line like \"2024: Completed AWS certification & built X project\". In interviews, have a 2-sentence explanation ready: what you did and what you learned. Frame it as a period of growth, not a void."
   },
   {
-    "instruction": "You are a friendly career coach who specializes in resume writing. Give specific, practical suggestions.",
-    "input": "My CV summary currently says: \"Mobile developer with experience building cross-platform apps.\" Is this good? How can I improve it?",
-    "output": "That summary is a starting point but it's generic. A strong summary has three parts: (1) who you are: \"Mobile Developer with 3+ years of experience\"; (2) your top differentiator: e.g. \"specializing in high-traffic web applications\"; (3) a value statement for the employer: \"seeking to bring scalable architecture skills to a growing product team\". Aim for 2-3 sentences max. Replace vague words like \"passionate\" and \"hard-working\" with specific skills."
-  },
-  {
-    "instruction": "You are a friendly career coach who specializes in resume writing. Give specific, practical suggestions.",
-    "input": "My experience section is just one line per job: \"built REST APIs\". How do I make it stronger?",
-    "output": "Expand each job into 3-5 bullet points using this structure: (1) a one-line scope statement (\"Responsible for the API layer of a fintech platform\"), (2) 2-3 action bullets with metrics (\"Reduced p99 latency from 800ms to 200ms by optimizing queries\"), (3) one impact bullet (\"Enabling 10K daily active users\"). Use present tense for your current job and past tense for previous ones. Keep bullets under two lines each."
-  },
-  {
-    "instruction": "You are an experienced HR professional and CV consultant. Help the user strengthen their CV.",
-    "input": "My CV says: Full stack developer passionate about building web apps. My skills are: React, Node.js, MongoDB, CSS. I want to apply for a Senior Frontend Engineer position. What skills should I add to my CV?",
-    "output": "Compare your CV to the Senior Frontend Engineer job description. Most Senior Frontend Engineer roles list Redux, GraphQL, Next.js, Jest as requirements. If you have used these at work, add them to your skills section. If not, consider completing a short course and noting it as \"familiar with\" rather than claiming expertise. Also re-read the job description line by line and mirror its keywords — many companies use ATS (Applicant Tracking Systems) that filter resumes by exact keyword matches."
-  },
-  {
-    "instruction": "You are an experienced HR professional and CV consultant. Help the user strengthen their CV.",
-    "input": "The job description requires PyTorch, MLflow, Docker, ONNX but I only know Python, Pandas, scikit-learn, SQL. Should I apply?",
-    "output": "Yes — most job descriptions are wish lists. Apply if you meet 60-70% of the requirements. In your CV, make your transferable skills visible: e.g. if the job wants PyTorch, MLflow, Docker, ONNX and you know Python, Pandas, scikit-learn, SQL, emphasize the shared concepts and mention that you're actively learning the gap. During the interview, show a project where you quickly ramped up on a new technology."
+    "instruction": "Sen CV yazma konusunda uzmanlaşmış samimi bir kariyer koçusun. Somut ve pratik öneriler ver. Yanıtların Türkçe olsun.",
+    "input": "DesignHub şirketinde Frontend Developer olarak deneyimimi nasıl yazmalıyım? Tek yazabildiğim şey \"built responsive interfaces\".",
+    "output": "Her sorumluluğu STAR yöntemiyle yazın: Durum, Görev, Eylem, Sonuç. \"built responsive interfaces\" yerine \"Günde 50K isteğe hizmet veren REST API'ler geliştirdim, yanıt süresini %30 kısalttım\" gibi yazın. Her maddeye güçlü bir eylem fiiliyle başlayın (geliştirdim, yönettim, otomatikleştirdim, azalttım, tasarladım). Her maddeye en az bir ölçü ekleyin: kullanıcı, gelir, performans yüzdesi, ekip büyüklüğü veya kazanılan süre. Rakamı bilmiyorsanız tahmin edin ve \"yaklaşık\" yazın."
   },
   {
     "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
-    "input": "My CV summary currently says: \"Frontend developer who loves clean, accessible UI.\" Is this good? How can I improve it?",
-    "output": "That summary is a starting point but it's generic. A strong summary has three parts: (1) who you are: \"Frontend Developer with 2+ years of experience\"; (2) your top differentiator: e.g. \"specializing in high-traffic web applications\"; (3) a value statement for the employer: \"seeking to bring scalable architecture skills to a growing product team\". Aim for 2-3 sentences max. Replace vague words like \"passionate\" and \"hard-working\" with specific skills."
-  },
-  {
-    "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
-    "input": "Which certifications should I add to my CV as a DevOps Engineer?",
-    "output": "Add any certification you have — put them in a dedicated section with the issuing body and year. For a DevOps Engineer, the most recognized ones are: Google Associate Android Developer. Only list certifications you can discuss in depth; interviewers will ask about them. Keep expired ones only if they're foundational (e.g. security clearances)."
-  },
-  {
-    "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
-    "input": "Give me examples of strong bullet points for a Frontend Developer CV.",
-    "output": "Weak: \"Responsible for backend development\". Strong: \"Designed and shipped Python/Django APIs processing 50K requests/day, reducing average latency by 35%\". Weak: \"Worked with Docker\". Strong: \"Containerized 12 services with Docker Compose, cutting setup time from hours to minutes\". Weak: \"Good at teamwork\". Strong: \"Collaborated with 3 engineers and a PM to ship a feature used by 10K users within 2 sprints\"."
-  },
-  {
-    "instruction": "You are a friendly career coach who specializes in resume writing. Give specific, practical suggestions.",
-    "input": "My CV says: Full stack developer passionate about building web apps. My skills are: React, Node.js, MongoDB, CSS. I want to apply for a ML Engineer position. What skills should I add to my CV?",
-    "output": "Compare your CV to the ML Engineer job description. Most ML Engineer roles list PyTorch, MLflow, Docker, ONNX as requirements. If you have used these at work, add them to your skills section. If not, consider completing a short course and noting it as \"familiar with\" rather than claiming expertise. Also re-read the job description line by line and mirror its keywords — many companies use ATS (Applicant Tracking Systems) that filter resumes by exact keyword matches."
-  },
-  {
-    "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
-    "input": "How should I organize my skills section?",
-    "output": "Group skills into 3-4 categories: Languages/Frameworks, Tools, Cloud/DevOps, Soft Skills. Put the most job-relevant category first. Don't use rating bars or percentages — they're subjective and ATS-hostile. Limit the section to your strongest 15-20 skills; listing 40 dilutes impact. Match the exact terminology used in job descriptions."
-  },
-  {
-    "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
-    "input": "Give me examples of strong bullet points for a Data Scientist CV.",
-    "output": "Weak: \"Responsible for backend development\". Strong: \"Designed and shipped Python/Django APIs processing 50K requests/day, reducing average latency by 35%\". Weak: \"Worked with Docker\". Strong: \"Containerized 12 services with Docker Compose, cutting setup time from hours to minutes\". Weak: \"Good at teamwork\". Strong: \"Collaborated with 3 engineers and a PM to ship a feature used by 10K users within 2 sprints\"."
-  },
-  {
-    "instruction": "You are a friendly career coach who specializes in resume writing. Give specific, practical suggestions.",
-    "input": "The job description requires FastAPI, Redis, Kafka, Kubernetes but I only know React, TypeScript, Tailwind CSS, Next.js. Should I apply?",
-    "output": "Yes — most job descriptions are wish lists. Apply if you meet 60-70% of the requirements. In your CV, make your transferable skills visible: e.g. if the job wants FastAPI, Redis, Kafka, Kubernetes and you know React, TypeScript, Tailwind CSS, Next.js, emphasize the shared concepts and mention that you're actively learning the gap. During the interview, show a project where you quickly ramped up on a new technology."
-  },
-  {
-    "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
-    "input": "Give me examples of strong bullet points for a Backend Developer CV.",
-    "output": "Weak: \"Responsible for backend development\". Strong: \"Designed and shipped Python/Django APIs processing 50K requests/day, reducing average latency by 35%\". Weak: \"Worked with Docker\". Strong: \"Containerized 12 services with Docker Compose, cutting setup time from hours to minutes\". Weak: \"Good at teamwork\". Strong: \"Collaborated with 3 engineers and a PM to ship a feature used by 10K users within 2 sprints\"."
-  },
-  {
-    "instruction": "You are a friendly career coach who specializes in resume writing. Give specific, practical suggestions.",
-    "input": "Will an ATS read my CV correctly? Any formatting tips?",
-    "output": "ATS systems struggle with tables, graphics, headers/footers, and unusual fonts. Use: (1) standard section titles — Summary, Experience, Education, Skills; (2) a single-column layout; (3) standard fonts like Arial or Calibri; (4) spell out acronyms at least once (e.g. \"CI/CD (Continuous Integration/Continuous Deployment)\"); (5) .docx or PDF (not images). Save as a plain, clean layout and verify by copying the text out of the file."
-  },
-  {
-    "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
-    "input": "Do I need a cover letter for my ML Engineer application?",
+    "input": "Do I need a cover letter for my Mobile Developer application?",
     "output": "Yes if the posting requests one or it's a small company. Keep it to 3 short paragraphs: (1) which role you're applying for and one sentence on why you're a fit; (2) your most relevant achievement with a number; (3) why this company, and a call to action. Don't repeat the CV line by line — add personality and context. If the posting doesn't ask for one, spend that time tailoring the CV instead."
+  },
+  {
+    "instruction": "Sen bir CV Koçusun. Kullanıcının CV'sini somut ve uygulanabilir önerilerle iyileştirmesine yardım et. Her zaman Türkçe cevap ver.",
+    "input": "Data Scientist olarak CV'me hangi sertifikaları eklemeliyim?",
+    "output": "Sahip olduğunuz tüm sertifikaları veren kurum ve yılıyla birlikte ayrı bir bölüme ekleyin. Data Scientist için en çok tanınanlar şunlardır: Google Associate Android Developer. Sadece görüşmede derinlemesine anlatabileceğiniz sertifikaları yazın; görüşmeciler mutlaka soracaktır. Temel olanlar (örneğin güvenlik izinleri) dışında süresi geçmişleri çıkarın."
+  },
+  {
+    "instruction": "You are an experienced HR professional and CV consultant. Help the user strengthen their CV.",
+    "input": "I'm a Full Stack Developer with 3 years of experience. My CV lists React, Node.js, MongoDB, CSS. What's missing that recruiters look for?",
+    "output": "For a Full Stack Developer with 3 years of experience, recruiters typically look for: (1) measurable achievements, not just responsibilities — add numbers like \"reduced latency by 40%\"; (2) the tools most used in your niche — for Full Stack Developer, tools like Redux, GraphQL, Next.js, Jest are commonly listed in postings; (3) soft skills demonstrated with examples, e.g. \"led a team of 3\"; (4) a clear summary sentence stating your years of experience and top 3 strengths."
+  },
+  {
+    "instruction": "Sen bir CV Koçusun. Kullanıcının CV'sini somut ve uygulanabilir önerilerle iyileştirmesine yardım et. Her zaman Türkçe cevap ver.",
+    "input": "Frontend Developer olarak CV'me hangi sertifikaları eklemeliyim?",
+    "output": "Sahip olduğunuz tüm sertifikaları veren kurum ve yılıyla birlikte ayrı bir bölüme ekleyin. Frontend Developer için en çok tanınanlar şunlardır: CKA, AWS DevOps Engineer. Sadece görüşmede derinlemesine anlatabileceğiniz sertifikaları yazın; görüşmeciler mutlaka soracaktır. Temel olanlar (örneğin güvenlik izinleri) dışında süresi geçmişleri çıkarın."
   },
   {
     "instruction": "You are a friendly career coach who specializes in resume writing. Give specific, practical suggestions.",
     "input": "I have an interview for a ML Engineer position next week. What should I prepare based on my CV?",
-    "output": "Be ready to (1) walk through every bullet on your CV with a short story — who, what, how, result; (2) explain the biggest technical challenge you faced as a Mobile Developer and how you solved it; (3) answer why you want this specific company; (4) describe a conflict with a teammate; (5) give your salary expectation range. Also prepare 3 questions to ask the interviewer about the team, roadmap, and success metrics."
+    "output": "Be ready to (1) walk through every bullet on your CV with a short story — who, what, how, result; (2) explain the biggest technical challenge you faced as a Data Scientist and how you solved it; (3) answer why you want this specific company; (4) describe a conflict with a teammate; (5) give your salary expectation range. Also prepare 3 questions to ask the interviewer about the team, roadmap, and success metrics."
+  },
+  {
+    "instruction": "Sen CV yazma konusunda uzmanlaşmış samimi bir kariyer koçusun. Somut ve pratik öneriler ver. Yanıtların Türkçe olsun.",
+    "input": "Eğitim bölümünü CV'me nasıl yazmalıyım?",
+    "output": "Eğitim bölümüne şunları yazın: bölüm adı, okul adı, başlangıç ve bitiş yılı. Yeni mezunsanız ilgili dersleri, bitirme projenizi ve not ortalamanızı (iyiyse) ekleyin. 3+ yıl deneyiminiz varsa eğitimi tek satıra indirin. İlgisiz sertifikaları ve lise bilgisini atlayın."
   },
   {
     "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
-    "input": "My experience section is just one line per job: \"developed user interfaces\". How do I make it stronger?",
-    "output": "Expand each job into 3-5 bullet points using this structure: (1) a one-line scope statement (\"Responsible for the API layer of a fintech platform\"), (2) 2-3 action bullets with metrics (\"Reduced p99 latency from 800ms to 200ms by optimizing queries\"), (3) one impact bullet (\"Enabling 10K daily active users\"). Use present tense for your current job and past tense for previous ones. Keep bullets under two lines each."
+    "input": "My CV summary currently says: \"Frontend developer who loves clean, accessible UI.\" Is this good? How can I improve it?",
+    "output": "That summary is a starting point but it's generic. A strong summary has three parts: (1) who you are: \"Frontend Developer with 2+ years of experience\"; (2) your top differentiator: e.g. \"specializing in high-traffic web applications\"; (3) a value statement for the employer: \"seeking to bring scalable architecture skills to a growing product team\". Aim for 2-3 sentences max. Replace vague words like \"passionate\" and \"hard-working\" with specific skills."
   },
   {
-    "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
-    "input": "The job description requires FastAPI, Redis, Kafka, Kubernetes but I only know Python, Pandas, scikit-learn, SQL. Should I apply?",
-    "output": "Yes — most job descriptions are wish lists. Apply if you meet 60-70% of the requirements. In your CV, make your transferable skills visible: e.g. if the job wants FastAPI, Redis, Kafka, Kubernetes and you know Python, Pandas, scikit-learn, SQL, emphasize the shared concepts and mention that you're actively learning the gap. During the interview, show a project where you quickly ramped up on a new technology."
+    "instruction": "Sen bir CV Koçusun. Kullanıcının CV'sini somut ve uygulanabilir önerilerle iyileştirmesine yardım et. Her zaman Türkçe cevap ver.",
+    "input": "Özet bölümüne hiçbir şey yazmadım. CV koçu olarak ne önerirsin?",
+    "output": "Özet bölümünü mutlaka ekleyin — işe alım uzmanları bir CV'ye ortalama 7 saniye bakar. Üç cümleyle şunu yazın: kim olduğunuz (unvan ve yıl), ne yaptığınız (2 ana uzmanlık alanı) ve ne başardığınız (ölçülebilir tek sonuç). Örnek: \"3 yıllık Full Stack Developer; React ve Node.js ile web uygulamaları geliştirdi, kullanıcı etkileşimini %25 artırdı.\" Başvurduğunuz ilanın anahtar kelimelerini özetinize yerleştirin."
+  },
+  {
+    "instruction": "You are a friendly career coach who specializes in resume writing. Give specific, practical suggestions.",
+    "input": "What are the most common interview questions for a DevOps Engineer?",
+    "output": "Typical questions: (1) \"Tell me about yourself\" — answer with a 2-minute summary of your career arc; (2) \"Describe a project you're proud of\" — use STAR; (3) technical deep-dive on the tools in your CV — be honest about depth; (4) \"Where do you see yourself in 5 years?\" — align with the company's growth; (5) \"Why should we hire you?\" — summarize your unique combination of skills and experience."
+  },
+  {
+    "instruction": "Sen deneyimli bir İK uzmanı ve CV danışmanısın. Kullanıcının CV'sini güçlendirmesine yardım et. Türkçe konuş.",
+    "input": "StartupX şirketinde Full Stack Developer olarak deneyimimi nasıl yazmalıyım? Tek yazabildiğim şey \"developed user interfaces\".",
+    "output": "Her sorumluluğu STAR yöntemiyle yazın: Durum, Görev, Eylem, Sonuç. \"developed user interfaces\" yerine \"Günde 50K isteğe hizmet veren REST API'ler geliştirdim, yanıt süresini %30 kısalttım\" gibi yazın. Her maddeye güçlü bir eylem fiiliyle başlayın (geliştirdim, yönettim, otomatikleştirdim, azalttım, tasarladım). Her maddeye en az bir ölçü ekleyin: kullanıcı, gelir, performans yüzdesi, ekip büyüklüğü veya kazanılan süre. Rakamı bilmiyorsanız tahmin edin ve \"yaklaşık\" yazın."
   },
   {
     "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
-    "input": "What are the most common interview questions for a Full Stack Developer?",
-    "output": "Typical questions: (1) \"Tell me about yourself\" — answer with a 2-minute summary of your career arc; (2) \"Describe a project you're proud of\" — use STAR; (3) technical deep-dive on the tools in your CV — be honest about depth; (4) \"Where do you see yourself in 5 years?\" — align with the company's growth; (5) \"Why should we hire you?\" — summarize your unique combination of skills and experience."
+    "input": "I have a non-CS degree but I work as a DevOps Engineer. How should I handle the education section?",
+    "output": "List your degree as-is, but highlight the relevant coursework or projects from it. If you have certifications or bootcamps (e.g. AWS, Kubernetes, a coding bootcamp), place a \"Certifications\" section right after education and put it ABOVE experience if it's more relevant than your degree. Emphasize continuous learning: mention recent courses you completed. Recruiters care most about what you can do today."
+  },
+  {
+    "instruction": "Sen bir CV koçluk asistanısın. Cesaretlendirici ama dürüst ol, her zaman örnek ver. Cevaplarını Türkçe yaz.",
+    "input": "StartupX şirketinde Full Stack Developer olarak deneyimimi nasıl yazmalıyım? Tek yazabildiğim şey \"developed user interfaces\".",
+    "output": "Her sorumluluğu STAR yöntemiyle yazın: Durum, Görev, Eylem, Sonuç. \"developed user interfaces\" yerine \"Günde 50K isteğe hizmet veren REST API'ler geliştirdim, yanıt süresini %30 kısalttım\" gibi yazın. Her maddeye güçlü bir eylem fiiliyle başlayın (geliştirdim, yönettim, otomatikleştirdim, azalttım, tasarladım). Her maddeye en az bir ölçü ekleyin: kullanıcı, gelir, performans yüzdesi, ekip büyüklüğü veya kazanılan süre. Rakamı bilmiyorsanız tahmin edin ve \"yaklaşık\" yazın."
   },
   {
     "instruction": "You are a friendly career coach who specializes in resume writing. Give specific, practical suggestions.",
@@ -375,28 +355,248 @@
     "output": "Top to bottom: (1) header with name, title, email, phone, LinkedIn; (2) 2-3 sentence summary; (3) core skills as comma-separated keywords; (4) experience, most recent first, 3-5 bullets per job with metrics; (5) education at the end; (6) optional certifications. Skip the \"References available on request\" line. Keep everything that doesn't add value out — the goal is a recruiter can find your fit in 6 seconds."
   },
   {
-    "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
-    "input": "The job description requires Terraform, Kubernetes, ArgoCD, Prometheus but I only know React, Node.js, MongoDB, CSS. Should I apply?",
-    "output": "Yes — most job descriptions are wish lists. Apply if you meet 60-70% of the requirements. In your CV, make your transferable skills visible: e.g. if the job wants Terraform, Kubernetes, ArgoCD, Prometheus and you know React, Node.js, MongoDB, CSS, emphasize the shared concepts and mention that you're actively learning the gap. During the interview, show a project where you quickly ramped up on a new technology."
+    "instruction": "Sen deneyimli bir İK uzmanı ve CV danışmanısın. Kullanıcının CV'sini güçlendirmesine yardım et. Türkçe konuş.",
+    "input": "CV'mde şunlar yazıyor: Backend developer with 4 years of experience in Python and Django. Becerilerim: Python, Django, PostgreSQL, Docker. Mobile Developer pozisyonuna başvurmak istiyorum. CV'me hangi becerileri eklemeliyim?",
+    "output": "CV'nizi Mobile Developer iş ilanıyla karşılaştırın. Çoğu Mobile Developer ilanında Kotlin, Swift, React Native, GraphQL gibi beceriler ön koşul olarak listelenir. Bunları işte kullandıysanız beceri bölümüne ekleyin. Kullanmadıysanız kısa bir kurs alıp \"temel düzeyde biliyorum\" olarak belirtin; uzman gibi göstermeyin. Ayrıca ilanı satır satır okuyup anahtar kelimelerini birebir kullanın — birçok firma başvuruları ATS (Başvuru Takip Sistemi) ile tam kelime eşleşmesine göre filtreler."
   },
   {
-    "instruction": "You are a friendly career coach who specializes in resume writing. Give specific, practical suggestions.",
-    "input": "The job description requires Redux, GraphQL, Next.js, Jest but I only know AWS, Docker, CI/CD, Linux. Should I apply?",
-    "output": "Yes — most job descriptions are wish lists. Apply if you meet 60-70% of the requirements. In your CV, make your transferable skills visible: e.g. if the job wants Redux, GraphQL, Next.js, Jest and you know AWS, Docker, CI/CD, Linux, emphasize the shared concepts and mention that you're actively learning the gap. During the interview, show a project where you quickly ramped up on a new technology."
+    "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
+    "input": "I have a non-CS degree but I work as a DevOps Engineer. How should I handle the education section?",
+    "output": "List your degree as-is, but highlight the relevant coursework or projects from it. If you have certifications or bootcamps (e.g. AWS, Kubernetes, a coding bootcamp), place a \"Certifications\" section right after education and put it ABOVE experience if it's more relevant than your degree. Emphasize continuous learning: mention recent courses you completed. Recruiters care most about what you can do today."
+  },
+  {
+    "instruction": "Sen bir CV Koçusun. Kullanıcının CV'sini somut ve uygulanabilir önerilerle iyileştirmesine yardım et. Her zaman Türkçe cevap ver.",
+    "input": "Eğitim bölümünü CV'me nasıl yazmalıyım?",
+    "output": "Eğitim bölümüne şunları yazın: bölüm adı, okul adı, başlangıç ve bitiş yılı. Yeni mezunsanız ilgili dersleri, bitirme projenizi ve not ortalamanızı (iyiyse) ekleyin. 3+ yıl deneyiminiz varsa eğitimi tek satıra indirin. İlgisiz sertifikaları ve lise bilgisini atlayın."
+  },
+  {
+    "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
+    "input": "I have an interview for a Backend Engineer position next week. What should I prepare based on my CV?",
+    "output": "Be ready to (1) walk through every bullet on your CV with a short story — who, what, how, result; (2) explain the biggest technical challenge you faced as a Full Stack Developer and how you solved it; (3) answer why you want this specific company; (4) describe a conflict with a teammate; (5) give your salary expectation range. Also prepare 3 questions to ask the interviewer about the team, roadmap, and success metrics."
+  },
+  {
+    "instruction": "Sen CV yazma konusunda uzmanlaşmış samimi bir kariyer koçusun. Somut ve pratik öneriler ver. Yanıtların Türkçe olsun.",
+    "input": "Backend Developer olarak CV'me hangi sertifikaları eklemeliyim?",
+    "output": "Sahip olduğunuz tüm sertifikaları veren kurum ve yılıyla birlikte ayrı bir bölüme ekleyin. Backend Developer için en çok tanınanlar şunlardır: AWS Certified Cloud Practitioner, Meta Frontend. Sadece görüşmede derinlemesine anlatabileceğiniz sertifikaları yazın; görüşmeciler mutlaka soracaktır. Temel olanlar (örneğin güvenlik izinleri) dışında süresi geçmişleri çıkarın."
   },
   {
     "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
+    "input": "My CV summary currently says: \"Mobile developer with experience building cross-platform apps.\" Is this good? How can I improve it?",
+    "output": "That summary is a starting point but it's generic. A strong summary has three parts: (1) who you are: \"Mobile Developer with 3+ years of experience\"; (2) your top differentiator: e.g. \"specializing in high-traffic web applications\"; (3) a value statement for the employer: \"seeking to bring scalable architecture skills to a growing product team\". Aim for 2-3 sentences max. Replace vague words like \"passionate\" and \"hard-working\" with specific skills."
+  },
+  {
+    "instruction": "Sen bir CV Koçusun. Kullanıcının CV'sini somut ve uygulanabilir önerilerle iyileştirmesine yardım et. Her zaman Türkçe cevap ver.",
+    "input": "CV özetim şu an: \"Mobile developer with experience building cross-platform apps.\" İyi mi, nasıl geliştirebilirim?",
+    "output": "Özetiniz doğru yolda ama daha güçlü olabilir. Şu formülü deneyin: [unvan] + [yıl] deneyim + [en güçlü 2 beceri] + [somut bir başarı]. Örneğin: \"4 yıllık deneyimli Backend Developer; Python ve Django ile ölçeklenebilir API'ler geliştirdi, yanıt süresini %30 kısalttı.\" Özeti 2-3 cümleyle sınırlayın, birinci tekil şahıstan kaçının ve başvurduğunuz ilana göre kelimeleri uyarlayın."
+  },
+  {
+    "instruction": "You are an experienced HR professional and CV consultant. Help the user strengthen their CV.",
+    "input": "My CV says: DevOps engineer specializing in cloud infrastructure automation. My skills are: AWS, Docker, CI/CD, Linux. I want to apply for a Backend Engineer position. What skills should I add to my CV?",
+    "output": "Compare your CV to the Backend Engineer job description. Most Backend Engineer roles list FastAPI, Redis, Kafka, Kubernetes as requirements. If you have used these at work, add them to your skills section. If not, consider completing a short course and noting it as \"familiar with\" rather than claiming expertise. Also re-read the job description line by line and mirror its keywords — many companies use ATS (Applicant Tracking Systems) that filter resumes by exact keyword matches."
+  },
+  {
+    "instruction": "Sen deneyimli bir İK uzmanı ve CV danışmanısın. Kullanıcının CV'sini güçlendirmesine yardım et. Türkçe konuş.",
+    "input": "5 yıllık deneyimli bir Data Scientist olarak CV'mde Python, Pandas, scikit-learn, SQL listeleniyor. İşe alım uzmanlarının aradığı neler eksik?",
+    "output": "5 yıllık bir Data Scientist için işe alım uzmanları şunlara bakar: (1) sadece görev değil ölçülebilir başarılar — \"yanıt süresini %40 azalttım\" gibi rakamlar ekleyin; (2) alanınızda en çok kullanılan araçlar — Data Scientist ilanlarında genellikle FastAPI, Redis, Kafka, Kubernetes gibi araçlar geçer; (3) örnekle desteklenen sosyal beceriler, örneğin \"3 kişilik ekibi yönettim\"; (4) deneyim yılınızı ve ilk 3 güçlü yönünüzü anlatan net bir özet cümlesi."
+  },
+  {
+    "instruction": "You are an experienced HR professional and CV consultant. Help the user strengthen their CV.",
+    "input": "Do I need a cover letter for my Backend Engineer application?",
+    "output": "Yes if the posting requests one or it's a small company. Keep it to 3 short paragraphs: (1) which role you're applying for and one sentence on why you're a fit; (2) your most relevant achievement with a number; (3) why this company, and a call to action. Don't repeat the CV line by line — add personality and context. If the posting doesn't ask for one, spend that time tailoring the CV instead."
+  },
+  {
+    "instruction": "Sen CV yazma konusunda uzmanlaşmış samimi bir kariyer koçusun. Somut ve pratik öneriler ver. Yanıtların Türkçe olsun.",
+    "input": "CV'mde şunlar yazıyor: Data scientist with 5 years of experience in predictive modeling. Becerilerim: Python, Pandas, scikit-learn, SQL. ML Engineer pozisyonuna başvurmak istiyorum. CV'me hangi becerileri eklemeliyim?",
+    "output": "CV'nizi ML Engineer iş ilanıyla karşılaştırın. Çoğu ML Engineer ilanında PyTorch, MLflow, Docker, ONNX gibi beceriler ön koşul olarak listelenir. Bunları işte kullandıysanız beceri bölümüne ekleyin. Kullanmadıysanız kısa bir kurs alıp \"temel düzeyde biliyorum\" olarak belirtin; uzman gibi göstermeyin. Ayrıca ilanı satır satır okuyup anahtar kelimelerini birebir kullanın — birçok firma başvuruları ATS (Başvuru Takip Sistemi) ile tam kelime eşleşmesine göre filtreler."
+  },
+  {
+    "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
+    "input": "How long should my CV summary be and what should it include?",
+    "output": "Keep it to 2-3 sentences. Include: your title and years of experience, your top 2-3 hard skills, and one achievement or value proposition. Do NOT mention hobbies, marital status, or nationality. Write it after you finish the rest of the CV so it summarizes your actual strengths. Customize the last sentence per application."
+  },
+  {
+    "instruction": "Sen CV yazma konusunda uzmanlaşmış samimi bir kariyer koçusun. Somut ve pratik öneriler ver. Yanıtların Türkçe olsun.",
+    "input": "Eğitim bölümünü CV'me nasıl yazmalıyım?",
+    "output": "Eğitim bölümüne şunları yazın: bölüm adı, okul adı, başlangıç ve bitiş yılı. Yeni mezunsanız ilgili dersleri, bitirme projenizi ve not ortalamanızı (iyiyse) ekleyin. 3+ yıl deneyiminiz varsa eğitimi tek satıra indirin. İlgisiz sertifikaları ve lise bilgisini atlayın."
+  },
+  {
+    "instruction": "You are a friendly career coach who specializes in resume writing. Give specific, practical suggestions.",
+    "input": "I have an interview for a ML Engineer position next week. What should I prepare based on my CV?",
+    "output": "Be ready to (1) walk through every bullet on your CV with a short story — who, what, how, result; (2) explain the biggest technical challenge you faced as a DevOps Engineer and how you solved it; (3) answer why you want this specific company; (4) describe a conflict with a teammate; (5) give your salary expectation range. Also prepare 3 questions to ask the interviewer about the team, roadmap, and success metrics."
+  },
+  {
+    "instruction": "Sen bir CV Koçusun. Kullanıcının CV'sini somut ve uygulanabilir önerilerle iyileştirmesine yardım et. Her zaman Türkçe cevap ver.",
+    "input": "CV'mde şunlar yazıyor: Backend developer with 4 years of experience in Python and Django. Becerilerim: Python, Django, PostgreSQL, Docker. Data Engineer pozisyonuna başvurmak istiyorum. CV'me hangi becerileri eklemeliyim?",
+    "output": "CV'nizi Data Engineer iş ilanıyla karşılaştırın. Çoğu Data Engineer ilanında Spark, Airflow, dbt, Snowflake gibi beceriler ön koşul olarak listelenir. Bunları işte kullandıysanız beceri bölümüne ekleyin. Kullanmadıysanız kısa bir kurs alıp \"temel düzeyde biliyorum\" olarak belirtin; uzman gibi göstermeyin. Ayrıca ilanı satır satır okuyup anahtar kelimelerini birebir kullanın — birçok firma başvuruları ATS (Başvuru Takip Sistemi) ile tam kelime eşleşmesine göre filtreler."
+  },
+  {
+    "instruction": "You are a friendly career coach who specializes in resume writing. Give specific, practical suggestions.",
+    "input": "I have a 1-year employment gap in my CV. How should I explain it?",
+    "output": "Don't hide it — gaps are common. In your CV, you don't need a section for it; just keep dates consistent. If the gap included learning (courses, certificates, freelance, personal projects), add a brief line like \"2024: Completed AWS certification & built X project\". In interviews, have a 2-sentence explanation ready: what you did and what you learned. Frame it as a period of growth, not a void."
+  },
+  {
+    "instruction": "Sen bir CV koçluk asistanısın. Cesaretlendirici ama dürüst ol, her zaman örnek ver. Cevaplarını Türkçe yaz.",
+    "input": "Başarılarım için rakam bulamıyorum. Ne yapmalıyım?",
+    "output": "Rakamlar şu kaynaklardan gelebilir: günlük/yıllık işlem hacmi, kullanıcı sayısı, ekip boyutu, maliyet tasarrufu, kazanılan saat, azalan hata oranı. Örneğin \"destek sürecini otomatikleştirdim\" yerine \"destek sürecini otomatikleştirerek ayda 10 saat tasarruf sağladım\" yazın. Hiçbir veri yoksa yönetimden veya git/rapor geçmişinden tahmin çıkarın ve \"yaklaşık\" notu düşün."
+  },
+  {
+    "instruction": "You are a friendly career coach who specializes in resume writing. Give specific, practical suggestions.",
+    "input": "The job description requires Spark, Airflow, dbt, Snowflake but I only know React, TypeScript, Tailwind CSS, Next.js. Should I apply?",
+    "output": "Yes — most job descriptions are wish lists. Apply if you meet 60-70% of the requirements. In your CV, make your transferable skills visible: e.g. if the job wants Spark, Airflow, dbt, Snowflake and you know React, TypeScript, Tailwind CSS, Next.js, emphasize the shared concepts and mention that you're actively learning the gap. During the interview, show a project where you quickly ramped up on a new technology."
+  },
+  {
+    "instruction": "Sen deneyimli bir İK uzmanı ve CV danışmanısın. Kullanıcının CV'sini güçlendirmesine yardım et. Türkçe konuş.",
+    "input": "CV'mi ATS sistemlerinden nasıl geçirebilirim?",
+    "output": "ATS (Başvuru Takip Sistemi) için şunlara dikkat edin: (1) standart başlıklar kullanın — \"Deneyim\", \"Eğitim\", \"Beceriler\"; yaratıcı başlıklar sistemi şaşırtır; (2) PDF kullanın ama tablo, sütun ve resim içermeyen basit bir düzen seçin; (3) ilandaki anahtar kelimeleri birebir kullanın — örneğin ilanda \"FastAPI\" geçiyorsa \"FastAPI\" yazın; (4) tarihleri \"Ocak 2022 - Haziran 2024\" gibi net yazın; (5) başlık ve alt yazılara gömülü metin koymayın."
+  },
+  {
+    "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
+    "input": "I have an interview for a Backend Engineer position next week. What should I prepare based on my CV?",
+    "output": "Be ready to (1) walk through every bullet on your CV with a short story — who, what, how, result; (2) explain the biggest technical challenge you faced as a Full Stack Developer and how you solved it; (3) answer why you want this specific company; (4) describe a conflict with a teammate; (5) give your salary expectation range. Also prepare 3 questions to ask the interviewer about the team, roadmap, and success metrics."
+  },
+  {
+    "instruction": "Sen bir CV koçluk asistanısın. Cesaretlendirici ama dürüst ol, her zaman örnek ver. Cevaplarını Türkçe yaz.",
+    "input": "Başarılarım için rakam bulamıyorum. Ne yapmalıyım?",
+    "output": "Rakamlar şu kaynaklardan gelebilir: günlük/yıllık işlem hacmi, kullanıcı sayısı, ekip boyutu, maliyet tasarrufu, kazanılan saat, azalan hata oranı. Örneğin \"destek sürecini otomatikleştirdim\" yerine \"destek sürecini otomatikleştirerek ayda 10 saat tasarruf sağladım\" yazın. Hiçbir veri yoksa yönetimden veya git/rapor geçmişinden tahmin çıkarın ve \"yaklaşık\" notu düşün."
+  },
+  {
+    "instruction": "You are an experienced HR professional and CV consultant. Help the user strengthen their CV.",
+    "input": "I'm a Frontend Developer with 2 years of experience. My CV lists React, TypeScript, Tailwind CSS, Next.js. What's missing that recruiters look for?",
+    "output": "For a Frontend Developer with 2 years of experience, recruiters typically look for: (1) measurable achievements, not just responsibilities — add numbers like \"reduced latency by 40%\"; (2) the tools most used in your niche — for Frontend Developer, tools like Redux, GraphQL, Next.js, Jest are commonly listed in postings; (3) soft skills demonstrated with examples, e.g. \"led a team of 3\"; (4) a clear summary sentence stating your years of experience and top 3 strengths."
+  },
+  {
+    "instruction": "Sen bir CV Koçusun. Kullanıcının CV'sini somut ve uygulanabilir önerilerle iyileştirmesine yardım et. Her zaman Türkçe cevap ver.",
+    "input": "Bir CV'nin bölüm sırası ne olmalı? Şu an sıralamam: eğitim, deneyim, beceriler.",
+    "output": "Deneyimli adaylar için şu sıra daha etkilidir: (1) İsim + iletişim bilgileri, (2) Özet, (3) Deneyim — en önemli bölüm, en üstte olmalı, (4) Beceriler, (5) Eğitim, (6) Sertifikalar. Yeni mezunsanız eğitimi deneyimden önce koyabilirsiniz. İki sayfayı geçmeyin; 10 yıldan eski deneyimleri kısaltın veya çıkarın."
+  },
+  {
+    "instruction": "You are an experienced HR professional and CV consultant. Help the user strengthen their CV.",
+    "input": "The job description requires Spark, Airflow, dbt, Snowflake but I only know Python, Pandas, scikit-learn, SQL. Should I apply?",
+    "output": "Yes — most job descriptions are wish lists. Apply if you meet 60-70% of the requirements. In your CV, make your transferable skills visible: e.g. if the job wants Spark, Airflow, dbt, Snowflake and you know Python, Pandas, scikit-learn, SQL, emphasize the shared concepts and mention that you're actively learning the gap. During the interview, show a project where you quickly ramped up on a new technology."
+  },
+  {
+    "instruction": "Sen bir CV Koçusun. Kullanıcının CV'sini somut ve uygulanabilir önerilerle iyileştirmesine yardım et. Her zaman Türkçe cevap ver.",
+    "input": "FinTechLabs şirketinde Data Scientist olarak deneyimimi nasıl yazmalıyım? Tek yazabildiğim şey \"built ML models\".",
+    "output": "Her sorumluluğu STAR yöntemiyle yazın: Durum, Görev, Eylem, Sonuç. \"built ML models\" yerine \"Günde 50K isteğe hizmet veren REST API'ler geliştirdim, yanıt süresini %30 kısalttım\" gibi yazın. Her maddeye güçlü bir eylem fiiliyle başlayın (geliştirdim, yönettim, otomatikleştirdim, azalttım, tasarladım). Her maddeye en az bir ölçü ekleyin: kullanıcı, gelir, performans yüzdesi, ekip büyüklüğü veya kazanılan süre. Rakamı bilmiyorsanız tahmin edin ve \"yaklaşık\" yazın."
+  },
+  {
+    "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
+    "input": "I have an interview for a Backend Engineer position next week. What should I prepare based on my CV?",
+    "output": "Be ready to (1) walk through every bullet on your CV with a short story — who, what, how, result; (2) explain the biggest technical challenge you faced as a DevOps Engineer and how you solved it; (3) answer why you want this specific company; (4) describe a conflict with a teammate; (5) give your salary expectation range. Also prepare 3 questions to ask the interviewer about the team, roadmap, and success metrics."
+  },
+  {
+    "instruction": "Sen deneyimli bir İK uzmanı ve CV danışmanısın. Kullanıcının CV'sini güçlendirmesine yardım et. Türkçe konuş.",
+    "input": "3 yıllık deneyimli bir Full Stack Developer olarak CV'mde React, Node.js, MongoDB, CSS listeleniyor. İşe alım uzmanlarının aradığı neler eksik?",
+    "output": "3 yıllık bir Full Stack Developer için işe alım uzmanları şunlara bakar: (1) sadece görev değil ölçülebilir başarılar — \"yanıt süresini %40 azalttım\" gibi rakamlar ekleyin; (2) alanınızda en çok kullanılan araçlar — Full Stack Developer ilanlarında genellikle PyTorch, MLflow, Docker, ONNX gibi araçlar geçer; (3) örnekle desteklenen sosyal beceriler, örneğin \"3 kişilik ekibi yönettim\"; (4) deneyim yılınızı ve ilk 3 güçlü yönünüzü anlatan net bir özet cümlesi."
+  },
+  {
+    "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
+    "input": "I have a non-CS degree but I work as a Full Stack Developer. How should I handle the education section?",
+    "output": "List your degree as-is, but highlight the relevant coursework or projects from it. If you have certifications or bootcamps (e.g. AWS, Kubernetes, a coding bootcamp), place a \"Certifications\" section right after education and put it ABOVE experience if it's more relevant than your degree. Emphasize continuous learning: mention recent courses you completed. Recruiters care most about what you can do today."
+  },
+  {
+    "instruction": "Sen CV yazma konusunda uzmanlaşmış samimi bir kariyer koçusun. Somut ve pratik öneriler ver. Yanıtların Türkçe olsun.",
+    "input": "5 yıllık deneyimli bir Data Scientist olarak CV'mde Python, Pandas, scikit-learn, SQL listeleniyor. İşe alım uzmanlarının aradığı neler eksik?",
+    "output": "5 yıllık bir Data Scientist için işe alım uzmanları şunlara bakar: (1) sadece görev değil ölçülebilir başarılar — \"yanıt süresini %40 azalttım\" gibi rakamlar ekleyin; (2) alanınızda en çok kullanılan araçlar — Data Scientist ilanlarında genellikle Spark, Airflow, dbt, Snowflake gibi araçlar geçer; (3) örnekle desteklenen sosyal beceriler, örneğin \"3 kişilik ekibi yönettim\"; (4) deneyim yılınızı ve ilk 3 güçlü yönünüzü anlatan net bir özet cümlesi."
+  },
+  {
+    "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
+    "input": "My CV summary currently says: \"Data scientist with 5 years of experience in predictive modeling.\" Is this good? How can I improve it?",
+    "output": "That summary is a starting point but it's generic. A strong summary has three parts: (1) who you are: \"Data Scientist with 5+ years of experience\"; (2) your top differentiator: e.g. \"specializing in high-traffic web applications\"; (3) a value statement for the employer: \"seeking to bring scalable architecture skills to a growing product team\". Aim for 2-3 sentences max. Replace vague words like \"passionate\" and \"hard-working\" with specific skills."
+  },
+  {
+    "instruction": "Sen bir CV koçluk asistanısın. Cesaretlendirici ama dürüst ol, her zaman örnek ver. Cevaplarını Türkçe yaz.",
+    "input": "CV'mde şunlar yazıyor: Mobile developer with experience building cross-platform apps. Becerilerim: Flutter, Dart, Firebase. ML Engineer pozisyonuna başvurmak istiyorum. CV'me hangi becerileri eklemeliyim?",
+    "output": "CV'nizi ML Engineer iş ilanıyla karşılaştırın. Çoğu ML Engineer ilanında PyTorch, MLflow, Docker, ONNX gibi beceriler ön koşul olarak listelenir. Bunları işte kullandıysanız beceri bölümüne ekleyin. Kullanmadıysanız kısa bir kurs alıp \"temel düzeyde biliyorum\" olarak belirtin; uzman gibi göstermeyin. Ayrıca ilanı satır satır okuyup anahtar kelimelerini birebir kullanın — birçok firma başvuruları ATS (Başvuru Takip Sistemi) ile tam kelime eşleşmesine göre filtreler."
+  },
+  {
+    "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
+    "input": "Which certifications should I add to my CV as a Frontend Developer?",
+    "output": "Add any certification you have — put them in a dedicated section with the issuing body and year. For a Frontend Developer, the most recognized ones are: AWS ML Specialty, TensorFlow Developer. Only list certifications you can discuss in depth; interviewers will ask about them. Keep expired ones only if they're foundational (e.g. security clearances)."
+  },
+  {
+    "instruction": "Sen deneyimli bir İK uzmanı ve CV danışmanısın. Kullanıcının CV'sini güçlendirmesine yardım et. Türkçe konuş.",
+    "input": "TechCorp şirketinde Backend Developer olarak deneyimimi nasıl yazmalıyım? Tek yazabildiğim şey \"built REST APIs\".",
+    "output": "Her sorumluluğu STAR yöntemiyle yazın: Durum, Görev, Eylem, Sonuç. \"built REST APIs\" yerine \"Günde 50K isteğe hizmet veren REST API'ler geliştirdim, yanıt süresini %30 kısalttım\" gibi yazın. Her maddeye güçlü bir eylem fiiliyle başlayın (geliştirdim, yönettim, otomatikleştirdim, azalttım, tasarladım). Her maddeye en az bir ölçü ekleyin: kullanıcı, gelir, performans yüzdesi, ekip büyüklüğü veya kazanılan süre. Rakamı bilmiyorsanız tahmin edin ve \"yaklaşık\" yazın."
+  },
+  {
+    "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
+    "input": "My CV says: DevOps engineer specializing in cloud infrastructure automation. My skills are: AWS, Docker, CI/CD, Linux. I want to apply for a DevOps Engineer position. What skills should I add to my CV?",
+    "output": "Compare your CV to the DevOps Engineer job description. Most DevOps Engineer roles list Terraform, Kubernetes, ArgoCD, Prometheus as requirements. If you have used these at work, add them to your skills section. If not, consider completing a short course and noting it as \"familiar with\" rather than claiming expertise. Also re-read the job description line by line and mirror its keywords — many companies use ATS (Applicant Tracking Systems) that filter resumes by exact keyword matches."
+  },
+  {
+    "instruction": "Sen bir CV Koçusun. Kullanıcının CV'sini somut ve uygulanabilir önerilerle iyileştirmesine yardım et. Her zaman Türkçe cevap ver.",
+    "input": "Bir CV'nin bölüm sırası ne olmalı? Şu an sıralamam: eğitim, deneyim, beceriler.",
+    "output": "Deneyimli adaylar için şu sıra daha etkilidir: (1) İsim + iletişim bilgileri, (2) Özet, (3) Deneyim — en önemli bölüm, en üstte olmalı, (4) Beceriler, (5) Eğitim, (6) Sertifikalar. Yeni mezunsanız eğitimi deneyimden önce koyabilirsiniz. İki sayfayı geçmeyin; 10 yıldan eski deneyimleri kısaltın veya çıkarın."
+  },
+  {
+    "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
+    "input": "How do I add numbers to my CV if I don't have exact metrics?",
+    "output": "Use relative estimates with qualifiers: \"served 10K+ users\", \"reduced response time by approx. 30%\", \"scaled to handle 3x traffic\", \"led a team of 4\", \"automated a task saving 2 hours/week\". If you genuinely can't quantify, use scope: \"solely responsible for\", \"first engineer to build\", \"end-to-end ownership of\". Consistency matters more than precision."
+  },
+  {
+    "instruction": "Sen CV yazma konusunda uzmanlaşmış samimi bir kariyer koçusun. Somut ve pratik öneriler ver. Yanıtların Türkçe olsun.",
+    "input": "Ön yazı (cover letter) yazmalı mıyım? Nasıl olmalı?",
+    "output": "İlan istiyorsa veya şirket küçükse evet. 3 kısa paragraf tutun: (1) hangi pozisyona başvurduğunuz ve neden uygun olduğunuz tek cümle; (2) en alakalı başarınız ve rakamı; (3) neden bu şirket ve çağrı cümlesi. CV'nizi satır satır tekrar etmeyin — kişilik ve bağlam ekleyin. İlan istemiyorsa o vakti CV'nizi ilana uyarlamaya harcayın."
+  },
+  {
+    "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
+    "input": "How do I add numbers to my CV if I don't have exact metrics?",
+    "output": "Use relative estimates with qualifiers: \"served 10K+ users\", \"reduced response time by approx. 30%\", \"scaled to handle 3x traffic\", \"led a team of 4\", \"automated a task saving 2 hours/week\". If you genuinely can't quantify, use scope: \"solely responsible for\", \"first engineer to build\", \"end-to-end ownership of\". Consistency matters more than precision."
+  },
+  {
+    "instruction": "Sen bir CV Koçusun. Kullanıcının CV'sini somut ve uygulanabilir önerilerle iyileştirmesine yardım et. Her zaman Türkçe cevap ver.",
+    "input": "Backend Developer olarak CV'me hangi sertifikaları eklemeliyim?",
+    "output": "Sahip olduğunuz tüm sertifikaları veren kurum ve yılıyla birlikte ayrı bir bölüme ekleyin. Backend Developer için en çok tanınanlar şunlardır: CKA, AWS DevOps Engineer. Sadece görüşmede derinlemesine anlatabileceğiniz sertifikaları yazın; görüşmeciler mutlaka soracaktır. Temel olanlar (örneğin güvenlik izinleri) dışında süresi geçmişleri çıkarın."
+  },
+  {
+    "instruction": "You are a friendly career coach who specializes in resume writing. Give specific, practical suggestions.",
     "input": "Will an ATS read my CV correctly? Any formatting tips?",
     "output": "ATS systems struggle with tables, graphics, headers/footers, and unusual fonts. Use: (1) standard section titles — Summary, Experience, Education, Skills; (2) a single-column layout; (3) standard fonts like Arial or Calibri; (4) spell out acronyms at least once (e.g. \"CI/CD (Continuous Integration/Continuous Deployment)\"); (5) .docx or PDF (not images). Save as a plain, clean layout and verify by copying the text out of the file."
   },
   {
-    "instruction": "You are an experienced HR professional and CV consultant. Help the user strengthen their CV.",
-    "input": "How should I describe my experience as a Data Scientist at FinTechLabs? I built ML models and that's about it.",
-    "output": "Turn each responsibility into a STAR bullet: Situation, Task, Action, Result. Instead of \"built ML models\", write \"Built and shipped REST APIs serving 50K daily requests, cutting response time by 30%\". Start every bullet with a strong action verb (built, led, automated, reduced, designed). Add at least one metric per bullet: users, revenue, performance percentage, team size, or time saved. If you don't know exact numbers, estimate and say \"approx.\"."
+    "instruction": "Sen CV yazma konusunda uzmanlaşmış samimi bir kariyer koçusun. Somut ve pratik öneriler ver. Yanıtların Türkçe olsun.",
+    "input": "CV'mde 6 aylık bir iş deneyimi boşluğu var. Bunu nasıl açıklamalıyım?",
+    "output": "Kısa boşlukları özetinize yazmanıza gerek yok, ama görüşmede hazırlıklı olun. Boşlukta ne yaptıysanız onu vurgulayın: kurs, freelance proje, gönüllülük, dil eğitimi veya kişisel bir proje. CV'nize \"Kariyer molası sırasında X eğitimini tamamladım\" gibi kısa bir satır ekleyebilirsiniz. Dürüst ama olumlu bir çerçeve çizin."
   },
   {
     "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
-    "input": "I have a 1-year employment gap in my CV. How should I explain it?",
-    "output": "Don't hide it — gaps are common. In your CV, you don't need a section for it; just keep dates consistent. If the gap included learning (courses, certificates, freelance, personal projects), add a brief line like \"2024: Completed AWS certification & built X project\". In interviews, have a 2-sentence explanation ready: what you did and what you learned. Frame it as a period of growth, not a void."
+    "input": "I have an interview for a Backend Engineer position next week. What should I prepare based on my CV?",
+    "output": "Be ready to (1) walk through every bullet on your CV with a short story — who, what, how, result; (2) explain the biggest technical challenge you faced as a DevOps Engineer and how you solved it; (3) answer why you want this specific company; (4) describe a conflict with a teammate; (5) give your salary expectation range. Also prepare 3 questions to ask the interviewer about the team, roadmap, and success metrics."
+  },
+  {
+    "instruction": "Sen deneyimli bir İK uzmanı ve CV danışmanısın. Kullanıcının CV'sini güçlendirmesine yardım et. Türkçe konuş.",
+    "input": "CV özetim şu an: \"Mobile developer with experience building cross-platform apps.\" İyi mi, nasıl geliştirebilirim?",
+    "output": "Özetiniz doğru yolda ama daha güçlü olabilir. Şu formülü deneyin: [unvan] + [yıl] deneyim + [en güçlü 2 beceri] + [somut bir başarı]. Örneğin: \"4 yıllık deneyimli Backend Developer; Python ve Django ile ölçeklenebilir API'ler geliştirdi, yanıt süresini %30 kısalttı.\" Özeti 2-3 cümleyle sınırlayın, birinci tekil şahıstan kaçının ve başvurduğunuz ilana göre kelimeleri uyarlayın."
+  },
+  {
+    "instruction": "You are a CV Coach. Help the user improve their CV with concrete, actionable advice.",
+    "input": "Do I need a cover letter for my DevOps Engineer application?",
+    "output": "Yes if the posting requests one or it's a small company. Keep it to 3 short paragraphs: (1) which role you're applying for and one sentence on why you're a fit; (2) your most relevant achievement with a number; (3) why this company, and a call to action. Don't repeat the CV line by line — add personality and context. If the posting doesn't ask for one, spend that time tailoring the CV instead."
+  },
+  {
+    "instruction": "Sen deneyimli bir İK uzmanı ve CV danışmanısın. Kullanıcının CV'sini güçlendirmesine yardım et. Türkçe konuş.",
+    "input": "CV'mde şunlar yazıyor: Data scientist with 5 years of experience in predictive modeling. Becerilerim: Python, Pandas, scikit-learn, SQL. Backend Engineer pozisyonuna başvurmak istiyorum. CV'me hangi becerileri eklemeliyim?",
+    "output": "CV'nizi Backend Engineer iş ilanıyla karşılaştırın. Çoğu Backend Engineer ilanında FastAPI, Redis, Kafka, Kubernetes gibi beceriler ön koşul olarak listelenir. Bunları işte kullandıysanız beceri bölümüne ekleyin. Kullanmadıysanız kısa bir kurs alıp \"temel düzeyde biliyorum\" olarak belirtin; uzman gibi göstermeyin. Ayrıca ilanı satır satır okuyup anahtar kelimelerini birebir kullanın — birçok firma başvuruları ATS (Başvuru Takip Sistemi) ile tam kelime eşleşmesine göre filtreler."
+  },
+  {
+    "instruction": "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
+    "input": "I have an interview for a ML Engineer position next week. What should I prepare based on my CV?",
+    "output": "Be ready to (1) walk through every bullet on your CV with a short story — who, what, how, result; (2) explain the biggest technical challenge you faced as a Backend Developer and how you solved it; (3) answer why you want this specific company; (4) describe a conflict with a teammate; (5) give your salary expectation range. Also prepare 3 questions to ask the interviewer about the team, roadmap, and success metrics."
+  },
+  {
+    "instruction": "Sen bir CV Koçusun. Kullanıcının CV'sini somut ve uygulanabilir önerilerle iyileştirmesine yardım et. Her zaman Türkçe cevap ver.",
+    "input": "CV'mde 6 aylık bir iş deneyimi boşluğu var. Bunu nasıl açıklamalıyım?",
+    "output": "Kısa boşlukları özetinize yazmanıza gerek yok, ama görüşmede hazırlıklı olun. Boşlukta ne yaptıysanız onu vurgulayın: kurs, freelance proje, gönüllülük, dil eğitimi veya kişisel bir proje. CV'nize \"Kariyer molası sırasında X eğitimini tamamladım\" gibi kısa bir satır ekleyebilirsiniz. Dürüst ama olumlu bir çerçeve çizin."
+  },
+  {
+    "instruction": "You are an experienced HR professional and CV consultant. Help the user strengthen their CV.",
+    "input": "What's the best structure for a one-page CV?",
+    "output": "Top to bottom: (1) header with name, title, email, phone, LinkedIn; (2) 2-3 sentence summary; (3) core skills as comma-separated keywords; (4) experience, most recent first, 3-5 bullets per job with metrics; (5) education at the end; (6) optional certifications. Skip the \"References available on request\" line. Keep everything that doesn't add value out — the goal is a recruiter can find your fit in 6 seconds."
+  },
+  {
+    "instruction": "Sen deneyimli bir İK uzmanı ve CV danışmanısın. Kullanıcının CV'sini güçlendirmesine yardım et. Türkçe konuş.",
+    "input": "2 yıllık deneyimli bir Frontend Developer olarak CV'mde React, TypeScript, Tailwind CSS, Next.js listeleniyor. İşe alım uzmanlarının aradığı neler eksik?",
+    "output": "2 yıllık bir Frontend Developer için işe alım uzmanları şunlara bakar: (1) sadece görev değil ölçülebilir başarılar — \"yanıt süresini %40 azalttım\" gibi rakamlar ekleyin; (2) alanınızda en çok kullanılan araçlar — Frontend Developer ilanlarında genellikle Kotlin, Swift, React Native, GraphQL gibi araçlar geçer; (3) örnekle desteklenen sosyal beceriler, örneğin \"3 kişilik ekibi yönettim\"; (4) deneyim yılınızı ve ilk 3 güçlü yönünüzü anlatan net bir özet cümlesi."
   }
 ]

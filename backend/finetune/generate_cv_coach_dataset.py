@@ -24,6 +24,14 @@ COACH_INSTRUCTIONS = [
     "You are a CV coaching assistant. Be encouraging but honest, and always give examples.",
 ]
 
+# Türkçe eğitim talimatları: kullanıcı Türkçe yazınca modelin Türkçe cevap vermesini öğretir.
+COACH_INSTRUCTIONS_TR = [
+    "Sen bir CV Koçusun. Kullanıcının CV'sini somut ve uygulanabilir önerilerle iyileştirmesine yardım et. Her zaman Türkçe cevap ver.",
+    "Sen CV yazma konusunda uzmanlaşmış samimi bir kariyer koçusun. Somut ve pratik öneriler ver. Yanıtların Türkçe olsun.",
+    "Sen deneyimli bir İK uzmanı ve CV danışmanısın. Kullanıcının CV'sini güçlendirmesine yardım et. Türkçe konuş.",
+    "Sen bir CV koçluk asistanısın. Cesaretlendirici ama dürüst ol, her zaman örnek ver. Cevaplarını Türkçe yaz.",
+]
+
 # ============================================================
 # PERSONAS (CV örnekleri)
 # ============================================================
@@ -239,6 +247,111 @@ QA_TEMPLATES = [
 ]
 
 # ============================================================
+# TÜRKÇE ŞABLONLAR (CV Koç sohbeti Türkçe öğrenimi için)
+# ============================================================
+
+TR_QA_TEMPLATES = [
+    {
+        "topic": "missing_skills",
+        "template": "CV'mde şunlar yazıyor: {summary} Becerilerim: {skills}. {target_role} pozisyonuna başvurmak istiyorum. CV'me hangi becerileri eklemeliyim?",
+        "answers": [
+            "CV'nizi {target_role} iş ilanıyla karşılaştırın. Çoğu {target_role} ilanında {target_skills} gibi beceriler ön koşul olarak listelenir. Bunları işte kullandıysanız beceri bölümüne ekleyin. Kullanmadıysanız kısa bir kurs alıp \"temel düzeyde biliyorum\" olarak belirtin; uzman gibi göstermeyin. Ayrıca ilanı satır satır okuyup anahtar kelimelerini birebir kullanın — birçok firma başvuruları ATS (Başvuru Takip Sistemi) ile tam kelime eşleşmesine göre filtreler.",
+        ],
+    },
+    {
+        "topic": "missing_skills",
+        "template": "{years} yıllık deneyimli bir {role} olarak CV'mde {skills} listeleniyor. İşe alım uzmanlarının aradığı neler eksik?",
+        "answers": [
+            "{years} yıllık bir {role} için işe alım uzmanları şunlara bakar: (1) sadece görev değil ölçülebilir başarılar — \"yanıt süresini %40 azalttım\" gibi rakamlar ekleyin; (2) alanınızda en çok kullanılan araçlar — {role} ilanlarında genellikle {target_skills} gibi araçlar geçer; (3) örnekle desteklenen sosyal beceriler, örneğin \"3 kişilik ekibi yönettim\"; (4) deneyim yılınızı ve ilk 3 güçlü yönünüzü anlatan net bir özet cümlesi.",
+        ],
+    },
+    {
+        "topic": "experience",
+        "template": "{company} şirketinde {role} olarak deneyimimi nasıl yazmalıyım? Tek yazabildiğim şey \"{achievement}\".",
+        "answers": [
+            "Her sorumluluğu STAR yöntemiyle yazın: Durum, Görev, Eylem, Sonuç. \"{achievement}\" yerine \"Günde 50K isteğe hizmet veren REST API'ler geliştirdim, yanıt süresini %30 kısalttım\" gibi yazın. Her maddeye güçlü bir eylem fiiliyle başlayın (geliştirdim, yönettim, otomatikleştirdim, azalttım, tasarladım). Her maddeye en az bir ölçü ekleyin: kullanıcı, gelir, performans yüzdesi, ekip büyüklüğü veya kazanılan süre. Rakamı bilmiyorsanız tahmin edin ve \"yaklaşık\" yazın.",
+        ],
+    },
+    {
+        "topic": "experience",
+        "template": "Deneyim bölümümde her iş için tek satır var: \"{achievement}\". Bunu nasıl güçlendiririm?",
+        "answers": [
+            "Her işi şu yapıyla 3-5 maddeye çıkarın: (1) tek satırlık kapsam cümlesi (\"Fintech platformunun API katmanından sorumluydum\"), (2) ölçü içeren 2-3 eylem maddesi (\"Sorguları optimize ederek gecikmeyi 800ms'den 200ms'ye düşürdüm\"), (3) bir etki maddesi (\"10 bin günlük aktif kullanıcıya olanak sağladı\"). Mevcut işinizde şimdiki zamanı, önceki işlerde geçmiş zamanı kullanın. Maddeleri iki satırın altında tutun.",
+        ],
+    },
+    {
+        "topic": "summary",
+        "template": "CV özetim şu an: \"{summary}\" İyi mi, nasıl geliştirebilirim?",
+        "answers": [
+            "Özetiniz doğru yolda ama daha güçlü olabilir. Şu formülü deneyin: [unvan] + [yıl] deneyim + [en güçlü 2 beceri] + [somut bir başarı]. Örneğin: \"4 yıllık deneyimli Backend Developer; Python ve Django ile ölçeklenebilir API'ler geliştirdi, yanıt süresini %30 kısalttı.\" Özeti 2-3 cümleyle sınırlayın, birinci tekil şahıstan kaçının ve başvurduğunuz ilana göre kelimeleri uyarlayın.",
+        ],
+    },
+    {
+        "topic": "summary",
+        "template": "Özet bölümüne hiçbir şey yazmadım. CV koçu olarak ne önerirsin?",
+        "answers": [
+            "Özet bölümünü mutlaka ekleyin — işe alım uzmanları bir CV'ye ortalama 7 saniye bakar. Üç cümleyle şunu yazın: kim olduğunuz (unvan ve yıl), ne yaptığınız (2 ana uzmanlık alanı) ve ne başardığınız (ölçülebilir tek sonuç). Örnek: \"3 yıllık Full Stack Developer; React ve Node.js ile web uygulamaları geliştirdi, kullanıcı etkileşimini %25 artırdı.\" Başvurduğunuz ilanın anahtar kelimelerini özetinize yerleştirin.",
+        ],
+    },
+    {
+        "topic": "ats",
+        "template": "CV'mi ATS sistemlerinden nasıl geçirebilirim?",
+        "answers": [
+            "ATS (Başvuru Takip Sistemi) için şunlara dikkat edin: (1) standart başlıklar kullanın — \"Deneyim\", \"Eğitim\", \"Beceriler\"; yaratıcı başlıklar sistemi şaşırtır; (2) PDF kullanın ama tablo, sütun ve resim içermeyen basit bir düzen seçin; (3) ilandaki anahtar kelimeleri birebir kullanın — örneğin ilanda \"FastAPI\" geçiyorsa \"FastAPI\" yazın; (4) tarihleri \"Ocak 2022 - Haziran 2024\" gibi net yazın; (5) başlık ve alt yazılara gömülü metin koymayın.",
+        ],
+    },
+    {
+        "topic": "structure",
+        "template": "Bir CV'nin bölüm sırası ne olmalı? Şu an sıralamam: eğitim, deneyim, beceriler.",
+        "answers": [
+            "Deneyimli adaylar için şu sıra daha etkilidir: (1) İsim + iletişim bilgileri, (2) Özet, (3) Deneyim — en önemli bölüm, en üstte olmalı, (4) Beceriler, (5) Eğitim, (6) Sertifikalar. Yeni mezunsanız eğitimi deneyimden önce koyabilirsiniz. İki sayfayı geçmeyin; 10 yıldan eski deneyimleri kısaltın veya çıkarın.",
+        ],
+    },
+    {
+        "topic": "education",
+        "template": "Eğitim bölümünü CV'me nasıl yazmalıyım?",
+        "answers": [
+            "Eğitim bölümüne şunları yazın: bölüm adı, okul adı, başlangıç ve bitiş yılı. Yeni mezunsanız ilgili dersleri, bitirme projenizi ve not ortalamanızı (iyiyse) ekleyin. 3+ yıl deneyiminiz varsa eğitimi tek satıra indirin. İlgisiz sertifikaları ve lise bilgisini atlayın.",
+        ],
+    },
+    {
+        "topic": "gap",
+        "template": "CV'mde 6 aylık bir iş deneyimi boşluğu var. Bunu nasıl açıklamalıyım?",
+        "answers": [
+            "Kısa boşlukları özetinize yazmanıza gerek yok, ama görüşmede hazırlıklı olun. Boşlukta ne yaptıysanız onu vurgulayın: kurs, freelance proje, gönüllülük, dil eğitimi veya kişisel bir proje. CV'nize \"Kariyer molası sırasında X eğitimini tamamladım\" gibi kısa bir satır ekleyebilirsiniz. Dürüst ama olumlu bir çerçeve çizin.",
+        ],
+    },
+    {
+        "topic": "metrics",
+        "template": "Başarılarım için rakam bulamıyorum. Ne yapmalıyım?",
+        "answers": [
+            "Rakamlar şu kaynaklardan gelebilir: günlük/yıllık işlem hacmi, kullanıcı sayısı, ekip boyutu, maliyet tasarrufu, kazanılan saat, azalan hata oranı. Örneğin \"destek sürecini otomatikleştirdim\" yerine \"destek sürecini otomatikleştirerek ayda 10 saat tasarruf sağladım\" yazın. Hiçbir veri yoksa yönetimden veya git/rapor geçmişinden tahmin çıkarın ve \"yaklaşık\" notu düşün.",
+        ],
+    },
+    {
+        "topic": "cover_letter",
+        "template": "Ön yazı (cover letter) yazmalı mıyım? Nasıl olmalı?",
+        "answers": [
+            "İlan istiyorsa veya şirket küçükse evet. 3 kısa paragraf tutun: (1) hangi pozisyona başvurduğunuz ve neden uygun olduğunuz tek cümle; (2) en alakalı başarınız ve rakamı; (3) neden bu şirket ve çağrı cümlesi. CV'nizi satır satır tekrar etmeyin — kişilik ve bağlam ekleyin. İlan istemiyorsa o vakti CV'nizi ilana uyarlamaya harcayın.",
+        ],
+    },
+    {
+        "topic": "certifications",
+        "template": "{role} olarak CV'me hangi sertifikaları eklemeliyim?",
+        "answers": [
+            "Sahip olduğunuz tüm sertifikaları veren kurum ve yılıyla birlikte ayrı bir bölüme ekleyin. {role} için en çok tanınanlar şunlardır: {certs}. Sadece görüşmede derinlemesine anlatabileceğiniz sertifikaları yazın; görüşmeciler mutlaka soracaktır. Temel olanlar (örneğin güvenlik izinleri) dışında süresi geçmişleri çıkarın.",
+        ],
+    },
+    {
+        "topic": "skills",
+        "template": "Beceri bölümümü nasıl düzenlemeliyim?",
+        "answers": [
+            "Becerileri 3-4 gruba ayırın: Programlama Dilleri/Çerçeveler, Araçlar, Bulut/DevOps, Sosyal Beceriler. İşle en alakalı grubu en üste koyun. Puan çubuğu veya yüzde kullanmayın — subjektiftir ve ATS'ye uygun değildir. En güçlü 15-20 becerinizle sınırlayın; 40 beceri yazmak etkiyi azaltır. İlanlarda geçen terimleri birebir kullanın.",
+        ],
+    },
+]
+
+# ============================================================
 # Veri üretimi
 # ============================================================
 
@@ -257,8 +370,15 @@ def generate(count):
     for i in range(count):
         persona = random.choice(PERSONAS)
         target = random.choice(TARGET_ROLES)
-        qa = random.choice(QA_TEMPLATES)
         instruction = random.choice(COACH_INSTRUCTIONS)
+        use_tr = (i % 2 == 1)
+
+        if use_tr:
+            qa = random.choice(TR_QA_TEMPLATES)
+            instruction = random.choice(COACH_INSTRUCTIONS_TR)
+        else:
+            qa = random.choice(QA_TEMPLATES)
+
         answer_template = random.choice(qa["answers"])
 
         question = qa["template"].format(

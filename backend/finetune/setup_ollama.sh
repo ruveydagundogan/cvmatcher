@@ -90,15 +90,17 @@ EOF
 
 process_adapter "cv-parser" "cv-parser-v1"
 process_adapter "cv-jd-matcher" "cv-jd-matcher-v1"
+process_adapter "cv-coach" "cv-coach-v1"
 
 echo ""
 echo "Done! Models created:"
-ollama list | grep -E "cv-parser|cv-jd-matcher"
+ollama list | grep -E "cv-parser|cv-jd-matcher|cv-coach"
 
 echo ""
 echo "To test:"
 echo "  ollama run cv-parser"
 echo "  ollama run cv-jd-matcher"
+echo "  ollama run cv-coach"
 echo ""
 echo "To start the backend with fine-tuned models:"
 echo "  cd backend && go run ./cmd/server"
