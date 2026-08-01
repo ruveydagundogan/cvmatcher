@@ -216,7 +216,7 @@ func (uc *ChatUseCase) SendMessage(ctx context.Context, userID, convID, content 
 
 func (uc *ChatUseCase) buildSystemPrompt(ctx context.Context, userID, cvID, jdID, matchID string) string {
 	var b strings.Builder
-	b.WriteString("You are the CV Coach, an expert career assistant. Help the user improve their CV, prepare for interviews, and tailor applications. Be concrete, practical and encouraging. Use short paragraphs and give examples with numbers when possible.")
+	b.WriteString("You are the CV Coach, an expert career assistant. Help the user improve their CV, prepare for interviews, and tailor applications. Be concrete, practical and encouraging. Use short paragraphs and give examples with numbers when possible. ALWAYS answer in the same language the user writes in: if the user writes in Turkish, answer in Turkish (Türkçe); if they write in English, answer in English. Never switch languages mid-answer.")
 
 	var match *matchmodel.MatchResult
 	if matchID != "" {
@@ -256,8 +256,8 @@ func (uc *ChatUseCase) buildSystemPrompt(ctx context.Context, userID, cvID, jdID
 	// Load match context if linked
 	if match != nil {
 		b.WriteString("\n\nThe AI match result between the user's CV and this job description (the user wants to understand and improve this score):\n")
-		b.WriteString(fmt.Sprintf("Overall score: %.0f/100\n", match.OverallScore))
-		b.WriteString(fmt.Sprintf("Skill match: %.0f/100, Experience: %.0f/100, Education: %.0f/100\n", match.SkillMatchScore, match.ExperienceScore, match.EducationScore))
+		b.WriteString(fmt.Sprintf("Overall score: %.0f/100\n", match.OverallScore*100))
+		b.WriteString(fmt.Sprintf("Skill match: %.0f/100, Experience: %.0f/100, Education: %.0f/100\n", match.SkillMatchScore*100, match.ExperienceScore*100, match.EducationScore*100))
 		if len(match.MatchedSkills) > 0 {
 			b.WriteString(fmt.Sprintf("Matched skills: %s\n", strings.Join(match.MatchedSkills, ", ")))
 		}

@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { api } from "@/lib/api";
+import { api, chatApi } from "@/lib/api";
 
 interface JDDetail {
   id: string;
@@ -20,6 +20,7 @@ interface JDDetail {
 
 export default function JDDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const id = params.id as string;
   const [jd, setJD] = useState<JDDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -47,6 +48,15 @@ export default function JDDetailPage() {
       setError(e.message);
     } finally {
       setAnalyzing(false);
+    }
+  };
+
+  const discussWithCoach = async () => {
+    try {
+      const conv = await chatApi.createConversation(undefined, undefined, id);
+      router.push(`/dashboard/coach?conv=${conv.id}`);
+    } catch (e: any) {
+      setError(e.message);
     }
   };
 
@@ -81,6 +91,12 @@ export default function JDDetailPage() {
           <div className="flex items-center gap-3">
             {!editing && (
               <>
+                <button
+                  onClick={discussWithCoach}
+                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-medium hover:opacity-90 transition-opacity"
+                >
+                  💬 CV Coach ile Tartış
+                </button>
                 <button onClick={() => setEditing(true)} className="px-4 py-2 rounded-xl bg-white/10 text-gray-300 hover:bg-white/20 font-medium transition-all duration-200 border border-white/10">
                   Edit
                 </button>

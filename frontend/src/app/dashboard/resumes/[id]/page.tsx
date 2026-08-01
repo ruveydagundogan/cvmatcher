@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { api } from "@/lib/api";
+import { api, chatApi } from "@/lib/api";
 
 interface ParsedExperience {
   title: string;
@@ -36,6 +36,7 @@ interface CVDetail {
 
 export default function CVDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const id = params.id as string;
   const [cv, setCV] = useState<CVDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -64,6 +65,15 @@ export default function CVDetailPage() {
     }
   };
 
+  const discussWithCoach = async () => {
+    try {
+      const conv = await chatApi.createConversation(undefined, id);
+      router.push(`/dashboard/coach?conv=${conv.id}`);
+    } catch (e: any) {
+      setError(e.message);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -83,6 +93,12 @@ export default function CVDetailPage() {
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{cv.title}</h1>
           <div className="flex items-center gap-3">
+            <button
+              onClick={discussWithCoach}
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-medium hover:opacity-90 transition-opacity"
+            >
+              💬 CV Coach ile Tartış
+            </button>
             <span className={`text-sm px-3 py-1 rounded-full font-medium ${
               cv.status === "completed" ? "bg-green-500/10 text-green-500" :
               cv.status === "pending" ? "bg-yellow-500/10 text-yellow-500" :
