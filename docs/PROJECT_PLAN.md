@@ -38,11 +38,14 @@ Uygulama iki persona tarafından kullanılır:
 - [x] Migration `008`: `conversations` + `messages` (canlıda uygulandı)
 - [x] API: `GET/POST /api/v1/chat/conversations`, `DELETE /{id}`, `POST /{id}/messages` (canlı test edildi)
 - [x] Sistem promptu kullanıcının parse edilmiş CV verisini içerir; son 10 mesaj bağlam
+- [x] **Bağlam referansları (migration 009)**: `conversations.jd_id` + `match_id`; match seçilince CV/JD otomatik türetilir; prompt'a JD (içerik, gerekli/tercih edilen skiller) ve match (skorlar, matched/missing skiller, analiz) eklenir — canlı test edildi
 - [ ] `ChatCompletionWithModel` stream varyantı (tunnel agent tam yanıtı buffer'ladığı için şu an non-stream; UI'da typing animasyonu)
 
 ### 1c. Frontend
 - [x] `/dashboard/coach`: solda konuşma geçmişi, sağda sohbet (canlıda çalışıyor)
 - [x] Sidebar'a CV Coach linki eklendi
+- [x] Yeni sohbette bağlam seçici (Match / CV / JD dropdown'ları) + aktif bağlam chip'i
+- [x] Match detay sayfasında "CV Coach ile Tartış" butonu (`/dashboard/coach?conv=<id>`)
 
 ## Faz 2 — İK Paneli (hr)
 
