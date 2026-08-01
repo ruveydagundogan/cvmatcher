@@ -68,6 +68,17 @@ func (s *Server) HandleWebSocket(w http.ResponseWriter, r *http.Request) {
 			s.connected = false
 		}
 		s.connMu.Unlock()
+
+		// Fail all in-flight requests instead of letting them hang until timeout.
+		s.pendingMu.Lock()
+		for id, ch := range s.pending {
+			delete(s.pending, id)
+			if ch != nil {
+				ch <- &TunnelResponse{Status: http.StatusBadGateway, Body: []byte("tunnel: agent disconnected")}
+			}
+		}
+		s.pendingMu.Unlock()
+
 		conn.Close()
 		slog.Warn("tunnel: agent disconnected")
 	}()
@@ -175,7 +186,7 @@ func (s *Server) ProxyHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		w.WriteHeader(tunnelResp.Status)
 		w.Write(tunnelResp.Body)
-	case <-time.After(60 * time.Second):
+	case <-time.After(180 * time.Second):
 		s.pendingMu.Lock()
 		delete(s.pending, reqID)
 		s.pendingMu.Unlock()

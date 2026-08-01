@@ -21,6 +21,30 @@ function getHeaders(): Record<string, string> {
   return headers;
 }
 
+const DEFAULT_TIMEOUT = 30_000;
+const CHAT_TIMEOUT = 180_000;
+
+export function friendlyError(e: unknown): Error {
+  if (e instanceof DOMException && e.name === "AbortError") {
+    return new Error("Sunucu zaman aşımına uğradı. Lütfen tekrar deneyin.");
+  }
+  const msg = (e as Error)?.message || "";
+  if (msg === "Failed to fetch" || msg.includes("NetworkError") || msg.includes("Network request failed")) {
+    return new Error("Sunucuya bağlanılamadı. İnternet bağlantınızı kontrol edin ve tekrar deneyin.");
+  }
+  return e as Error;
+}
+
+async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs: number): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function handleResponse(res: Response) {
   const text = await res.text();
 
@@ -65,34 +89,58 @@ async function handleResponse(res: Response) {
 
 export const api = {
   async get(path: string) {
-    const res = await fetch(`${API_BASE}${path}`, { headers: getHeaders() });
-    return handleResponse(res);
+    try {
+      const res = await fetchWithTimeout(`${API_BASE}${path}`, { headers: getHeaders() }, DEFAULT_TIMEOUT);
+      return await handleResponse(res);
+    } catch (e) {
+      throw friendlyError(e);
+    }
   },
 
-  async post(path: string, body?: unknown) {
-    const res = await fetch(`${API_BASE}${path}`, {
-      method: "POST",
-      headers: getHeaders(),
-      body: body ? JSON.stringify(body) : undefined,
-    });
-    return handleResponse(res);
+  async post(path: string, body?: unknown, timeoutMs: number = DEFAULT_TIMEOUT) {
+    try {
+      const res = await fetchWithTimeout(
+        `${API_BASE}${path}`,
+        {
+          method: "POST",
+          headers: getHeaders(),
+          body: body ? JSON.stringify(body) : undefined,
+        },
+        timeoutMs
+      );
+      return await handleResponse(res);
+    } catch (e) {
+      throw friendlyError(e);
+    }
   },
 
   async put(path: string, body?: unknown) {
-    const res = await fetch(`${API_BASE}${path}`, {
-      method: "PUT",
-      headers: getHeaders(),
-      body: body ? JSON.stringify(body) : undefined,
-    });
-    return handleResponse(res);
+    try {
+      const res = await fetchWithTimeout(
+        `${API_BASE}${path}`,
+        {
+          method: "PUT",
+          headers: getHeaders(),
+          body: body ? JSON.stringify(body) : undefined,
+        },
+        DEFAULT_TIMEOUT
+      );
+      return await handleResponse(res);
+    } catch (e) {
+      throw friendlyError(e);
+    }
   },
 
   async delete(path: string) {
-    const res = await fetch(`${API_BASE}${path}`, {
-      method: "DELETE",
-      headers: getHeaders(),
-    });
-    return handleResponse(res);
+    try {
+      const res = await fetchWithTimeout(`${API_BASE}${path}`, {
+        method: "DELETE",
+        headers: getHeaders(),
+      }, DEFAULT_TIMEOUT);
+      return await handleResponse(res);
+    } catch (e) {
+      throw friendlyError(e);
+    }
   },
 };
 
@@ -115,6 +163,6 @@ export const chatApi = {
     return api.delete(`/api/v1/chat/conversations/${id}`);
   },
   async sendMessage(id: string, content: string) {
-    return api.post(`/api/v1/chat/conversations/${id}/messages`, { content });
+    return api.post(`/api/v1/chat/conversations/${id}/messages`, { content }, CHAT_TIMEOUT);
   },
 };

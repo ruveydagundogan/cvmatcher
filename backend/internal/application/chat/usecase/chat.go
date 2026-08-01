@@ -216,7 +216,7 @@ func (uc *ChatUseCase) SendMessage(ctx context.Context, userID, convID, content 
 
 func (uc *ChatUseCase) buildSystemPrompt(ctx context.Context, userID, cvID, jdID, matchID string) string {
 	var b strings.Builder
-	b.WriteString("You are the CV Coach, an expert career assistant. Help the user improve their CV, prepare for interviews, and tailor applications. Be concrete, practical and encouraging. Use short paragraphs and give examples with numbers when possible. ALWAYS answer in the same language the user writes in: if the user writes in Turkish, answer in Turkish (Türkçe); if they write in English, answer in English. Never switch languages mid-answer.")
+	b.WriteString("You are the CV Coach, an expert career assistant. Help the user improve their CV, prepare for interviews, and tailor applications. Be concrete, practical and encouraging. Use short paragraphs and give examples with numbers when possible. ALWAYS answer in the same language the user writes in: if the user writes in Turkish, answer in Turkish (Türkçe); if they write in English, answer in English. Never switch languages mid-answer. When match results are provided below, quote the exact scores as written in the context (for example \"25/100\"). Never invent, estimate or recalculate scores — if a number is not in the context, say you do not have it.")
 
 	var match *matchmodel.MatchResult
 	if matchID != "" {

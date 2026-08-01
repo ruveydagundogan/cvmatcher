@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { api, chatApi } from "@/lib/api";
+import { api, chatApi, friendlyError } from "@/lib/api";
 
 interface Message {
   id: string;
@@ -171,10 +171,8 @@ export default function CoachPage() {
         );
       }
     } catch (e: any) {
-      setMessages((prev) => [
-        ...prev,
-        { id: `err-${Date.now()}`, role: "assistant", content: `⚠️ ${e.message}`, created_at: new Date().toISOString() },
-      ]);
+      setInput(content);
+      setError(friendlyError(e).message);
     } finally {
       setLoading(false);
     }

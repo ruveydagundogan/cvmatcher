@@ -33,9 +33,24 @@ func main() {
 		}
 
 		log.Info("connected to tunnel server")
+		go pingLoop(c, log)
 		readLoop(c, ollamaURL, httpClient, log)
 		log.Warn("disconnected, reconnecting in 3s")
 		time.Sleep(3 * time.Second)
+	}
+}
+
+func pingLoop(conn *websocket.Conn, log *slog.Logger) {
+	// Keep the websocket alive so proxies (e.g. Render) do not drop it while idle.
+	ticker := time.NewTicker(15 * time.Second)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-ticker.C:
+			if err := conn.WriteControl(websocket.PingMessage, nil, time.Now().Add(5*time.Second)); err != nil {
+				return
+			}
+		}
 	}
 }
 
