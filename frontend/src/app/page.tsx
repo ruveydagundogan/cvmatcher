@@ -43,8 +43,15 @@ export default function LoginPage() {
       if (data?.user?.first_name) {
         localStorage.setItem("userName", data.user.first_name);
       }
+      if (data?.user?.role) {
+        localStorage.setItem("userRole", data.user.role);
+      }
 
-      router.push("/dashboard");
+      if (data?.user?.role === "hr") {
+        router.push("/ik");
+      } else {
+        router.push("/dashboard");
+      }
     } catch (e: any) {
       setError(e.message || "Login failed");
     } finally {

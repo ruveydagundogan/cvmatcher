@@ -8,6 +8,7 @@ import (
 
 	adminhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/admin"
 	backendllmhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/backendllm"
+	chathandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/chat"
 	cvhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/cv"
 	healthhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/health"
 	iamhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/iam"
@@ -32,6 +33,7 @@ type Dependencies struct {
 	MCPHandler         *mcphandler.Handler
 	KnowledgeHandler   *knowledgehandler.Handler
 	AdminHandler       *adminhandler.Handler
+	ChatHandler        *chathandler.Handler
 	JWTValidator       middleware.TokenValidator
 	Config             *config.Config
 	RateLimiter        func(http.Handler) http.Handler
@@ -117,6 +119,14 @@ func NewRouter(deps Dependencies) http.Handler {
 				r.Get("/knowledge/{id}", deps.KnowledgeHandler.GetByID)
 				r.Delete("/knowledge/{id}", deps.KnowledgeHandler.Delete)
 				r.Post("/knowledge/query-ai", deps.KnowledgeHandler.QueryAI)
+			}
+
+			if deps.ChatHandler != nil {
+				r.Post("/chat/conversations", deps.ChatHandler.CreateConversation)
+				r.Get("/chat/conversations", deps.ChatHandler.ListConversations)
+				r.Get("/chat/conversations/{id}", deps.ChatHandler.GetConversation)
+				r.Delete("/chat/conversations/{id}", deps.ChatHandler.DeleteConversation)
+				r.Post("/chat/conversations/{id}/messages", deps.ChatHandler.SendMessage)
 			}
 
 			if deps.AdminHandler != nil {

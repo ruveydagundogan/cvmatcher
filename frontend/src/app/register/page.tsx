@@ -12,6 +12,7 @@ export default function RegisterPage() {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("user");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -42,6 +43,7 @@ export default function RegisterPage() {
         last_name: lastName,
         email,
         password,
+        role,
       });
 
       if (data?.token) {
@@ -53,7 +55,13 @@ export default function RegisterPage() {
       if (data?.user?.first_name) {
         localStorage.setItem("userName", data.user.first_name);
       }
-      router.push("/dashboard");
+      localStorage.setItem("userRole", role);
+
+      if (role === "hr") {
+        router.push("/ik");
+      } else {
+        router.push("/dashboard");
+      }
     } catch (e: any) {
       setError(e.message || "Registration failed");
     } finally {
@@ -125,6 +133,36 @@ export default function RegisterPage() {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">I am a...</label>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setRole("user")}
+                  className={`px-4 py-3 rounded-xl border transition-all ${
+                    role === "user"
+                      ? "bg-purple-500/20 border-purple-500/50 text-white"
+                      : "bg-white/5 border-white/10 text-gray-400 hover:border-white/20"
+                  }`}
+                >
+                  <span className="block font-semibold">Job Seeker</span>
+                  <span className="block text-xs mt-1 opacity-80">Improve my CV & find matches</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRole("hr")}
+                  className={`px-4 py-3 rounded-xl border transition-all ${
+                    role === "hr"
+                      ? "bg-blue-500/20 border-blue-500/50 text-white"
+                      : "bg-white/5 border-white/10 text-gray-400 hover:border-white/20"
+                  }`}
+                >
+                  <span className="block font-semibold">HR Specialist</span>
+                  <span className="block text-xs mt-1 opacity-80">Manage candidates & jobs</span>
+                </button>
+              </div>
+            </div>
+
           </div>
 
           {error && (

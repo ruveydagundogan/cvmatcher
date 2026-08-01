@@ -12,11 +12,11 @@ import (
 )
 
 type RegisterUseCase interface {
-	Execute(ctx context.Context, email, password, firstName, lastName string) (string, *iammodel.User, error)
+	Execute(ctx context.Context, email, password, firstName, lastName, role string) (string, *iammodel.User, error)
 }
 
 type LoginUseCase interface {
-	Execute(ctx context.Context, email, password string) (string, *iammodel.User, error)
+	Execute(ctx context.Context, email, password string) (string, *iammodel.User, string, error)
 }
 
 type GetProfileUseCase interface {
@@ -65,7 +65,7 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, user, err := h.registerUC.Execute(r.Context(), req.Email, req.Password, req.FirstName, req.LastName)
+	token, user, err := h.registerUC.Execute(r.Context(), req.Email, req.Password, req.FirstName, req.LastName, req.Role)
 	if err != nil {
 		response.Error(w, err)
 		return
@@ -79,6 +79,7 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 			FirstName: user.FirstName,
 			LastName:  user.LastName,
 			Status:    user.Status,
+			Role:      req.Role,
 		},
 	})
 }
@@ -95,7 +96,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, user, err := h.loginUC.Execute(r.Context(), req.Email, req.Password)
+	token, user, role, err := h.loginUC.Execute(r.Context(), req.Email, req.Password)
 	if err != nil {
 		response.Error(w, err)
 		return
@@ -109,6 +110,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 			FirstName: user.FirstName,
 			LastName:  user.LastName,
 			Status:    user.Status,
+			Role:      role,
 		},
 	})
 }

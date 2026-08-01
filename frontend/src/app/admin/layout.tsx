@@ -15,8 +15,11 @@ export default function AdminLayout({
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    const role = localStorage.getItem("userRole");
     if (!token) {
       router.replace("/");
+    } else if (role !== "admin") {
+      router.replace(role === "hr" ? "/ik" : "/dashboard");
     }
   }, [router]);
 

@@ -46,6 +46,7 @@ type Client struct {
 const (
 	ModelCVParse    = "cv-parser"
 	ModelCVJDMatch  = "cv-jd-matcher"
+	ModelCVCoach    = "cv-coach"
 	ModelBase    = "qwen2.5:1.5b-instruct"
 )
 

@@ -87,3 +87,21 @@ export const api = {
     return handleResponse(res);
   },
 };
+
+export const chatApi = {
+  async listConversations() {
+    return api.get("/chat/conversations");
+  },
+  async createConversation(title?: string, cvId?: string) {
+    return api.post("/chat/conversations", { title: title || "New Chat", cv_id: cvId });
+  },
+  async getConversation(id: string) {
+    return api.get(`/chat/conversations/${id}`);
+  },
+  async deleteConversation(id: string) {
+    return api.delete(`/chat/conversations/${id}`);
+  },
+  async sendMessage(id: string, content: string) {
+    return api.post(`/chat/conversations/${id}/messages`, { content });
+  },
+};

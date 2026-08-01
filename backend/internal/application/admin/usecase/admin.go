@@ -90,7 +90,7 @@ func (uc *AdminUseCase) ActivatePrompt(ctx context.Context, id string) (*model.S
 
 func (uc *AdminUseCase) GetSettings(ctx context.Context) (*model.LLMSettings, error) {
 	settings, err := uc.repo.GetSettings(ctx)
-	if err != nil {
+	if err != nil || settings == nil {
 		return model.DefaultSettings(), nil
 	}
 	return settings, nil

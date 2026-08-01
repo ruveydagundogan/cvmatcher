@@ -58,8 +58,8 @@ def parse_args():
                         help="Max sequence length (default: 512)")
     parser.add_argument("--quantize", action="store_true", default=False,
                         help="Use 4-bit quantization to reduce memory")
-    parser.add_argument("--mode", type=str, default="cv-parse", choices=["cv-parse", "cv-jd-match"],
-                        help="Training mode: cv-parse (extract structured CV data) or cv-jd-match (CV-JD match scoring)")
+    parser.add_argument("--mode", type=str, default="cv-parse", choices=["cv-parse", "cv-jd-match", "cv-coach"],
+                        help="Training mode: cv-parse (extract structured CV data), cv-jd-match (CV-JD match scoring), or cv-coach (CV improvement chat)")
     parser.add_argument("--test-only", action="store_true", default=False,
                         help="Load existing adapter and test inference")
     return parser.parse_args()
@@ -68,6 +68,8 @@ def parse_args():
 def get_system_prompt(mode):
     if mode == "cv-jd-match":
         return "You are a CV-JD matching assistant. Analyze CV and job description pairs, provide match scores (0.0-1.0) for each category, highlight matched and missing skills, and give a detailed analysis."
+    if mode == "cv-coach":
+        return "You are a CV Coach. Help job seekers improve their CVs with concrete, actionable advice. Be encouraging but honest, and always give specific examples and numbers."
     return "You are a CV parsing assistant. Extract structured information from CV texts."
 
 
@@ -259,7 +261,11 @@ def main():
 
     trainer = train(model, tokenizer, dataset, args.output_dir, args)
 
-    output_name = "cv-parser" if args.mode == "cv-parse" else "cv-jd-matcher"
+    output_name = "cv-parser"
+    if args.mode == "cv-jd-match":
+        output_name = "cv-jd-matcher"
+    elif args.mode == "cv-coach":
+        output_name = "cv-coach"
     create_ollama_modelfile(
         adapter_path=os.path.abspath(args.output_dir),
         base_model=args.base_model,

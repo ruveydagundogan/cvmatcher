@@ -40,9 +40,17 @@ func NewRegisterUseCase(
 	}
 }
 
-func (uc *RegisterUseCase) Execute(ctx context.Context, email, password, firstName, lastName string) (string, *iammodel.User, error) {
+func (uc *RegisterUseCase) Execute(ctx context.Context, email, password, firstName, lastName, role string) (string, *iammodel.User, error) {
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
+
+	// Only public roles can self-register
+	if role == "" {
+		role = "user"
+	}
+	if role != "user" && role != "hr" {
+		return "", nil, apperrors.Validation("invalid role")
+	}
 
 	existing, err := uc.userRepo.FindByEmail(ctx, email)
 	if err != nil {
@@ -63,26 +71,26 @@ func (uc *RegisterUseCase) Execute(ctx context.Context, email, password, firstNa
 		return "", nil, apperrors.Internal("failed to create user", err)
 	}
 
-	defaultRole, err := uc.roleRepo.FindByName(ctx, "user")
+	defaultRole, err := uc.roleRepo.FindByName(ctx, role)
 	if err == nil && defaultRole != nil {
 		if err := uc.roleRepo.AssignToUser(ctx, user.ID, defaultRole.ID); err != nil {
 			uc.logger.Warn("failed to assign role", "user_id", user.ID, "error", err)
 		}
 	}
 
-	token, err := uc.jwtService.GenerateToken(user.ID, user.Email, "user")
+	token, err := uc.jwtService.GenerateToken(user.ID, user.Email, role)
 	if err != nil {
 		return "", nil, apperrors.Internal("failed to generate token", err)
 	}
 
 	if err := uc.auditRepo.Save(ctx, auditmodel.NewAuditLog(
 		user.ID, "register", "user", user.ID,
-		"", "", map[string]string{"email": email},
+		"", "", map[string]string{"email": email, "role": role},
 	)); err != nil {
 		uc.logger.Warn("failed to save audit log", "error", err)
 	}
 
-	uc.logger.Info("user registered", "user_id", user.ID, "email", email)
+	uc.logger.Info("user registered", "user_id", user.ID, "email", email, "role", role)
 
 	return token, user, nil
 }
@@ -114,17 +122,17 @@ func NewLoginUseCase(
 	}
 }
 
-func (uc *LoginUseCase) Execute(ctx context.Context, email, password string) (string, *iammodel.User, error) {
+func (uc *LoginUseCase) Execute(ctx context.Context, email, password string) (string, *iammodel.User, string, error) {
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
 	user, err := uc.userRepo.FindByEmail(ctx, email)
 	if err != nil || user == nil {
-		return "", nil, apperrors.Unauthorized("invalid email or password")
+		return "", nil, "", apperrors.Unauthorized("invalid email or password")
 	}
 
 	if !uc.authService.ComparePassword(user.PasswordHash, password) {
-		return "", nil, apperrors.Unauthorized("invalid email or password")
+		return "", nil, "", apperrors.Unauthorized("invalid email or password")
 	}
 
 	role := "user"
@@ -135,7 +143,7 @@ func (uc *LoginUseCase) Execute(ctx context.Context, email, password string) (st
 
 	token, err := uc.jwtService.GenerateToken(user.ID, user.Email, role)
 	if err != nil {
-		return "", nil, apperrors.Internal("failed to generate token", err)
+		return "", nil, "", apperrors.Internal("failed to generate token", err)
 	}
 
 	if err := uc.auditRepo.Save(ctx, auditmodel.NewAuditLog(
@@ -147,7 +155,7 @@ func (uc *LoginUseCase) Execute(ctx context.Context, email, password string) (st
 
 	uc.logger.Info("user logged in", "user_id", user.ID)
 
-	return token, user, nil
+	return token, user, role, nil
 }
 
 type GetProfileUseCase struct {

@@ -10,6 +10,7 @@ import (
 	"time"
 
 	adminuc "github.com/ruveydagundogan/cvmatcher/backend/internal/application/admin/usecase"
+	chatusecase "github.com/ruveydagundogan/cvmatcher/backend/internal/application/chat/usecase"
 	cvusecase "github.com/ruveydagundogan/cvmatcher/backend/internal/application/cv/usecase"
 	iusecase "github.com/ruveydagundogan/cvmatcher/backend/internal/application/iam/usecase"
 	jdusecase "github.com/ruveydagundogan/cvmatcher/backend/internal/application/jobdescription/usecase"
@@ -18,8 +19,9 @@ import (
 	matchusecase "github.com/ruveydagundogan/cvmatcher/backend/internal/application/matching/usecase"
 	"github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/auth"
 	adminhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/admin"
-	cvhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/cv"
 	backendllmhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/backendllm"
+	chathandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/chat"
+	cvhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/cv"
 	"github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/health"
 	iamhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/iam"
 	jdhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/jd"
@@ -33,12 +35,14 @@ import (
 	"github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/memory"
 	"github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/metrics"
 	pgresaudit "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/postgres/audit"
+	pgresadmin "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/postgres/admin"
 	pgrescv "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/postgres/cv"
 	pgresiam "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/postgres/iam"
 	pgresjd "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/postgres/jobdescription"
 	pgresknowledge "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/postgres/knowledge"
 	pgresscoring "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/postgres/llmscoring"
 	pgresmatch "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/postgres/matching"
+	pgreschat "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/postgres/chat"
 	"github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/ratelimit"
 	"github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/tunnel"
 	"github.com/ruveydagundogan/cvmatcher/backend/internal/shared/cache"
@@ -49,6 +53,7 @@ import (
 
 	adminrepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/admin/repository"
 	auditrepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/audit/repository"
+	chatrepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/chat/repository"
 	cvrepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/cv/repository"
 	iamrepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/iam/repository"
 	jdrepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/jobdescription/repository"
@@ -80,6 +85,7 @@ func main() {
 		matchingRepo    matchrepo.MatchingRepository
 		knowledgeRepo   knowledgerepo.KnowledgeRepository
 		adminRepo       adminrepo.AdminRepository
+		chatRepo        chatrepo.ChatRepository
 		dbPool          interface{ Close() }
 	)
 
@@ -96,6 +102,7 @@ func main() {
 		matchingRepo = memory.NewInMemoryMatchingRepo()
 		knowledgeRepo = memory.NewKnowledgeRepository()
 		adminRepo = memory.NewAdminRepository()
+		chatRepo = memory.NewInMemoryChatRepository()
 	} else {
 		log.Info("postgresql connected, using persistent storage")
 		if err := database.RunMigrations(ctx, pool, log); err != nil {
@@ -109,7 +116,8 @@ func main() {
 		jdRepo = pgresjd.NewJobDescriptionRepository(pool)
 		matchingRepo = pgresmatch.NewMatchingRepository(pool)
 		knowledgeRepo = pgresknowledge.NewKnowledgeRepository(pool)
-		adminRepo = memory.NewAdminRepository()
+		adminRepo = pgresadmin.NewAdminRepository(pool)
+		chatRepo = pgreschat.NewChatRepository(pool)
 		dbPool = pool
 	}
 
@@ -183,6 +191,9 @@ func main() {
 	adminUseCase := adminuc.NewAdminUseCase(adminRepo, log)
 	adminH := adminhandler.NewHandler(adminUseCase, mcpEngine)
 
+	chatUC := chatusecase.NewChatUseCase(chatRepo, cvRepo, llmClient, log)
+	chatH := chathandler.NewHandler(chatUC)
+
 	deps := router.Dependencies{
 		HealthHandler:      healthHandler,
 		IAMHandler:         iamH,
@@ -194,6 +205,7 @@ func main() {
 		MCPHandler:         mcpH,
 		KnowledgeHandler:   knowledgeH,
 		AdminHandler:       adminH,
+		ChatHandler:        chatH,
 		JWTValidator:       jwtService,
 		Config:             cfg,
 		RateLimiter:        rateLimiter,
