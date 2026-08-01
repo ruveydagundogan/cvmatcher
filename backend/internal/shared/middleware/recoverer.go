@@ -27,18 +27,41 @@ func RequestID(next http.Handler) http.Handler {
 	})
 }
 
+type writeCatcher struct {
+	http.ResponseWriter
+	wroteHeader bool
+}
+
+func (w *writeCatcher) WriteHeader(code int) {
+	if w.wroteHeader {
+		return
+	}
+	w.wroteHeader = true
+	w.ResponseWriter.WriteHeader(code)
+}
+
+func (w *writeCatcher) Write(b []byte) (int, error) {
+	if !w.wroteHeader {
+		w.wroteHeader = true
+	}
+	return w.ResponseWriter.Write(b)
+}
+
 func Recoverer(logger interface{ Error(string, ...interface{}) }) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			wrapped := &writeCatcher{ResponseWriter: w}
 			defer func() {
 				if rec := recover(); rec != nil {
 					if logger != nil {
-						logger.Error("panic recovered", "error", rec)
+						logger.Error("panic recovered", "error", rec, "path", r.URL.Path)
 					}
-					response.Error(w, response.InternalError("internal server error"))
+					if !wrapped.wroteHeader {
+						response.Error(w, response.InternalError("internal server error"))
+					}
 				}
 			}()
-			next.ServeHTTP(w, r)
+			next.ServeHTTP(wrapped, r)
 		})
 	}
 }

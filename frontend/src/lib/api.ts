@@ -32,12 +32,20 @@ async function handleResponse(res: Response) {
     throw new Error("Session expired. Please login again.");
   }
 
+  if (res.status === 204 || text.trim() === "") {
+    return undefined;
+  }
+
   if (!res.ok) {
     try {
       const data = JSON.parse(text);
       throw new Error(data.error || `HTTP ${res.status}`);
     } catch (e: any) {
-      throw new Error(e.message || `HTTP ${res.status}: ${text.slice(0, 100)}`);
+      throw new Error(
+        e?.message?.startsWith?.("HTTP") || !e?.message?.includes?.("JSON")
+          ? e.message || `HTTP ${res.status}`
+          : `HTTP ${res.status}: ${text.slice(0, 200)}`
+      );
     }
   }
 
