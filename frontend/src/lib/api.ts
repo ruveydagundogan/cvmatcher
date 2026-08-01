@@ -98,18 +98,18 @@ export const api = {
 
 export const chatApi = {
   async listConversations() {
-    return api.get("/chat/conversations");
+    return api.get("/api/v1/chat/conversations");
   },
   async createConversation(title?: string, cvId?: string) {
-    return api.post("/chat/conversations", { title: title || "New Chat", cv_id: cvId });
+    return api.post("/api/v1/chat/conversations", { title: title || "New Chat", cv_id: cvId });
   },
   async getConversation(id: string) {
-    return api.get(`/chat/conversations/${id}`);
+    return api.get(`/api/v1/chat/conversations/${id}`);
   },
   async deleteConversation(id: string) {
-    return api.delete(`/chat/conversations/${id}`);
+    return api.delete(`/api/v1/chat/conversations/${id}`);
   },
   async sendMessage(id: string, content: string) {
-    return api.post(`/chat/conversations/${id}/messages`, { content });
+    return api.post(`/api/v1/chat/conversations/${id}/messages`, { content });
   },
 };
