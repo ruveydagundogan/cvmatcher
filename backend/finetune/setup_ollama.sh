@@ -29,11 +29,18 @@ echo ""
 echo "Fixing macOS extended attributes (com.apple.provenance)..."
 xattr -cr "$WORK_DIR" 2>/dev/null || true
 
-BASE_MODEL_PATH="$HOME/.cache/huggingface/hub/Qwen/Qwen2.5-1.5B-Instruct"
-# Also search in common locations
-if [ ! -d "$BASE_MODEL_PATH" ]; then
-    BASE_MODEL_PATH="$HOME/.cache/huggingface/hub/models--Qwen--Qwen2.5-1.5B-Instruct/snapshots/"*
+BASE_MODEL_PATH="$HOME/.cache/huggingface/hub/models--Qwen--Qwen2.5-1.5B-Instruct"
+# Resolve the actual snapshot directory (HF hub layout: .../snapshots/<hash>/config.json)
+SNAPSHOT_DIR="$(ls -d "$BASE_MODEL_PATH"/snapshots/*/ 2>/dev/null | head -n1)"
+if [ -n "$SNAPSHOT_DIR" ]; then
+    BASE_MODEL_PATH="${SNAPSHOT_DIR%/}"
 fi
+if [ ! -f "$BASE_MODEL_PATH/config.json" ]; then
+    echo "ERROR: base model config.json not found at $BASE_MODEL_PATH"
+    echo "Download it first: huggingface-cli download Qwen/Qwen2.5-1.5B-Instruct"
+    exit 1
+fi
+echo "Using base model at: $BASE_MODEL_PATH"
 
 echo ""
 echo "Creating Ollama models..."
