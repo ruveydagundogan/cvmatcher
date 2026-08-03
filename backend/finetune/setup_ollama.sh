@@ -57,16 +57,12 @@ process_adapter() {
     local gguf_out="$adapter_dir/$name.gguf"
     if [ ! -f "$gguf_out" ]; then
         echo "  -> Converting LoRA to GGUF..."
-        if [ -f "$adapter_dir/adapter_model.safetensors" ]; then
+        if [ -f "$adapter_dir/adapter_model.safetensors" ] || [ -f "$adapter_dir/model.safetensors" ]; then
             python3 "$CONVERT_SCRIPT" \
-                --base-model "$BASE_MODEL_PATH" \
-                --lora-model "$adapter_dir" \
-                --output "$gguf_out"
-        elif [ -f "$adapter_dir/model.safetensors" ]; then
-            python3 "$CONVERT_SCRIPT" \
-                --base-model "$BASE_MODEL_PATH" \
-                --lora-model "$adapter_dir" \
-                --output "$gguf_out"
+                --base "$BASE_MODEL_PATH" \
+                --outfile "$gguf_out" \
+                --outtype auto \
+                "$adapter_dir"
         else
             echo "  ERROR: No safetensors found in $adapter_dir!"
             ls -la "$adapter_dir/"
