@@ -17,8 +17,33 @@ fi
 
 if [ ! -f "$CONVERT_SCRIPT" ]; then
     echo "convert_lora_to_gguf.py not found at $CONVERT_SCRIPT"
-    echo "Run: git clone https://github.com/ggerganov/llama.cpp.git /tmp/llama.cpp"
+    echo "Run: git clone --depth 1 https://github.com/ggerganov/llama.cpp.git /tmp/llama.cpp"
     exit 1
+fi
+
+# Patch llama.cpp converter for compatibility with newer torch versions
+# (LoraTorchTensor is missing dim()/numel()/item(), used by conversion/base.py heuristics)
+if ! grep -q "def dim(self)" "$CONVERT_SCRIPT"; then
+    echo "Patching $CONVERT_SCRIPT for torch compatibility..."
+    python3 - <<'PATCH'
+path = "/tmp/llama.cpp/convert_lora_to_gguf.py"
+src = open(path).read()
+anchor = "    def contiguous(self) -> LoraTorchTensor:"
+addition = """    def dim(self) -> int:
+        return len(self._lora_A.shape)
+
+    def numel(self) -> int:
+        return self._lora_A.numel() + self._lora_B.numel()
+
+    def item(self):
+        raise NotImplementedError("LoraTorchTensor has no scalar value")
+
+"""
+if "def dim(self)" not in src:
+    src = src.replace(anchor, addition + anchor, 1)
+    open(path, "w").write(src)
+    print("  -> patched")
+PATCH
 fi
 
 echo "Extracting adapters to $WORK_DIR..."
