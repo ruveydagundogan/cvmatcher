@@ -19,8 +19,8 @@ import (
 )
 
 const (
-	maxHistoryMessages = 10
-	maxChatTokens      = 1024
+	maxHistoryMessages = 6
+	maxChatTokens      = 512
 )
 
 type ConversationDetail struct {
@@ -184,11 +184,9 @@ func (uc *ChatUseCase) SendMessage(ctx context.Context, userID, convID, content 
 	response, err := uc.llmClient.ChatCompletionWithModel(ctx, llm.ModelCVCoach, chatMessages, maxChatTokens)
 	durationMs := time.Since(startTime).Milliseconds()
 	if err != nil {
-		uc.log.Warn("cv-coach chat failed, falling back to base model", "error", err)
-		response, err = uc.llmClient.ChatCompletionWithModel(ctx, llm.ModelBase, chatMessages, maxChatTokens)
-		if err != nil {
-			return nil, apperrors.Internal("LLM request failed", err)
-		}
+		// No base-model fallback: it doubles latency (crossing proxy timeouts)
+		// and produces incoherent Turkish/wrong scores. Fail fast instead.
+		return nil, apperrors.Internal("LLM request failed", err)
 	}
 
 	assistantMsg := chatmodel.NewMessage(convID, "assistant", response, 0)
