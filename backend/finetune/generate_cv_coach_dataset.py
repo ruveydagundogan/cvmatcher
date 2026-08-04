@@ -244,6 +244,29 @@ QA_TEMPLATES = [
             "Group skills into 3-4 categories: Languages/Frameworks, Tools, Cloud/DevOps, Soft Skills. Put the most job-relevant category first. Don't use rating bars or percentages — they're subjective and ATS-hostile. Limit the section to your strongest 15-20 skills; listing 40 dilutes impact. Match the exact terminology used in job descriptions.",
         ],
     },
+    # --- Skor soruları (bağlamdan aynen alınacak) ---
+    {
+        "topic": "score",
+        "template": "What is my overall match score?",
+        "answers": [
+            "Your overall score is 25/100, with skill match at 0/100, experience at 50/100 and education at 50/100. The biggest gap is missing skills: PostgreSQL and Redis. Focus on those first to raise your score.",
+            "Your overall score is 58/100 (skills 62/100, experience 55/100, education 50/100). Matched skills: Python, Django. Missing: Docker, Kubernetes. The score is already solid — the fastest win is adding the missing skills to your CV.",
+        ],
+    },
+    {
+        "topic": "score",
+        "template": "How can I improve my score from 41/100?",
+        "answers": [
+            "Your current score is 41/100. The weakest categories are skills (30/100) and experience (35/100). Missing skills from the job description: FastAPI, Redis, Kafka. Add these if you have used them, and rewrite your experience bullets with metrics to lift the experience score.",
+        ],
+    },
+    {
+        "topic": "score",
+        "template": "Which score is higher: my skill match or my education score?",
+        "answers": [
+            "Your education score (50/100) is higher than your skill match (0/100). Your overall score is 25/100. Since skills weigh heavily in most roles, investing in the missing skills (PostgreSQL, Redis) will move your overall score more than any other change.",
+        ],
+    },
 ]
 
 # ============================================================
@@ -349,6 +372,29 @@ TR_QA_TEMPLATES = [
             "Becerileri 3-4 gruba ayırın: Programlama Dilleri/Çerçeveler, Araçlar, Bulut/DevOps, Sosyal Beceriler. İşle en alakalı grubu en üste koyun. Puan çubuğu veya yüzde kullanmayın — subjektiftir ve ATS'ye uygun değildir. En güçlü 15-20 becerinizle sınırlayın; 40 beceri yazmak etkiyi azaltır. İlanlarda geçen terimleri birebir kullanın.",
         ],
     },
+    # --- Skor soruları (bağlamdan aynen alınacak) ---
+    {
+        "topic": "score",
+        "template": "Toplam eşleşme skorum kaç?",
+        "answers": [
+            "Toplam skorunuz 25/100: beceri eşleşmesi 0/100, deneyim 50/100, eğitim 50/100. En büyük eksik, becerilerde: PostgreSQL ve Redis. Skoru artırmak için önce bu eksik becerilere odaklanın.",
+            "Toplam skorunuz 58/100 (beceriler 62/100, deneyim 55/100, eğitim 50/100). Eşleşen beceriler: Python, Django. Eksik olanlar: Docker, Kubernetes. Skor zaten iyi durumda — en hızlı kazanç, eksik becerileri CV'nize eklemek.",
+        ],
+    },
+    {
+        "topic": "score",
+        "template": "41/100'den skorumu nasıl yükseltebilirim?",
+        "answers": [
+            "Mevcut skorunuz 41/100. En zayıf kategoriler beceriler (30/100) ve deneyim (35/100). İlanda istenen ve CV'nizde eksik olan beceriler: FastAPI, Redis, Kafka. Bunları kullandıysanız ekleyin ve deneyim maddelerinizi ölçülerle yeniden yazın — bu deneyim skorunu yukarı çeker.",
+        ],
+    },
+    {
+        "topic": "score",
+        "template": "Hangisi daha yüksek: beceri eşleşmem mi eğitim skorum mu?",
+        "answers": [
+            "Eğitim skorunuz (50/100), beceri eşleşmenizden (0/100) daha yüksek. Toplam skorunuz 25/100. Çoğu rolde beceriler daha ağırlıklı olduğu için, eksik becerileri (PostgreSQL, Redis) eklemek toplam skoru en çok artıran değişikliktir.",
+        ],
+    },
 ]
 
 # ============================================================
@@ -372,12 +418,17 @@ def generate(count):
         target = random.choice(TARGET_ROLES)
         instruction = random.choice(COACH_INSTRUCTIONS)
         use_tr = (i % 2 == 1)
+        score_q = (i % 4 == 3)
 
         if use_tr:
             qa = random.choice(TR_QA_TEMPLATES)
             instruction = random.choice(COACH_INSTRUCTIONS_TR)
+            if score_q:
+                qa = random.choice([t for t in TR_QA_TEMPLATES if t["topic"] == "score"])
         else:
             qa = random.choice(QA_TEMPLATES)
+            if score_q:
+                qa = random.choice([t for t in QA_TEMPLATES if t["topic"] == "score"])
 
         answer_template = random.choice(qa["answers"])
 

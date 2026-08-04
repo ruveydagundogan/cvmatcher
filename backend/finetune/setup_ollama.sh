@@ -110,6 +110,9 @@ process_adapter() {
     cat > "$adapter_dir/Modelfile" <<EOF
 FROM qwen2.5:1.5b-instruct
 ADAPTER $abs_gguf_path
+PARAMETER temperature 0.6
+PARAMETER top_p 0.9
+PARAMETER repeat_penalty 1.3
 EOF
 
     ollama create "$name" -f "$adapter_dir/Modelfile"
