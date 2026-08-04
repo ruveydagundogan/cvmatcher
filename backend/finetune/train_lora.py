@@ -74,16 +74,29 @@ def get_system_prompt(mode):
 
 
 def load_dataset(data_path, mode, tokenizer):
-    """Load and prepare the training dataset using the model's chat template."""
+    """Load and prepare the training dataset using the model's chat template.
+
+    Supports two item formats:
+      - {"instruction", "input", "output"} (legacy, instruction merged into user msg)
+      - {"system", "input", "output", "history"?} (v2: system + optional prior turns)
+    """
     with open(data_path, "r") as f:
         raw_data = json.load(f)
 
     formatted = []
     for item in raw_data:
-        messages = [
-            {"role": "user", "content": f"{item['instruction']}\n\n{item['input']}"},
-            {"role": "assistant", "content": item["output"]},
-        ]
+        messages = []
+        if "system" in item:
+            messages.append({"role": "system", "content": item["system"]})
+            if item.get("history"):
+                messages.extend(item["history"])
+            messages.append({"role": "user", "content": item["input"]})
+            messages.append({"role": "assistant", "content": item["output"]})
+        else:
+            messages = [
+                {"role": "user", "content": f"{item['instruction']}\n\n{item['input']}"},
+                {"role": "assistant", "content": item["output"]},
+            ]
         text = tokenizer.apply_chat_template(messages, tokenize=False)
         formatted.append({"text": text})
 
