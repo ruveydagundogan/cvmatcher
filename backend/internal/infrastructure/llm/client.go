@@ -17,9 +17,10 @@ type ChatMessage struct {
 }
 
 type ChatCompletionRequest struct {
-	Model    string        `json:"model"`
-	Messages []ChatMessage `json:"messages"`
-	MaxTokens int          `json:"max_tokens,omitempty"`
+	Model     string        `json:"model"`
+	Messages  []ChatMessage `json:"messages"`
+	MaxTokens int           `json:"max_tokens,omitempty"`
+	KeepAlive string        `json:"keep_alive,omitempty"`
 }
 
 type ChatCompletionChoice struct {
@@ -77,9 +78,12 @@ func (c *Client) ChatCompletionWithModel(ctx context.Context, model string, mess
 
 func (c *Client) chatCompletion(ctx context.Context, model string, messages []ChatMessage, maxTokens int) (string, error) {
 	reqBody := ChatCompletionRequest{
-		Model:    model,
-		Messages: messages,
+		Model:     model,
+		Messages:  messages,
 		MaxTokens: maxTokens,
+		// Keep the model loaded in memory so cold reloads (60-90s on MacBook)
+		// don't trip proxy timeouts (Cloudflare cuts at 100s).
+		KeepAlive: "-1",
 	}
 
 	body, err := json.Marshal(reqBody)

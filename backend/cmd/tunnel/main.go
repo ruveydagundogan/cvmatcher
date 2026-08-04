@@ -24,6 +24,10 @@ func main() {
 
 	httpClient := &http.Client{Timeout: 120 * time.Second}
 
+	// Keep the Render instance awake: free-tier instances sleep after ~15 min
+	// without inbound HTTP requests (websocket traffic doesn't count).
+	go keepServerAwake(*serverURL, log)
+
 	for {
 		c, _, err := websocket.DefaultDialer.Dial(*serverURL, nil)
 		if err != nil {
@@ -37,6 +41,27 @@ func main() {
 		readLoop(c, ollamaURL, httpClient, log)
 		log.Warn("disconnected, reconnecting in 3s")
 		time.Sleep(3 * time.Second)
+	}
+}
+
+func keepServerAwake(serverURL string, log *slog.Logger) {
+	base := strings.TrimSuffix(serverURL, "/tunnel/ws")
+	if strings.HasPrefix(base, "wss://") {
+		base = "https://" + strings.TrimPrefix(base, "wss://")
+	} else if strings.HasPrefix(base, "ws://") {
+		base = "http://" + strings.TrimPrefix(base, "ws://")
+	}
+	healthURL := base + "/health/live"
+	client := &http.Client{Timeout: 15 * time.Second}
+	for {
+		time.Sleep(10 * time.Minute)
+		resp, err := client.Get(healthURL)
+		if err != nil {
+			log.Warn("keepalive ping failed", "error", err)
+			continue
+		}
+		resp.Body.Close()
+		log.Info("keepalive ping", "status", resp.StatusCode)
 	}
 }
 
@@ -74,6 +99,11 @@ func readLoop(conn *websocket.Conn, ollamaURL *string, httpClient *http.Client, 
 }
 
 func handleRequest(conn *websocket.Conn, req *tunnel.Request, ollamaURL string, httpClient *http.Client, log *slog.Logger) {
+	started := time.Now()
+	log.Info("request received", "id", req.ID, "method", req.Method, "path", req.Path)
+	defer func() {
+		log.Info("request finished", "id", req.ID, "duration_ms", time.Since(started).Milliseconds())
+	}()
 	targetURL := ollamaURL + req.Path
 
 	body, err := base64.StdEncoding.DecodeString(req.Body)
