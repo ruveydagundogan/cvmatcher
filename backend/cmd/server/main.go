@@ -14,7 +14,6 @@ import (
 	cvusecase "github.com/ruveydagundogan/cvmatcher/backend/internal/application/cv/usecase"
 	iusecase "github.com/ruveydagundogan/cvmatcher/backend/internal/application/iam/usecase"
 	jdusecase "github.com/ruveydagundogan/cvmatcher/backend/internal/application/jobdescription/usecase"
-	knowledgeuc "github.com/ruveydagundogan/cvmatcher/backend/internal/application/knowledge/usecase"
 	llmusecase "github.com/ruveydagundogan/cvmatcher/backend/internal/application/llmscoring/usecase"
 	matchusecase "github.com/ruveydagundogan/cvmatcher/backend/internal/application/matching/usecase"
 	"github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/auth"
@@ -25,7 +24,6 @@ import (
 	"github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/health"
 	iamhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/iam"
 	jdhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/jd"
-	knowledgehandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/knowledge"
 	llmhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/llmscoring"
 	matchinghandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/matching"
 	mcphandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/mcp"
@@ -39,7 +37,6 @@ import (
 	pgrescv "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/postgres/cv"
 	pgresiam "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/postgres/iam"
 	pgresjd "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/postgres/jobdescription"
-	pgresknowledge "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/postgres/knowledge"
 	pgresscoring "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/postgres/llmscoring"
 	pgresmatch "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/postgres/matching"
 	pgreschat "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/postgres/chat"
@@ -57,7 +54,6 @@ import (
 	cvrepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/cv/repository"
 	iamrepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/iam/repository"
 	jdrepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/jobdescription/repository"
-	knowledgerepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/knowledge/repository"
 	matchrepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/matching/repository"
 	scoringrepo "github.com/ruveydagundogan/cvmatcher/backend/internal/domain/llmscoring/repository"
 )
@@ -83,7 +79,6 @@ func main() {
 		cvRepo          cvrepo.CVRepository
 		jdRepo          jdrepo.JobDescriptionRepository
 		matchingRepo    matchrepo.MatchingRepository
-		knowledgeRepo   knowledgerepo.KnowledgeRepository
 		adminRepo       adminrepo.AdminRepository
 		chatRepo        chatrepo.ChatRepository
 		dbPool          interface{ Close() }
@@ -100,7 +95,6 @@ func main() {
 		cvRepo = memory.NewInMemoryCVRepo()
 		jdRepo = memory.NewInMemoryJDRepo()
 		matchingRepo = memory.NewInMemoryMatchingRepo()
-		knowledgeRepo = memory.NewKnowledgeRepository()
 		adminRepo = memory.NewAdminRepository()
 		chatRepo = memory.NewInMemoryChatRepository()
 	} else {
@@ -115,7 +109,6 @@ func main() {
 		cvRepo = pgrescv.NewCVRepository(pool)
 		jdRepo = pgresjd.NewJobDescriptionRepository(pool)
 		matchingRepo = pgresmatch.NewMatchingRepository(pool)
-		knowledgeRepo = pgresknowledge.NewKnowledgeRepository(pool)
 		adminRepo = pgresadmin.NewAdminRepository(pool)
 		chatRepo = pgreschat.NewChatRepository(pool)
 		dbPool = pool
@@ -186,8 +179,6 @@ func main() {
 
 	mcpEngine := mcpengine.NewEngine(llmClient, log)
 	mcpH := mcphandler.NewHandler(mcpEngine)
-	knowledgeUseCase := knowledgeuc.NewKnowledgeUseCase(knowledgeRepo, log)
-	knowledgeH := knowledgehandler.NewHandler(knowledgeUseCase, mcpEngine)
 	adminUseCase := adminuc.NewAdminUseCase(adminRepo, log)
 	adminH := adminhandler.NewHandler(adminUseCase, mcpEngine)
 
@@ -203,7 +194,6 @@ func main() {
 		JDHandler:          jdH,
 		MatchingHandler:    matchH,
 		MCPHandler:         mcpH,
-		KnowledgeHandler:   knowledgeH,
 		AdminHandler:       adminH,
 		ChatHandler:        chatH,
 		JWTValidator:       jwtService,

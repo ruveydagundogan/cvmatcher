@@ -13,7 +13,6 @@ import (
 	healthhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/health"
 	iamhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/iam"
 	jdhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/jd"
-	knowledgehandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/knowledge"
 	llmhandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/llmscoring"
 	matchinghandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/matching"
 	mcphandler "github.com/ruveydagundogan/cvmatcher/backend/internal/infrastructure/http/handler/mcp"
@@ -31,7 +30,6 @@ type Dependencies struct {
 	JDHandler          *jdhandler.Handler
 	MatchingHandler    *matchinghandler.Handler
 	MCPHandler         *mcphandler.Handler
-	KnowledgeHandler   *knowledgehandler.Handler
 	AdminHandler       *adminhandler.Handler
 	ChatHandler        *chathandler.Handler
 	JWTValidator       middleware.TokenValidator
@@ -109,16 +107,6 @@ func NewRouter(deps Dependencies) http.Handler {
 				r.Get("/matches/{id}", deps.MatchingHandler.GetByID)
 				r.Delete("/matches/{id}", deps.MatchingHandler.Delete)
 				r.Get("/dashboard/stats", deps.MatchingHandler.GetDashboardStats)
-			}
-
-			if deps.KnowledgeHandler != nil {
-				r.Post("/knowledge", deps.KnowledgeHandler.Create)
-				r.Get("/knowledge", deps.KnowledgeHandler.List)
-				r.Get("/knowledge/search", deps.KnowledgeHandler.Search)
-				r.Get("/knowledge/categories", deps.KnowledgeHandler.ListCategories)
-				r.Get("/knowledge/{id}", deps.KnowledgeHandler.GetByID)
-				r.Delete("/knowledge/{id}", deps.KnowledgeHandler.Delete)
-				r.Post("/knowledge/query-ai", deps.KnowledgeHandler.QueryAI)
 			}
 
 			if deps.ChatHandler != nil {
